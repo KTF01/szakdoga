@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -24,6 +25,9 @@ public class ParkingLot {
 	@OneToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name= "plate_number")
 	Car occupiingCar;
+	
+	@ManyToOne
+	Section section;
 
 	public Long getId() {
 		return id;
@@ -48,7 +52,13 @@ public class ParkingLot {
 	public void setOccupiingCar(Car occupiingCar) {
 		this.occupiingCar = occupiingCar;
 	}
-	
-	
+
+	public Section getSection() {
+		return section;
+	}
+
+	public void setSection(Section section) {
+		this.section = section;
+	}
 
 }

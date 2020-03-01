@@ -6,9 +6,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "parkHouses")
@@ -18,12 +18,16 @@ public class ParkHouse {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 	
+	String name;
+	
 	@NotBlank
 	String adress;
 	
-	@OneToMany(mappedBy = "parkHouse")
-	List<Floor> floors;
-
+	@NotNull
+	int numberOfFloors;
+	
+	List<Section> sections;
+	
 	public Long getId() {
 		return id;
 	}
@@ -40,12 +44,28 @@ public class ParkHouse {
 		this.adress = adress;
 	}
 
-	public List<Floor> getFloors() {
-		return floors;
+	public String getName() {
+		return name;
 	}
 
-	public void setFloors(List<Floor> floors) {
-		this.floors = floors;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getNumberOfFloors() {
+		return numberOfFloors;
+	}
+
+	public void setNumberOfFloors(int numberOfFloors) {
+		this.numberOfFloors = numberOfFloors;
+	}
+
+	public List<Section> getSections() {
+		return sections;
+	}
+
+	public void setSections(List<Section> sections) {
+		this.sections = sections;
 	}
 
 	

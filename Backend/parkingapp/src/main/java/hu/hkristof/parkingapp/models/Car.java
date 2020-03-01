@@ -17,6 +17,8 @@ public class Car {
 	//@NotBlank
 	@ManyToOne
 	User owner;
+	
+	Long plId;
 
 	public String getPlateNumber() {
 		return plateNumber;
@@ -33,5 +35,14 @@ public class Car {
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
+
+	public Long getPlId() {
+		return plId;
+	}
+
+	public void setPlId(Long plId) {
+		this.plId = plId;
+	}
+	
 
 }
