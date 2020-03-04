@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +31,10 @@ public class ParkHouseController {
 	    return parkHouseRepository.save(ph);
 	}
 	
+	@CrossOrigin
 	@GetMapping("/all")
 	public List<ParkHouse> getAllParkhouse(){
+		System.out.println("Parkolóházak lekérdezve!");
 		return parkHouseRepository.findAll();
 	}
 	
@@ -41,7 +44,7 @@ public class ParkHouseController {
 		editPH.setAdress(ph.getAdress());
 		editPH.setName(ph.getName());
 		editPH.setNumberOfFloors(ph.getNumberOfFloors());
-		editPH.setSections(ph.getSections());
+		//editPH.setSections(ph.getSections());
 		
 		return parkHouseRepository.save(editPH);
 	}

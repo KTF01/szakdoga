@@ -26,7 +26,8 @@ public class ParkHouse {
 	@NotNull
 	int numberOfFloors;
 	
-	List<Section> sections;
+	
+	//List<Section> sections;
 	
 	public Long getId() {
 		return id;
@@ -60,13 +61,13 @@ public class ParkHouse {
 		this.numberOfFloors = numberOfFloors;
 	}
 
-	public List<Section> getSections() {
+	/*public List<Section> getSections() {
 		return sections;
 	}
 
 	public void setSections(List<Section> sections) {
 		this.sections = sections;
-	}
+	}*/
 
 	
 }
