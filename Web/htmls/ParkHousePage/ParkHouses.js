@@ -1,27 +1,39 @@
-let http = new XMLHttpRequest();
+
 let myUl = document.querySelector('#listOfDatas');
-let myButton = document.querySelector("#sendButton");
 let addbtn = document.querySelector(".addbtn");
 
 let sendbtn = document.querySelector("#sendbtn");
 
 let addFrom = document.forms.NewDataForm;
-let addFormData = new FormData(addFrom);
 
 let dataList = [
-    {
-        name : "Loszar",
-        address:"1202 cfasz",
-        numberOfFloors : "3"
-    }
 ];
 
-for(let i = 0; i<dataList.length; i++){
-    addParkHouse(dataList[i].name,dataList[i].address, dataList[i].numberOfFloors);
+function loadParkHouses(){
+    let http = new XMLHttpRequest();
+    http.open("GET", "http://localhost:8080/parkHouses/all", true);
+    http.setRequestHeader("Content-Type", "application/json");
+    http.onreadystatechange = function(){
+        if(this.readyState==4){
+            if(this.status == 200){
+            dataList = (JSON.parse(http.response));
+            for(let i = 0; i<dataList.length; i++){
+                addParkHouse(dataList[i].name,dataList[i].address, dataList[i].numberOfFloors);
+            }
+            }else{
+                console.log(this.readyState);
+                console.log(http.response);
+            }
+        }
+}
+http.send();
 }
 
+loadParkHouses();
+
+
+
 addbtn.addEventListener('click', function(){
-    console.log("fds");
     addFrom.classList.toggle("show");
     addbtn.classList.toggle("hide");
 });
@@ -30,7 +42,7 @@ sendbtn.addEventListener('click', function(event){
     event.preventDefault();
     let formElements = document.querySelectorAll("#NewDataForm input");
 
-formElements[2].value;
+    formElements[2].value;
     let newData = {
         name : formElements[0].value,
         address: formElements[1].value,
@@ -38,14 +50,10 @@ formElements[2].value;
     }
 
     if(validateNewParkHouseForm(newData)){
-
-        dataList.push(newData);
-        addParkHouse(newData.name, newData.address, newData.numberOfFloors);
+        saveParkHouseToDb(newData);
         formElements[0].value="";
         formElements[1].value="";
         formElements[2].value="";
-        addFrom.classList.toggle("show");
-        addbtn.classList.toggle("hide");
     }else{
         console.log("INVALID");//TODO!!!
     }
@@ -65,14 +73,28 @@ function addParkHouse(name, address, numberOfFloors){
     +`<span class='numberOfFloors'>${numberOfFloors}</span></div>`;
 }
 
+//HTTP REQUESTS
 
-/*http.onreadystatechange = function(){
-    if(this.readyState==4 && this.status == 200){
-        myUl.innerHTML+="<li>"+JSON.parse(http.response)[0]["name"]+"</li>";
-    }
+
+function saveParkHouseToDb(parkHouse){
+    let http = new XMLHttpRequest();
+    http.open("POST", "http://localhost:8080/parkHouses/newPH", true);
+    http.setRequestHeader("Content-Type", "application/json");
+    http.onreadystatechange = function(){
+        if(this.readyState==4){
+            if(this.status == 200){
+            let newData = JSON.parse(http.response);
+            dataList.push(newData);
+        addParkHouse(newData.name, newData.address, newData.numberOfFloors);
+        
+        addFrom.classList.toggle("show");
+        addbtn.classList.toggle("hide");
+            
+            }else{
+                console.log(this.readyState);
+                console.log(http.response);
+            }
+        }
 }
-
-myButton.addEventListener("click", function(){
-    http.open("GET", "http://localhost:8080/parkHouses/all");
-    http.send();
-});*/
+http.send(JSON.stringify(parkHouse));
+}

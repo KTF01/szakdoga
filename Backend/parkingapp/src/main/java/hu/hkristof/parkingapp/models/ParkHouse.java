@@ -21,7 +21,7 @@ public class ParkHouse {
 	String name;
 	
 	@NotBlank
-	String adress;
+	String address;
 	
 	@NotNull
 	int numberOfFloors;
@@ -37,12 +37,12 @@ public class ParkHouse {
 		this.id = id;
 	}
 
-	public String getAdress() {
-		return adress;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setAdress(String adress) {
-		this.adress = adress;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	public String getName() {

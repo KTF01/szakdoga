@@ -25,6 +25,7 @@ public class ParkHouseController {
 	@Autowired
 	ParkHouseRepository parkHouseRepository;
 	
+	@CrossOrigin
 	@PostMapping("/newPH")
 	public ParkHouse createNote(@Valid @RequestBody ParkHouse ph) {
 		System.out.println(ph.getName()+" nevű parkolóház létrehozva!");
@@ -41,7 +42,7 @@ public class ParkHouseController {
 	@PutMapping("updatePH/{id}")
 	public ParkHouse updateParkHouse(@PathVariable Long id, @Valid @RequestBody ParkHouse ph) {
 		ParkHouse editPH = parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
-		editPH.setAdress(ph.getAdress());
+		editPH.setAddress(ph.getAddress());
 		editPH.setName(ph.getName());
 		editPH.setNumberOfFloors(ph.getNumberOfFloors());
 		//editPH.setSections(ph.getSections());
