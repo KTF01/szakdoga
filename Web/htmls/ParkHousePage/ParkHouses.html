@@ -7,12 +7,19 @@
     <title>Parking App</title>
     <link rel="stylesheet" href="ParkHouses.css">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="..\..\libs\fontawesome\css\all.min.css">
     <!--<link rel="stylesheet" href="../../libs/bootstrap-4.4.1-dist/css/bootstrap.min.css">-->
 </head>
 
 <body>
     <div class="display">
         <nav>
+            <div id="mainTitle">
+                <h1>Parkoló házak</h1>
+            </div>
+            <div id="userBasicData">
+                Horváth Kristóf
+            </div>
             <ul>
                 <li>Parkolóházak</li>
                 <li>Autók</li>
@@ -22,12 +29,30 @@
         </nav>
         <div id="page">
             <header>
-                <h1>Parkoló házak</h1>
             </header>
 
 
             <div id="content">
                 <h2>MAIN CONTENT</h2>
+                <ul id="listOfDatas">
+                    <div class="dataCard">
+                        <span class="name">Parkoloház1</span>
+                        <span class="adress">Budapest XI. Tűzoltó utca 13.</span>
+                        <span class="numberOfFloors">2</span>
+
+                    </div>
+                    
+                </ul>
+                <div id="addCard" class="popupContainer">
+                    <span class="far fa-plus-square addbtn"></span>
+                    <form id="NewDataForm" class="addForm">
+                        <input type="text" placeholder="Név" required>
+                        <input type="text" placeholder="Cím" required>
+                        <input type="text" placeholder="Emeletek száma">
+                        <button type="button" id="sendbtn">Kész</button>
+                    </form>
+                </div>                   
+                
 
             </div>
         </div>
