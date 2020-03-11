@@ -9,6 +9,7 @@ let addFrom = document.forms.NewDataForm;
 let dataList = [
 ];
 
+
 function loadParkHouses(){
     let http = new XMLHttpRequest();
     http.open("GET", "http://localhost:8080/parkHouses/all", true);
@@ -18,7 +19,7 @@ function loadParkHouses(){
             if(this.status == 200){
             dataList = (JSON.parse(http.response));
             for(let i = 0; i<dataList.length; i++){
-                addParkHouse(dataList[i].name,dataList[i].address, dataList[i].numberOfFloors);
+                addParkHouse(dataList[i]);
             }
             }else{
                 console.log(this.readyState);
@@ -67,11 +68,19 @@ function validateNewParkHouseForm(data){
     return true;
 }
 
-function addParkHouse(name, address, numberOfFloors){
-    myUl.innerHTML+=`<div class='dataCard'><span class='name'>${name}</span>`+
-    `<span class="adress">${address}</span>`
-    +`<span class='numberOfFloors'>${numberOfFloors}</span></div>`;
+function addParkHouse(data){
+    let card = document.createElement('div');
+    card.className="dataCard";
+    card.innerHTML=`<span class='name'>${data.name}</span>`+
+    `<span class="adress">${data.address}</span>`
+    +`<span class='numberOfFloors'>${data.numberOfFloors}</span>`;
+    card.addEventListener("click", function(){
+        window.location=`../SectorPage/sector.html?id=${data.id}`;
+    });
+    myUl.appendChild(card);
 }
+
+
 
 //HTTP REQUESTS
 

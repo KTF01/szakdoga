@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.exceptions.ParkHouseNotFoundException;
+import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.repositoris.ParkHouseRepository;
 
@@ -37,6 +39,13 @@ public class ParkHouseController {
 	public List<ParkHouse> getAllParkhouse(){
 		System.out.println("Parkolóházak lekérdezve!");
 		return parkHouseRepository.findAll();
+	}
+	
+	@CrossOrigin
+	@GetMapping("/{id}")
+	public ParkHouse getParkHouse(@PathVariable Long id) {
+		System.out.println("Parkolóház lekérdezés!");
+		return parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 	}
 	
 	@PutMapping("updatePH/{id}")

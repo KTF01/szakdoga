@@ -26,7 +26,6 @@ public class ParkHouse {
 	@NotNull
 	int numberOfFloors;
 	
-	
 	//List<Section> sections;
 	
 	public Long getId() {

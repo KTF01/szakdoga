@@ -27,14 +27,18 @@ nav{
 }
 .display > #page{
     width: 88%;
+    align-self: stretch;
 }
 
-#mainDisplay{
-    background-color: #535966;
+#content{
+    height: 64%;
 }
 
 #listOfDatas{
     padding: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
 }
 
 .dataCard{
@@ -42,6 +46,11 @@ nav{
     border-radius: 5px;
     box-shadow: 2px 2px black;
     margin-bottom: 10px;
+}
+
+.dataCard:hover{
+    border: lightblue solid 2px;
+    transition: all 0.3s;
 }
 .dataCard span{
     display: block;
@@ -51,6 +60,7 @@ nav{
     font-size: 50px;
     text-align: center;
     margin: 10px;
+    border-radius: 5px;
 }
 
 .addbtn{
@@ -60,8 +70,8 @@ nav{
 
 #addCard:hover{
     color: blue;
-    border: lightblue solid 1px;
-    border-radius: 5px;
+    border: lightblue solid 2px;
+    
     transition: all 0.3s;
 }
 
