@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -31,6 +32,19 @@ public class Section {
 	
 	@OneToMany(mappedBy = "section")
 	List<ParkingLot> parkingLots;
+	
+	
+	@ManyToOne
+	ParkHouse parkHouse;
+
+	
+	public ParkHouse getParkHouse() {
+		return parkHouse;
+	}
+
+	public void setParkHouse(ParkHouse parkHouse) {
+		this.parkHouse = parkHouse;
+	}
 
 	public Long getId() {
 		return id;

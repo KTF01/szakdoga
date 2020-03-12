@@ -75,7 +75,10 @@ function addParkHouse(data){
     `<span class="adress">${data.address}</span>`
     +`<span class='numberOfFloors'>${data.numberOfFloors}</span>`;
     card.addEventListener("click", function(){
-        window.location=`../SectorPage/sector.html?id=${data.id}`;
+        let qs = encodeURIComponent(data);
+        console.log(data);
+        window.location=`../ParkHousePage/ParkHouse.html?id=${data.id}`;
+
     });
     myUl.appendChild(card);
 }

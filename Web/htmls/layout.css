@@ -1,0 +1,26 @@
+.display{
+    display: flex;
+    background-color: azure;
+    align-items: flex-start;
+    height: 100vh;
+}
+
+nav{
+    display: block;
+    color: #a9b7d0;
+    background: #3f4d67;
+    /*width : 200px;
+    height: 100vh;
+    top : 0;
+    position: fixed;*/
+}
+
+.display> nav{
+    align-self: stretch;
+    width: 12%;
+    min-width: 182px;
+}
+.display > #page{
+    width: 88%;
+    align-self: stretch;
+}

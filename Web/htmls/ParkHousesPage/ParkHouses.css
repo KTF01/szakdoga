@@ -1,0 +1,86 @@
+
+#content{
+    height: 64%;
+}
+
+#listOfDatas{
+    padding: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.dataCard{
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 2px 2px black;
+    margin-bottom: 10px;
+}
+
+.dataCard:hover{
+    border: lightblue solid 2px;
+    transition: all 0.3s;
+}
+.dataCard span{
+    display: block;
+}
+#addCard{
+    padding: 10px;
+    font-size: 50px;
+    text-align: center;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.addbtn{
+    display: block;
+    
+}
+
+#addCard:hover{
+    color: blue;
+    border: lightblue solid 2px;
+    
+    transition: all 0.3s;
+}
+
+.popupContainer .addForm{
+    display: none;
+}
+.popupContainer .show{
+    display: block;
+    transition: all 0.3s;
+}
+
+.popupContainer .hide{
+    display: none;
+}
+
+#mainTitle{
+    display: block;
+    padding: 10px;
+    margin: 0 auto;
+}
+#userBasicData{
+    padding: 10px;
+}
+header{
+    display: block;
+    min-height: 70px;
+    width: 100%;
+    padding: 0;
+    top:0;
+    background: transparent;
+    border-bottom: #3f4d67 solid 1px;
+    margin: 0;
+    /*color: #3f4d67;*/
+    /*width: calc(100% - 200px);
+    margin-left: 200px;*/
+}
+h1{
+    margin: 0;
+}
+ul{
+    list-style-type: none;
+    padding:10px;
+}

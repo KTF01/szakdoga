@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.exceptions.ParkHouseNotFoundException;
-import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.ParkHouse;
+import hu.hkristof.parkingapp.models.Section;
 import hu.hkristof.parkingapp.repositoris.ParkHouseRepository;
 
 @RestController
@@ -57,5 +56,15 @@ public class ParkHouseController {
 		//editPH.setSections(ph.getSections());
 		
 		return parkHouseRepository.save(editPH);
+	}
+	
+	@PutMapping("/addSection/{id}")
+	public ParkHouse addSection(@PathVariable Long id, @Valid @RequestBody List<Section> newSections) {
+		ParkHouse ph =  parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
+		for(Section sec : newSections) {
+			ph.addSection(sec);
+		}
+		System.out.println(ph.getName()+" parkolóházhoz szekciók lettek hozzáadva!");
+		return parkHouseRepository.save(ph);
 	}
 }
