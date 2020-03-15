@@ -6,10 +6,14 @@ let sendbtn = document.querySelector("#sendbtn");
 
 let addFrom = document.forms.NewDataForm;
 
-let dataList = [
+let dataList = [{
+    name:"Teszt",
+    address: "cim",
+    numberOfFloors : "3"
+}
 ];
 
-
+addParkHouse(dataList[0]);
 function loadParkHouses(){
     let http = new XMLHttpRequest();
     http.open("GET", "http://localhost:8080/parkHouses/all", true);
@@ -22,7 +26,7 @@ function loadParkHouses(){
                 addParkHouse(dataList[i]);
             }
             }else{
-                console.log(this.readyState);
+                console.log(this.readyState, this.status);
                 console.log(http.response);
             }
         }
@@ -69,6 +73,8 @@ function validateNewParkHouseForm(data){
 }
 
 function addParkHouse(data){
+    let listItem = document.createElement('li');
+    listItem.className="listItem";
     let card = document.createElement('div');
     card.className="dataCard";
     card.innerHTML=`<span class='name'>${data.name}</span>`+
@@ -80,12 +86,16 @@ function addParkHouse(data){
         window.location=`../ParkHousePage/ParkHouse.html?id=${data.id}`;
 
     });
-    myUl.appendChild(card);
+    listItem.appendChild(card);
+    let deleteIcon = document.createElement("span");
+    deleteIcon.className=`far fa-trash-alt trash`;
+    //let trashCont =  document.createElement("div");
+    //trashCont.className = "trashWrapper";
+    //trashCont.appendChild(deleteIcon);
+    listItem.appendChild(deleteIcon);
+    myUl.appendChild(listItem);
+
 }
-
-
-
-//HTTP REQUESTS
 
 
 function saveParkHouseToDb(parkHouse){
@@ -97,7 +107,7 @@ function saveParkHouseToDb(parkHouse){
             if(this.status == 200){
             let newData = JSON.parse(http.response);
             dataList.push(newData);
-        addParkHouse(newData.name, newData.address, newData.numberOfFloors);
+        addParkHouse(newData);
         
         addFrom.classList.toggle("show");
         addbtn.classList.toggle("hide");

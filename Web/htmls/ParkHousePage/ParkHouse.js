@@ -15,9 +15,9 @@ function loadParkhouse(){
             parkHouse = JSON.parse(http.response);
 
             console.log(parkHouse);
-            let h1 = document.querySelector('#page h1');
-            let h2 = document.querySelector('#page h2');
-            let h3 = document.querySelector('#page h3');
+            let h1 = document.querySelector('main h1');
+            let h2 = document.querySelector('main h2');
+            let h3 = document.querySelector('main h3');
             h1.innerHTML+=parkHouse.name;
             h2.innerHTML+=parkHouse.address;
             h3.innerHTML+=parkHouse.numberOfFloors;

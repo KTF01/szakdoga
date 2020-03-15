@@ -8,7 +8,7 @@
 nav{
     display: block;
     color: #a9b7d0;
-    background: #3f4d67;
+    background: var(--dark-background);
     /*width : 200px;
     height: 100vh;
     top : 0;
@@ -20,7 +20,7 @@ nav{
     width: 12%;
     min-width: 182px;
 }
-.display > #page{
+.display > main{
     width: 88%;
     align-self: stretch;
 }
