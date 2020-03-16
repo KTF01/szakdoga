@@ -88,7 +88,8 @@ function addParkHouse(data){
     });
     listItem.appendChild(card);
     let deleteIcon = document.createElement("span");
-    deleteIcon.className=`far fa-trash-alt trash`;
+    deleteIcon.innerHTML="<i class='far fa-trash-alt '></i>";
+    deleteIcon.className=`trash`;
     //let trashCont =  document.createElement("div");
     //trashCont.className = "trashWrapper";
     //trashCont.appendChild(deleteIcon);
