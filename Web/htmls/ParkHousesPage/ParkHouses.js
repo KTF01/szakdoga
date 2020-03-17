@@ -87,12 +87,14 @@ function addParkHouse(data){
 
     });
     listItem.appendChild(card);
-    let deleteIcon = document.createElement("span");
+    let deleteIcon = document.createElement("div");
     deleteIcon.innerHTML="<i class='far fa-trash-alt '></i>";
     deleteIcon.className=`trash`;
-    //let trashCont =  document.createElement("div");
-    //trashCont.className = "trashWrapper";
-    //trashCont.appendChild(deleteIcon);
+
+    deleteIcon.addEventListener("click", function(){
+        console.log("clicked");
+    })
+
     listItem.appendChild(deleteIcon);
     myUl.appendChild(listItem);
 
