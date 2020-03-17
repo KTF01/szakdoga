@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,4 +68,13 @@ public class ParkHouseController {
 		System.out.println(ph.getName()+" parkolóházhoz szekciók lettek hozzáadva!");
 		return parkHouseRepository.save(ph);
 	}
+	
+	@DeleteMapping("delete/{id}")
+	public void deleteParkHouse(@PathVariable Long id) {
+		ParkHouse ph = parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
+		System.out.println(ph.getName()+" nevű parkolóház törölve!");
+		parkHouseRepository.delete(ph);
+		
+	}
+	
 }
