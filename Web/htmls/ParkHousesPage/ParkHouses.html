@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="../layout.css">
     <link rel="stylesheet" href="ParkHouses.css">
+    <link rel="stylesheet" href="popup.css">
     
     <link rel="stylesheet" href="..\..\libs\fontawesome\css\all.min.css">
     <!--<link rel="stylesheet" href="../../libs/bootstrap-4.4.1-dist/css/bootstrap.min.css">-->
@@ -50,11 +51,25 @@
                 
 
             </div>
+
+            <!-- Popup window, invisible by default.-->
+            <div class="popup">
+                <div class="popupContent">
+                    <!--<span class="closeButton">&times;</span>-->
+                    <h1>Biztos törlöd a Parkolóházat?</h1>
+                    <div id="answerBtns">
+                        <span id="yesBtn">Igen</span>
+                        <span id="noBtn">Nem</span>
+                    </div>
+                </div>
+            </div>
         </main>
 
     </div>
 
+    
     <script src="ParkHouses.js"></script>
+    <script src="popup.js"></script>
 </body>
 
 </html>

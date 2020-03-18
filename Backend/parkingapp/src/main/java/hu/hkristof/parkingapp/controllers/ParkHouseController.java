@@ -69,6 +69,7 @@ public class ParkHouseController {
 		return parkHouseRepository.save(ph);
 	}
 	
+	@CrossOrigin
 	@DeleteMapping("delete/{id}")
 	public void deleteParkHouse(@PathVariable Long id) {
 		ParkHouse ph = parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));

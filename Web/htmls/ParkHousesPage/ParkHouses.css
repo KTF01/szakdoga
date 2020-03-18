@@ -52,12 +52,15 @@
     box-shadow: 2px 2px black;
     border-radius: 5px;
     margin-left: 4px;
+    cursor: pointer;
     transition: all 0.3s ease-out;
 }
 .trash>i{
     color: transparent;
     transition: all 0.3s;
 }
+
+
 
 #addCard{
     padding: 10px;

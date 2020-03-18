@@ -6,14 +6,11 @@ let sendbtn = document.querySelector("#sendbtn");
 
 let addFrom = document.forms.NewDataForm;
 
-let dataList = [{
-    name:"Teszt",
-    address: "cim",
-    numberOfFloors : "3"
-}
+let dataList = [
 ];
 
-addParkHouse(dataList[0]);
+let currentPh = null;
+
 function loadParkHouses(){
     let http = new XMLHttpRequest();
     http.open("GET", "http://localhost:8080/parkHouses/all", true);
@@ -21,10 +18,8 @@ function loadParkHouses(){
     http.onreadystatechange = function(){
         if(this.readyState==4){
             if(this.status == 200){
-            dataList = (JSON.parse(http.response));
-            for(let i = 0; i<dataList.length; i++){
-                addParkHouse(dataList[i]);
-            }
+                dataList = (JSON.parse(http.response));
+                refreshDatas();
             }else{
                 console.log(this.readyState, this.status);
                 console.log(http.response);
@@ -36,6 +31,12 @@ http.send();
 
 loadParkHouses();
 
+function refreshDatas(){
+    myUl.innerHTML="";
+    for(let i = 0; i<dataList.length; i++){
+        addParkHouse(dataList[i]);
+    }
+}
 
 
 addbtn.addEventListener('click', function(){
@@ -92,7 +93,8 @@ function addParkHouse(data){
     deleteIcon.className=`trash`;
 
     deleteIcon.addEventListener("click", function(){
-        console.log("clicked");
+        currentPh = data;
+        togglePopup();
     })
 
     listItem.appendChild(deleteIcon);
@@ -123,3 +125,5 @@ function saveParkHouseToDb(parkHouse){
 }
 http.send(JSON.stringify(parkHouse));
 }
+
+
