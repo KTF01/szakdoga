@@ -4,13 +4,6 @@ let addbtn = document.querySelector(".addbtn");
 
 let sendbtn = document.querySelector("#sendbtn");
 
-let addFrom = document.forms.NewDataForm;
-
-let dataList = [
-];
-
-let currentPh = null;
-
 function loadParkHouses(){
     let http = new XMLHttpRequest();
     http.open("GET", "http://localhost:8080/parkHouses/all", true);
@@ -18,7 +11,7 @@ function loadParkHouses(){
     http.onreadystatechange = function(){
         if(this.readyState==4){
             if(this.status == 200){
-                dataList = (JSON.parse(http.response));
+                parkHouseList = (JSON.parse(http.response));
                 refreshDatas();
             }else{
                 console.log(this.readyState, this.status);
@@ -31,40 +24,27 @@ http.send();
 
 loadParkHouses();
 
-function refreshDatas(){
-    myUl.innerHTML="";
-    for(let i = 0; i<dataList.length; i++){
-        addParkHouse(dataList[i]);
-    }
-}
-
 
 addbtn.addEventListener('click', function(){
-    addFrom.classList.toggle("show");
-    addbtn.classList.toggle("hide");
+    createEditPopup({name: "", address:"", numberOfFloors:""}, handleParkHouseForm);
+    togglePopup();
 });
 
-sendbtn.addEventListener('click', function(event){
-    event.preventDefault();
-    let formElements = document.querySelectorAll("#NewDataForm input");
+function handleParkHouseForm(){
 
-    formElements[2].value;
     let newData = {
-        name : formElements[0].value,
-        address: formElements[1].value,
-        numberOfFloors : formElements[2].value,
+        name : editForm.name.value,
+        address: editForm.address.value,
+        numberOfFloors : editForm.number.value,
     }
 
     if(validateNewParkHouseForm(newData)){
-        saveParkHouseToDb(newData);
-        formElements[0].value="";
-        formElements[1].value="";
-        formElements[2].value="";
+        saveParkHouseToDb(newData, addParkHouse);
     }else{
         console.log("INVALID");//TODO!!!
     }
+}
 
-});
 
 function validateNewParkHouseForm(data){
     if(data.name.length === 0 || !data.name.trim()) return false;
@@ -73,18 +53,17 @@ function validateNewParkHouseForm(data){
     return true;
 }
 
-function addParkHouse(data){
+function addParkHouse(parkHouse){
     let listItem = document.createElement('li');
     listItem.className="listItem";
     let card = document.createElement('div');
     card.className="dataCard";
-    card.innerHTML=`<span class='name'>${data.name}</span>`+
-    `<span class="adress">${data.address}</span>`
-    +`<span class='numberOfFloors'>${data.numberOfFloors}</span>`;
+    card.innerHTML=`<span class='name'>${parkHouse.name}</span>`+
+    `<span class="adress">${parkHouse.address}</span>`
+    +`<span class='numberOfFloors'>${parkHouse.numberOfFloors}</span>`;
     card.addEventListener("click", function(){
-        let qs = encodeURIComponent(data);
-        console.log(data);
-        window.location=`../ParkHousePage/ParkHouse.html?id=${data.id}`;
+        currentPh=parkHouse;
+        window.location=`../ParkHousePage/ParkHouse.html?id=${parkHouse.id}`;
 
     });
     listItem.appendChild(card);
@@ -93,7 +72,8 @@ function addParkHouse(data){
     deleteIcon.className=`trash`;
 
     deleteIcon.addEventListener("click", function(){
-        currentPh = data;
+        currentPh = parkHouse;
+        createPopup("Biztos törölni akarod a parkolóházat?", function(){deleteParkHouse(currentPh, refreshDatas)});
         togglePopup();
     })
 
@@ -102,28 +82,10 @@ function addParkHouse(data){
 
 }
 
-
-function saveParkHouseToDb(parkHouse){
-    let http = new XMLHttpRequest();
-    http.open("POST", "http://localhost:8080/parkHouses/newPH", true);
-    http.setRequestHeader("Content-Type", "application/json");
-    http.onreadystatechange = function(){
-        if(this.readyState==4){
-            if(this.status == 200){
-            let newData = JSON.parse(http.response);
-            dataList.push(newData);
-        addParkHouse(newData);
-        
-        addFrom.classList.toggle("show");
-        addbtn.classList.toggle("hide");
-            
-            }else{
-                console.log(this.readyState);
-                console.log(http.response);
-            }
-        }
+function refreshDatas(){
+    myUl.innerHTML="";
+    for(let i = 0; i<parkHouseList.length; i++){
+        addParkHouse(parkHouseList[i]);
+    }
 }
-http.send(JSON.stringify(parkHouse));
-}
-
 

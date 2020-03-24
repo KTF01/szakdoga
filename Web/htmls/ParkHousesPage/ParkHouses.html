@@ -4,11 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parking App</title>
+    <title>Parkoló App</title>
     <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="../layout.css">
+    <link rel="stylesheet" href="../buttons.css">
     <link rel="stylesheet" href="ParkHouses.css">
-    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="../popup.css">    
     
     <link rel="stylesheet" href="..\..\libs\fontawesome\css\all.min.css">
     <!--<link rel="stylesheet" href="../../libs/bootstrap-4.4.1-dist/css/bootstrap.min.css">-->
@@ -18,7 +19,7 @@
     <div class="display">
         <nav>
             <div id="mainTitle">
-                <h1>Parkoló házak</h1>
+                <h1>Parkoló App</h1>
             </div>
             <div id="userBasicData">
                 Horváth Kristóf
@@ -41,35 +42,17 @@
                 </ul>
                 <div id="addCard" class="popupContainer" >
                     <span class="far fa-plus-square addbtn"></span>
-                    <form id="NewDataForm" class="addForm">
-                        <input type="text" placeholder="Név" required>
-                        <input type="text" placeholder="Cím" required>
-                        <input type="text" placeholder="Emeletek száma">
-                        <button type="button" id="sendbtn">Kész</button>
-                    </form>
                 </div>                   
-                
-
             </div>
 
-            <!-- Popup window, invisible by default.-->
-            <div class="popup">
-                <div class="popupContent">
-                    <!--<span class="closeButton">&times;</span>-->
-                    <h1>Biztos törlöd a Parkolóházat?</h1>
-                    <div id="answerBtns">
-                        <span id="yesBtn">Igen</span>
-                        <span id="noBtn">Nem</span>
-                    </div>
-                </div>
-            </div>
         </main>
 
     </div>
 
-    
+    <script src="../../common.js"></script>
+    <script src="../popup.js"></script>
     <script src="ParkHouses.js"></script>
-    <script src="popup.js"></script>
+
 </body>
 
 </html>

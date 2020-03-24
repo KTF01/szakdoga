@@ -48,19 +48,21 @@ public class ParkHouseController {
 		return parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 	}
 	
-	@PutMapping("updatePH/{id}")
+	@CrossOrigin
+	@PutMapping("/updatePH/{id}")
 	public ParkHouse updateParkHouse(@PathVariable Long id, @Valid @RequestBody ParkHouse ph) {
 		ParkHouse editPH = parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
+		String oldName = editPH.getName();
 		editPH.setAddress(ph.getAddress());
 		editPH.setName(ph.getName());
 		editPH.setNumberOfFloors(ph.getNumberOfFloors());
 		//editPH.setSections(ph.getSections());
-		
+		System.out.println(oldName +" nevű parkolóház módosítva lett! Új név: "+ editPH.getName());
 		return parkHouseRepository.save(editPH);
 	}
 	
-	@PutMapping("/addSection/{id}")
-	public ParkHouse addSection(@PathVariable Long id, @Valid @RequestBody List<Section> newSections) {
+	@PutMapping("/addSector/{id}")
+	public ParkHouse addSector(@PathVariable Long id, @Valid @RequestBody List<Section> newSections) {
 		ParkHouse ph =  parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 		for(Section sec : newSections) {
 			ph.addSection(sec);

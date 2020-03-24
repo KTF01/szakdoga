@@ -2,6 +2,7 @@ package hu.hkristof.parkingapp.models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,13 +31,17 @@ public class Section {
 	@NotNull
 	int floor;
 	
-	@OneToMany(mappedBy = "section")
+	@OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
 	List<ParkingLot> parkingLots;
 	
-	
+	@NotNull
 	@ManyToOne
 	ParkHouse parkHouse;
 
+	public void addParkingLot(ParkingLot parkingLot) {
+		parkingLots.add(parkingLot);
+		parkingLot.setSection(this);
+    }
 	
 	public ParkHouse getParkHouse() {
 		return parkHouse;

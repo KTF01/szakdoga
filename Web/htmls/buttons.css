@@ -1,0 +1,15 @@
+.trash, .edit{
+    display: block;
+    text-align: center;
+    width: 80px;
+    font-size: 2em;
+    height: 100%;
+    box-shadow: 2px 2px black;
+    border-radius: 5px;
+    border: 1px solid black;
+    margin-left: 4px;
+    cursor: pointer;
+}
+.trash>i{
+    color: black /*var(--light-color);*/
+}
