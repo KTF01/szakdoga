@@ -2,8 +2,6 @@ let popup = document.createElement("div");
 popup.className="popup";
 let popupContent = document.createElement("div");
 popupContent.className="popupContent";
-let popupButtons = document.createElement("div");
-popupButtons.id="answerBtns";
 
 popup.appendChild(popupContent);
 document.body.appendChild(popup);
@@ -18,25 +16,34 @@ window.addEventListener("click", function(event){
     }
 });
 
-//TODO createPopup
-function createPopup(popupText,yesFunc){
-    popupButtons.innerHTML="";
-    popupContent.innerHTML="";
-    let text = document.createElement("h1");
-    text.innerHTML=popupText;
+
+function createYesNoButtons(yesText, noText, yesFunc, noFunc){
+    let popupButtons = document.createElement("div");
+    popupButtons.id="answerBtns";
     let yesBtn = document.createElement("span");
     yesBtn.id="yesBtn";
-    yesBtn.innerHTML="Igen";
+    yesBtn.innerHTML=yesText;
     yesBtn.addEventListener("click", yesFunc);
     let noBtn = document.createElement("span");
     noBtn.id="noBtn";
-    noBtn.innerHTML="Nem";
-    noBtn.addEventListener("click", togglePopup);
-
+    noBtn.innerHTML=noText;
+    noBtn.addEventListener("click", noFunc);
     popupButtons.appendChild(yesBtn);
     popupButtons.appendChild(noBtn);
+
+    return popupButtons;
+}
+
+//TODO createPopup
+function createPopup(popupText,yesFunc){
+    popupContent.innerHTML="";
+    let text = document.createElement("h1");
+    text.innerHTML=popupText;
+    
+    let answerButtons = createYesNoButtons("Igen", "Nem", yesFunc, togglePopup);
+
     popupContent.appendChild(text);
-    popupContent.appendChild(popupButtons);
+    popupContent.appendChild(answerButtons);
 }
 
 
@@ -54,8 +61,8 @@ let editForm = {
     number : numberInput
 }
 
+
 function createEditPopup({name, address, numberOfFloors}, yesFunc){
-    popupButtons.innerHTML="";
     popupContent.innerHTML="";
 
     let form = document.createElement("div");
@@ -70,32 +77,37 @@ function createEditPopup({name, address, numberOfFloors}, yesFunc){
     form.appendChild(addressInput);
     form.appendChild(numberInput);
 
-    let saveBtn = document.createElement("span");
-    saveBtn.id="yesBtn";
-    saveBtn.innerHTML="Mentés";
-    saveBtn.addEventListener("click", yesFunc);
-    let discardBtn = document.createElement("span");
-    discardBtn.id="noBtn";
-    discardBtn.innerHTML="Mégse";
-    discardBtn.addEventListener("click", togglePopup);
-    popupButtons.appendChild(saveBtn);
-    popupButtons.appendChild(discardBtn);
+    let answerButtons=createYesNoButtons("Mentés", "Mégse", yesFunc, togglePopup);
 
     popupContent.appendChild(form);
-    popupContent.appendChild(popupButtons);
+    popupContent.appendChild(answerButtons);
 }
 
 
 let formList = [
     {
         name : nameInput,
-        number : numberInput
+        floor : numberInput
     }
 ]
 
+function createAddSectorForm(){
+    let formListElement = document.createElement("div");
+    let sectorNameInput = document.createElement("input");
+    sectorNameInput.placeholder="Név";
+    let sectorFloorInput = document.createElement("input");
+    sectorFloorInput.placeholder = "Szint";
+    sectorFloorInput.type="number";
+    sectorFloorInput.min="0";
+    sectorFloorInput.max=currentPh.numberOfFloors;
+    formList.push({name : sectorNameInput, floor : sectorFloorInput});
 
-function showAddSectorPopup(){
-    popupButtons.innerHTML="";
+    formListElement.appendChild(sectorNameInput);
+    formListElement.appendChild(sectorFloorInput);
+    return formListElement;
+}
+
+function showAddSectorPopup(yesFunc){
     popupContent.innerHTML="";
     formList=[];
 
@@ -106,16 +118,7 @@ function showAddSectorPopup(){
     formUl.className="formUl";
 
     //TODO GATYÁBA RÁZÁS
-    let formListElement = document.createElement("div");
-    let sectorNameInput = document.createElement("input");
-    sectorNameInput.placeholder="Név";
-    let sectorFloorInput = document.createElement("input");
-    sectorFloorInput.placeholder = "Szint";
-    sectorFloorInput.type="number";
-    formList.push({sectorNameInput,sectorFloorInput});
-
-    formListElement.appendChild(sectorNameInput);
-    formListElement.appendChild(sectorFloorInput);
+    let formListElement = createAddSectorForm();
     formUl.appendChild(formListElement);
 
     let smallBtnDiv = document.createElement("div");
@@ -124,15 +127,7 @@ function showAddSectorPopup(){
     plusBtn.id="popupSmallBtn";
     plusBtn.innerHTML="<i class='fas fa-plus'></i>";
     plusBtn.addEventListener("click", function(){
-        let newFormListElement = document.createElement("div");
-        let newSectorNameInput = document.createElement("input");
-        newSectorNameInput.placeholder="Név";
-        let newSectorFloorInput = document.createElement("input");
-        newSectorFloorInput.placeholder = "Szint";
-        newSectorFloorInput.type="number";
-        formList.push({newSectorNameInput,newSectorFloorInput});
-        newFormListElement.appendChild(newSectorNameInput);
-        newFormListElement.appendChild(newSectorFloorInput);
+        let newFormListElement = createAddSectorForm();
         formUl.appendChild(newFormListElement);
         console.log(formList);
     });
@@ -152,20 +147,8 @@ function showAddSectorPopup(){
     smallBtnDiv.appendChild(minusBtn);
     formListDiv.appendChild(smallBtnDiv);
 
-    let saveBtn = document.createElement("span");
-    saveBtn.id="yesBtn";
-    saveBtn.innerHTML="Mentés";
-    //saveBtn.addEventListener("click", yesFunc);
-    let discardBtn = document.createElement("span");
-    discardBtn.id="noBtn";
-    discardBtn.innerHTML="Mégse";
-    discardBtn.addEventListener("click", togglePopup);
-    popupButtons.appendChild(saveBtn);
-    popupButtons.appendChild(discardBtn);
+    let answerButtons=createYesNoButtons("Mentés", "Mégse", yesFunc, togglePopup);
 
     popupContent.appendChild(formListDiv);
-    popupContent.appendChild(popupButtons);
+    popupContent.appendChild(answerButtons);
 }
-
-
-

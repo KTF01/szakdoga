@@ -61,8 +61,9 @@ public class ParkHouseController {
 		return parkHouseRepository.save(editPH);
 	}
 	
-	@PutMapping("/addSector/{id}")
-	public ParkHouse addSector(@PathVariable Long id, @Valid @RequestBody List<Section> newSections) {
+	@CrossOrigin
+	@PutMapping("/addSectors/{id}")
+	public ParkHouse addSectors(@PathVariable Long id, @Valid @RequestBody List<Section> newSections) {
 		ParkHouse ph =  parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 		for(Section sec : newSections) {
 			ph.addSection(sec);

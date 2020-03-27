@@ -5,6 +5,10 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +24,7 @@ import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.repositoris.SectionRepository;
 
 @RestController
-@RequestMapping("/sections")
+@RequestMapping("/sectors")
 public class SectionController {
 	
 	@Autowired
@@ -34,7 +38,7 @@ public class SectionController {
 	    return sectionRepository.findAll();
 	}
 	
-	@PostMapping("/newSection")
+	@PostMapping("/newSector")
 	public Section createSection(@Valid @RequestBody Section section) {
 		System.out.println(section.getName()+" nevű szekció létrehozva!");
 		
@@ -55,5 +59,16 @@ public class SectionController {
 		}
 		System.out.println(section.getName()+" szekcióhoz parkolóhelyek lettek hozzáadva!");
 		return sectionRepository.save(section);
+	}
+	
+	@CrossOrigin
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<Long> deleteSector(@PathVariable Long id)
+	{
+		Section section = sectionRepository.findById(id).orElseThrow(()->new SectionNotFoundException(id));
+		sectionRepository.delete(section);
+		System.out.println(section.getParkHouse().getName()+ " parkolóház "+ section.getName()+" nevű szektora eltávolításra került.");
+		
+		return new ResponseEntity<>(id, HttpStatus.OK);
 	}
 }

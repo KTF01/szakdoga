@@ -37,7 +37,6 @@ public class Section {
 	@NotNull
 	@ManyToOne
 	ParkHouse parkHouse;
-
 	public void addParkingLot(ParkingLot parkingLot) {
 		parkingLots.add(parkingLot);
 		parkingLot.setSection(this);
