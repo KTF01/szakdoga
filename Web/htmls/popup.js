@@ -1,7 +1,17 @@
 let popup = document.createElement("div");
 popup.className="popup";
+popup.isClosable=true;
 let popupContent = document.createElement("div");
 popupContent.className="popupContent";
+popupContent.addEventListener("load_start", function(){
+    popup.isClosable=false;
+    this.oldHtml = this.innerHTML;
+    this.innerHTML="<div class='lds-ring'><div></div><div></div><div></div><div></div></div>";
+});
+
+popupContent.addEventListener("load_end", function(){
+    popup.isClosable = true;
+});
 
 popup.appendChild(popupContent);
 document.body.appendChild(popup);
@@ -11,11 +21,10 @@ function togglePopup(){
 }
 
 window.addEventListener("click", function(event){
-    if (event.target === popup) {
+    if (event.target === popup && popup.isClosable===true) {
         togglePopup();
     }
 });
-
 
 function createYesNoButtons(yesText, noText, yesFunc, noFunc){
     let popupButtons = document.createElement("div");

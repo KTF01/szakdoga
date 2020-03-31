@@ -17,9 +17,9 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
-@Table(name = "sections")
+@Table(name = "sectors")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Section {
+public class Sector {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,15 +31,16 @@ public class Section {
 	@NotNull
 	int floor;
 	
-	@OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "sector", cascade = CascadeType.ALL)
 	List<ParkingLot> parkingLots;
 	
 	@NotNull
 	@ManyToOne
 	ParkHouse parkHouse;
+	
 	public void addParkingLot(ParkingLot parkingLot) {
 		parkingLots.add(parkingLot);
-		parkingLot.setSection(this);
+		parkingLot.setSector(this);
     }
 	
 	public ParkHouse getParkHouse() {

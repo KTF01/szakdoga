@@ -33,25 +33,25 @@ public class ParkHouse {
 	int numberOfFloors;
 	
 	@OneToMany(mappedBy = "parkHouse", cascade = CascadeType.ALL)
-	List<Section> sections;
+	List<Sector> sectors;
 	
-	public void addSection(Section section) {
-		sections.add(section);
-        section.setParkHouse(this);
+	public void addSection(Sector sector) {
+		sectors.add(sector);
+        sector.setParkHouse(this);
     }
  
-    public void removeSection(Section section) {
-        section.setParkHouse(null);
-        this.sections.remove(section);
+    public void removeSector(Sector sector) {
+        sector.setParkHouse(null);
+        this.sectors.remove(sector);
     }
 	
 	
-	public List<Section> getSections() {
-		return sections;
+	public List<Sector> getSectors() {
+		return sectors;
 	}
 
-	public void setSections(List<Section> sections) {
-		this.sections = sections;
+	public void setSectors(List<Sector> sector) {
+		this.sectors = sector;
 	}
 
 	public Long getId() {
@@ -85,14 +85,4 @@ public class ParkHouse {
 	public void setNumberOfFloors(int numberOfFloors) {
 		this.numberOfFloors = numberOfFloors;
 	}
-
-	/*public List<Section> getSections() {
-		return sections;
-	}
-
-	public void setSections(List<Section> sections) {
-		this.sections = sections;
-	}*/
-
-	
 }

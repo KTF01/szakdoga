@@ -3,7 +3,8 @@ let parkHouseList = [
 
 let currentPh = null;
 
-
+let loadStartEvent = new Event("load_start");
+let loadEndEvent = new Event("load_end");
 
 function deleteParkHouse(parkHouse, callback) {
     let http = new XMLHttpRequest();
@@ -31,14 +32,15 @@ function updateParkHouse(parkHouse, callback) {
     http.onreadystatechange = function () {
         if (this.readyState == 4) {
             if (this.status == 200) {
-                togglePopup();
-                callback();
+                let updatedParkHouse = JSON.parse(http.response);
+                callback(updatedParkHouse);
             } else {
                 console.log(this.readyState);
                 console.log(http.response);
             }
         }
     }
+    console.log(parkHouse);
     http.send(JSON.stringify(parkHouse));
 }
 
@@ -97,7 +99,7 @@ function deleteSector(sector, callback) {
     http.onreadystatechange = function () {
         if (this.readyState == 4) {
             if (this.status == 200) {
-                //let responseSections =JSON.parse(http.response);
+                //let responseSectors =JSON.parse(http.response);
                 togglePopup();
                 callback();
             } else {

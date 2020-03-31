@@ -5,9 +5,8 @@ let id = url.searchParams.get("id");
 let sectorList = document.querySelector("#listOfSectors");
 let parkHouse;
 
-let nameElement = document.querySelector("#info h1");
-let addressElement = document.querySelector("#info h2");
-let levelElement = document.querySelector("#info h3");
+let contentElement = document.querySelector("#content");
+let infoElement = document.querySelector("#info");
 function loadParkhouse() {
     let http = new XMLHttpRequest();
     http.open("GET", `http://localhost:8080/parkHouses/${id}`, true);
@@ -16,16 +15,11 @@ function loadParkhouse() {
         if (this.readyState == 4) {
             if (this.status == 200) {
                 parkHouse = JSON.parse(http.response);
-
-                nameElement.innerHTML += parkHouse.name;
-                addressElement.innerHTML += parkHouse.address;
-                levelElement.innerHTML += parkHouse.numberOfFloors;
-
-                updateSectors(parkHouse.sections);
+                refreshInfo(parkHouse);
+                updateSectors(parkHouse.sectors);
 
                 currentPh = parkHouse;
 
-                //TODO SECTIONS ORE SECTORS!!! DECIDE
             } else {
                 console.log(this.readyState);
                 console.log(http.response);
@@ -36,28 +30,57 @@ function loadParkhouse() {
 }
 loadParkhouse();
 
-function createSectorElement(sector){
+function refreshInfo(parkH){
+    infoElement.innerHTML = `<h1>${parkH.name}</h1>`+
+    `<h2>${parkH.address}</h2>`+
+    `<h3>${parkH.numberOfFloors}</h3>`;
+
+}
+
+function createSectorElement(sector) {
     let sectorElement = document.createElement("div");
-    sectorElement.className="sectorItem";
+    sectorElement.className = "sectorItem";
     let deleteButton = document.createElement("div");
-    deleteButton.className="trash";
-    deleteButton.addEventListener("click", function(){
-        createPopup("Biztos törlöd a szektort?", function(){
-            deleteSector(sector, function(){
-                let index = parkHouse.sections.indexOf(sector);
+    deleteButton.className = "trash";
+    deleteButton.addEventListener("click", function () {
+        createPopup("Biztos törlöd a szektort?", function () {
+            popupContent.dispatchEvent(loadStartEvent);
+            deleteSector(sector, function () {
+                loading = false;
+                let index = parkHouse.sectors.indexOf(sector);
                 if (index > -1) {
-                    parkHouse.sections.splice(index, 1);
-                  }
-                updateSectors(parkHouse.sections);
+                    parkHouse.sectors.splice(index, 1);
+                }
+                updateSectors(parkHouse.sectors);
             });
         });
         togglePopup();
     });
 
-    deleteButton.innerHTML="<i class='far fa-trash-alt'></i>";
-    sectorElement.innerHTML=`<div class="sectorInfo"><span>${sector.name}</span>`+
-                            `<span>${sector.floor}</span>`+
-                            `<i class="fas fa-caret-down"></i></div>`;
+    deleteButton.innerHTML = "<i class='far fa-trash-alt'></i>";
+    let sectorInfoElement = document.createElement("div");
+    sectorInfoElement.className="sectorInfo";
+    let sectorHeader = document.createElement("div");
+    sectorHeader.className="sectorHeader";
+    let expandBtn = document.createElement("div");
+    expandBtn.className="expandBtn";
+    expandBtn.innerHTML=`<i class="fas fa-caret-down"></i>`;
+
+    let parkingLotsPanel = createParkingLotPanel();
+
+    
+    expandBtn.addEventListener("click", function(){
+        parkingLotsPanel.classList.toggle("expanded");
+        //sectorElement.removeChild(deleteButton);
+    });
+    
+    
+    sectorElement.appendChild(sectorInfoElement);
+    sectorInfoElement.appendChild(sectorHeader);
+    sectorHeader.innerHTML =    `<span>${sector.name}</span>` +
+                                `<span>${sector.floor}</span>`;
+    sectorHeader.appendChild(expandBtn);
+    sectorInfoElement.appendChild(parkingLotsPanel);
     sectorElement.appendChild(deleteButton);
 
     return sectorElement;
@@ -73,34 +96,41 @@ function updateSectors(sectors) {
 
 let deleteButton = document.querySelector(".trash");
 deleteButton.addEventListener("click", function () {
-    createPopup("Biztos törlöd?", function () { deleteParkHouse(parkHouse, function () { window.location = "../ParkHousesPage/ParkHouses.html"; }); });
-    togglePopup();
-});
-
-
-let editButton = document.querySelector(".edit");
-let buttons = document.querySelector("#buttons");
-editButton.addEventListener("click", function () {
-    createEditPopup(parkHouse, function () {
-        parkHouse.name = editForm.name.value;
-        parkHouse.address = editForm.address.value;
-        parkHouse.numberOfFloors = editForm.number.value;
-        updateParkHouse(parkHouse, function () {
-            location.reload();
+    createPopup("Biztos törlöd?", function () {
+        popupContent.dispatchEvent(loadStartEvent);
+        deleteParkHouse(parkHouse, function () {
+        window.location = "../ParkHousesPage/ParkHouses.html";
         });
     });
     togglePopup();
 });
 
+let editButton = document.querySelector(".edit");
+let buttons = document.querySelector("#buttons");
+editButton.addEventListener("click", function () {
+    createEditPopup(parkHouse, function () {
+        popupContent.dispatchEvent(loadStartEvent);
+        parkHouse.name = editForm.name.value;
+        parkHouse.address = editForm.address.value;
+        parkHouse.numberOfFloors = editForm.number.value;
+        updateParkHouse(parkHouse, function (updatedParkhouse) {
+            popupContent.dispatchEvent(loadEndEvent);
+            togglePopup();
+            parkHouse = updatedParkhouse;
+            refreshInfo(parkHouse);
+        });
+    });
+    togglePopup();
+});
 
 let addbtn = document.querySelector(".addbtn");
 
 addbtn.addEventListener('click', function () {
     showAddSectorPopup(function () {
-        console.log("fds");
+        popupContent.dispatchEvent(loadStartEvent);
         addSectorsToParkHouse(parkHouse, formList, function (modifiedParkHouse) {
-            updateSectors(modifiedParkHouse.sections);
-            parkHouse=modifiedParkHouse;
+            updateSectors(modifiedParkHouse.sectors);
+            parkHouse = modifiedParkHouse;
         })
     });
     togglePopup();

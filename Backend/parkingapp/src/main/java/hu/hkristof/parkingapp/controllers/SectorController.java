@@ -17,57 +17,58 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import hu.hkristof.parkingapp.exceptions.SectionNotFoundException;
+import hu.hkristof.parkingapp.exceptions.SectorNotFoundException;
 import hu.hkristof.parkingapp.models.ParkingLot;
-import hu.hkristof.parkingapp.models.Section;
+import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.repositoris.SectionRepository;
 
 @RestController
 @RequestMapping("/sectors")
-public class SectionController {
+public class SectorController {
 	
 	@Autowired
-	SectionRepository sectionRepository;
+	SectionRepository sectorRepository;
 	
 	@Autowired
 	ParkingLotRepository plRepository;
 	
 	@GetMapping("/all")
-	public List<Section> getAllNotes() {
-	    return sectionRepository.findAll();
+	public List<Sector> getAllNotes() {
+	    return sectorRepository.findAll();
 	}
 	
 	@PostMapping("/newSector")
-	public Section createSection(@Valid @RequestBody Section section) {
-		System.out.println(section.getName()+" nevű szekció létrehozva!");
+	public Sector createSection(@Valid @RequestBody Sector sector) {
 		
-		Section newSection = sectionRepository.save(section);
-		for(ParkingLot pl : section.getParkingLots()) {
-			pl.setSection(section);
+		System.out.println(sector.getName()+" nevű szekció létrehozva!");
+		
+		Sector newSector = sectorRepository.save(sector);
+		for(ParkingLot pl : sector.getParkingLots()) {
+			pl.setSector(sector);
 		}
-		plRepository.saveAll(section.getParkingLots());
-	    return newSection ;
+		plRepository.saveAll(sector.getParkingLots());
+	    return newSector ;
 	}
 	
 	
 	@PutMapping("/addParkingLot/{id}")
-	public Section addParkingLot(@PathVariable Long id, @Valid @RequestBody List<ParkingLot> newParkingLots) {
-		Section section = sectionRepository.findById(id).orElseThrow(()->new SectionNotFoundException(id));
+	public Sector addParkingLot(@PathVariable Long id, @Valid @RequestBody List<ParkingLot> newParkingLots) {
+		Sector sector = sectorRepository.findById(id).orElseThrow(()->new SectorNotFoundException(id));
 		for(ParkingLot parkingLot : newParkingLots) {
-			section.addParkingLot(parkingLot);
+			sector.addParkingLot(parkingLot);
 		}
-		System.out.println(section.getName()+" szekcióhoz parkolóhelyek lettek hozzáadva!");
-		return sectionRepository.save(section);
+		System.out.println(sector.getName()+" szekcióhoz parkolóhelyek lettek hozzáadva!");
+		return sectorRepository.save(sector);
 	}
 	
 	@CrossOrigin
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Long> deleteSector(@PathVariable Long id)
 	{
-		Section section = sectionRepository.findById(id).orElseThrow(()->new SectionNotFoundException(id));
-		sectionRepository.delete(section);
-		System.out.println(section.getParkHouse().getName()+ " parkolóház "+ section.getName()+" nevű szektora eltávolításra került.");
+		Sector sector = sectorRepository.findById(id).orElseThrow(()->new SectorNotFoundException(id));
+		sectorRepository.delete(sector);
+		System.out.println(sector.getParkHouse().getName()+ " parkolóház "+ sector.getName()+" nevű szektora eltávolításra került.");
 		
 		return new ResponseEntity<>(id, HttpStatus.OK);
 	}

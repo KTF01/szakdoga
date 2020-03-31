@@ -74,28 +74,35 @@
     display: flex;
     justify-content: stretch;
     width: 100%;
+    margin-bottom: 5px;
 }
 
-.sectorInfo{
+.sectorInfo {
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 2px 2px black;
+    
+}
+.sectorHeader{
     display: flex;
     justify-content: space-between;
     text-align: center;
-    box-shadow: 2px 2px black;
     border-radius: 5px;
     margin-bottom: 5px;
-    height: 40px;
+    /*height: 100%;*/
     width: 100%;
 }
 .sectorItem .trash>i{
     color: transparent;
     transition: all 0.3s;
 }
-.sectorInfo span, .sectorInfo i{
+
+.sectorHeader span, .sectorHeader i{
     display: block;
     margin: auto 0;
 }
 
-.sectorInfo i{
+.sectorHeader i{
     margin-right: 10px;
 }
 
@@ -116,6 +123,21 @@
     transition: all 0.3s ease-out;
 }
 
+.expandBtn{
+    cursor: pointer;
+    margin : auto 0;
+    width : 40px;
+    height: 100%;
+    border-radius: 5px;
+}
+.expandBtn:hover{
+    background-color: var(--secondary-color);
+}
+.expandBtn i{
+    display: block;
+    margin: 25% auto;
+    font-size: larger;
+}
 
 h1{
     margin: 0;

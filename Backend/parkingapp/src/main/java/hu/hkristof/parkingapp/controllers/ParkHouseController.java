@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.exceptions.ParkHouseNotFoundException;
 import hu.hkristof.parkingapp.models.ParkHouse;
-import hu.hkristof.parkingapp.models.Section;
+import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.repositoris.ParkHouseRepository;
 
 @RestController
@@ -37,6 +37,7 @@ public class ParkHouseController {
 	@CrossOrigin
 	@GetMapping("/all")
 	public List<ParkHouse> getAllParkhouse(){
+
 		System.out.println("Parkolóházak lekérdezve!");
 		return parkHouseRepository.findAll();
 	}
@@ -44,6 +45,7 @@ public class ParkHouseController {
 	@CrossOrigin
 	@GetMapping("/{id}")
 	public ParkHouse getParkHouse(@PathVariable Long id) {
+
 		System.out.println("Parkolóház lekérdezés!");
 		return parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 	}
@@ -51,6 +53,7 @@ public class ParkHouseController {
 	@CrossOrigin
 	@PutMapping("/updatePH/{id}")
 	public ParkHouse updateParkHouse(@PathVariable Long id, @Valid @RequestBody ParkHouse ph) {
+
 		ParkHouse editPH = parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 		String oldName = editPH.getName();
 		editPH.setAddress(ph.getAddress());
@@ -63,18 +66,20 @@ public class ParkHouseController {
 	
 	@CrossOrigin
 	@PutMapping("/addSectors/{id}")
-	public ParkHouse addSectors(@PathVariable Long id, @Valid @RequestBody List<Section> newSections) {
+	public ParkHouse addSectors(@PathVariable Long id, @Valid @RequestBody List<Sector> newSections) {
+
 		ParkHouse ph =  parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
-		for(Section sec : newSections) {
+		for(Sector sec : newSections) {
 			ph.addSection(sec);
 		}
-		System.out.println(ph.getName()+" parkolóházhoz szekciók lettek hozzáadva!");
+		System.out.println(ph.getName()+" parkolóházhoz szektorok lettek hozzáadva!");
 		return parkHouseRepository.save(ph);
 	}
 	
 	@CrossOrigin
 	@DeleteMapping("delete/{id}")
 	public void deleteParkHouse(@PathVariable Long id) {
+
 		ParkHouse ph = parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 		System.out.println(ph.getName()+" nevű parkolóház törölve!");
 		parkHouseRepository.delete(ph);

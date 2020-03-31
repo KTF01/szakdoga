@@ -12,14 +12,15 @@ function loadParkHouses(){
         if(this.readyState==4){
             if(this.status == 200){
                 parkHouseList = (JSON.parse(http.response));
+
                 refreshDatas();
             }else{
                 console.log(this.readyState, this.status);
                 console.log(http.response);
             }
         }
-}
-http.send();
+    }
+    http.send();
 }
 
 loadParkHouses();
@@ -32,6 +33,7 @@ addbtn.addEventListener('click', function(){
 
 function handleParkHouseForm(){
 
+    popupContent.dispatchEvent(loadStartEvent);
     let newData = {
         name : editForm.name.value,
         address: editForm.address.value,
@@ -73,7 +75,10 @@ function addParkHouse(parkHouse){
 
     deleteIcon.addEventListener("click", function(){
         currentPh = parkHouse;
-        createPopup("Biztos törölni akarod a parkolóházat?", function(){deleteParkHouse(currentPh, refreshDatas)});
+        createPopup("Biztos törölni akarod a parkolóházat?", function(){
+            deleteParkHouse(currentPh, refreshDatas);
+            popupContent.dispatchEvent(loadStartEvent);
+        });
         togglePopup();
     })
 

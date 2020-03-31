@@ -21,6 +21,7 @@
     padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 2px 2px 10px black ;
+    width: 30%;
 
 }
 .popupContent .closeButton{
@@ -89,6 +90,7 @@
     text-align: center;
     cursor: pointer;
 }
+
 #popupSmallBtn:hover{
     background-color: darkgray;
 }

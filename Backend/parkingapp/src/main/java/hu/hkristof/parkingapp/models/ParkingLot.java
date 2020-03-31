@@ -27,7 +27,7 @@ public class ParkingLot {
 	Car occupiingCar;
 	
 	@ManyToOne
-	Section section;
+	Sector sector;
 
 	public Long getId() {
 		return id;
@@ -53,12 +53,12 @@ public class ParkingLot {
 		this.occupiingCar = occupiingCar;
 	}
 
-	public Section getSection() {
-		return section;
+	public Sector getSector() {
+		return sector;
 	}
 
-	public void setSection(Section section) {
-		this.section = section;
+	public void setSector(Sector section) {
+		this.sector = section;
 	}
 
 }
