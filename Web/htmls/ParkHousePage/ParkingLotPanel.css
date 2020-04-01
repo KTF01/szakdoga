@@ -1,26 +1,36 @@
 .parkignLotsPanel{
     height: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     transition: all 0.2s ease-in;
 }
 
 .expanded{
-    height: 200px;
+    height: 40vh;
     transition: all 0.2s ease-in;
 }
 
 .parkingLotTileList{
     height: 100%;
     display: flex;
-
-    background-color: lightblue;
+    flex-wrap: wrap;
     
 }
 .parkingLotTile{
     border: 1px black solid;
     height: 100px;
-    width: 15px;
-    
+    width: 80px;
+    margin: 0 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+.plName{
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+.plIcon{
+    text-align: center;
+    font-size: large;
 }
 

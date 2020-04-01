@@ -34,7 +34,7 @@ public class CarController {
 	}
 	
 	@PostMapping("/newCar")
-	public Car createNote(@Valid @RequestBody Car car) {
+	public Car createCar(@Valid @RequestBody Car car) {
 	    return carRepository.save(car);
 	}
 }

@@ -31,9 +31,9 @@ function loadParkhouse() {
 loadParkhouse();
 
 function refreshInfo(parkH){
-    infoElement.innerHTML = `<h1>${parkH.name}</h1>`+
+    infoElement.innerHTML = `<h2>${parkH.name}</h2>`+
     `<h2>${parkH.address}</h2>`+
-    `<h3>${parkH.numberOfFloors}</h3>`;
+    `<h2>${parkH.numberOfFloors}</h2>`;
 
 }
 
@@ -66,22 +66,25 @@ function createSectorElement(sector) {
     expandBtn.className="expandBtn";
     expandBtn.innerHTML=`<i class="fas fa-caret-down"></i>`;
 
-    let parkingLotsPanel = createParkingLotPanel();
+    let parkingLotsPanel = createParkingLotPanel(sector);
 
     
     expandBtn.addEventListener("click", function(){
         parkingLotsPanel.classList.toggle("expanded");
+        deleteButton.classList.toggle("hiddenTrash");
+        deleteButton.classList.toggle("trash");
+        this.classList.toggle("activeExpandBtn");
         //sectorElement.removeChild(deleteButton);
     });
     
-    
+    sectorElement.appendChild(deleteButton);
     sectorElement.appendChild(sectorInfoElement);
     sectorInfoElement.appendChild(sectorHeader);
     sectorHeader.innerHTML =    `<span>${sector.name}</span>` +
                                 `<span>${sector.floor}</span>`;
     sectorHeader.appendChild(expandBtn);
     sectorInfoElement.appendChild(parkingLotsPanel);
-    sectorElement.appendChild(deleteButton);
+    
 
     return sectorElement;
 }
