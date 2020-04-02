@@ -1,5 +1,6 @@
 package hu.hkristof.parkingapp.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -32,8 +33,13 @@ public class ParkHouse {
 	@NotNull
 	int numberOfFloors;
 	
+	@NotNull
 	@OneToMany(mappedBy = "parkHouse", cascade = CascadeType.ALL)
 	List<Sector> sectors;
+	
+	ParkHouse(){
+		this.sectors = new ArrayList<>();
+	}
 	
 	public void addSection(Sector sector) {
 		sectors.add(sector);

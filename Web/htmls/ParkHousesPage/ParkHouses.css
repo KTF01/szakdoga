@@ -63,8 +63,8 @@
 }
 
 #addCard:hover{
-    color: blue;
-    border: lightblue solid 2px;
+    color: var(--add-btn-color);
+    border:var(--add-btn-hover-color) solid 2px;
     
     transition: all 0.3s;
 }

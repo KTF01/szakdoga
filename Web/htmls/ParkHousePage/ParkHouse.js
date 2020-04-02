@@ -46,7 +46,6 @@ function createSectorElement(sector) {
         createPopup("Biztos törlöd a szektort?", function () {
             popupContent.dispatchEvent(loadStartEvent);
             deleteSector(sector, function () {
-                loading = false;
                 let index = parkHouse.sectors.indexOf(sector);
                 if (index > -1) {
                     parkHouse.sectors.splice(index, 1);
@@ -129,7 +128,7 @@ editButton.addEventListener("click", function () {
 let addbtn = document.querySelector(".addbtn");
 
 addbtn.addEventListener('click', function () {
-    showAddSectorPopup(function () {
+    showAddFormPopup(createAddSectorForm, function () {
         popupContent.dispatchEvent(loadStartEvent);
         addSectorsToParkHouse(parkHouse, formList, function (modifiedParkHouse) {
             updateSectors(modifiedParkHouse.sectors);

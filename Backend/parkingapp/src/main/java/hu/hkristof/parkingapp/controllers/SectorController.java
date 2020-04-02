@@ -51,7 +51,7 @@ public class SectorController {
 	    return newSector ;
 	}
 	
-	
+	@CrossOrigin
 	@PutMapping("/addParkingLot/{id}")
 	public Sector addParkingLot(@PathVariable Long id, @Valid @RequestBody List<ParkingLot> newParkingLots) {
 		Sector sector = sectorRepository.findById(id).orElseThrow(()->new SectorNotFoundException(id));

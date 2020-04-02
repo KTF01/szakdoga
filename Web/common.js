@@ -110,3 +110,31 @@ function deleteSector(sector, callback) {
     }
     http.send();
 }
+
+function addParkingLotsToSector(sector, formList, callback) {
+    let http = new XMLHttpRequest();
+    http.open("PUT", "http://localhost:8080/sectors/addParkingLot/" + sector.id, true);
+    http.setRequestHeader("Content-Type", "application/json");
+    http.onreadystatechange = function () {
+        if (this.readyState == 4) {
+            if (this.status == 200) {
+                let modifiedSector = JSON.parse(http.response);
+                togglePopup();
+                callback(modifiedSector);
+            } else {
+                console.log(this.readyState);
+                console.log(http.response);
+            }
+        }
+    }
+
+    let requestList = [];
+    for (let i = 0; i < formList.length; i++) {
+        let newSector = {
+            name: formList[i].name.value,
+        }
+        requestList.push(newSector);
+    }
+    console.log(JSON.stringify(requestList));
+    http.send(JSON.stringify(requestList));
+}

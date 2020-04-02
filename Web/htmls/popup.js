@@ -94,10 +94,6 @@ function createEditPopup({name, address, numberOfFloors}, yesFunc){
 
 
 let formList = [
-    {
-        name : nameInput,
-        floor : numberInput
-    }
 ]
 
 function createAddSectorForm(){
@@ -115,9 +111,18 @@ function createAddSectorForm(){
     formListElement.appendChild(sectorFloorInput);
     return formListElement;
 }
+function createAddParkingLotsFormItem(){
+    let formListElement = document.createElement("div");
+    let parkingLotNameInput = document.createElement("input");
+    parkingLotNameInput.placeholder="Név";
+    formList.push({name : parkingLotNameInput});
+    formListElement.appendChild(parkingLotNameInput);
+    return formListElement;
+}
 
-function showAddSectorPopup(yesFunc){
+function showAddFormPopup(formItemFunc, yesFunc){
     popupContent.innerHTML="";
+
     formList=[];
 
     let formListDiv = document.createElement("div");
@@ -127,7 +132,7 @@ function showAddSectorPopup(yesFunc){
     formUl.className="formUl";
 
     //TODO GATYÁBA RÁZÁS
-    let formListElement = createAddSectorForm();
+    let formListElement = formItemFunc();
     formUl.appendChild(formListElement);
 
     let smallBtnDiv = document.createElement("div");
@@ -136,7 +141,7 @@ function showAddSectorPopup(yesFunc){
     plusBtn.id="popupSmallBtn";
     plusBtn.innerHTML="<i class='fas fa-plus'></i>";
     plusBtn.addEventListener("click", function(){
-        let newFormListElement = createAddSectorForm();
+        let newFormListElement = formItemFunc();
         formUl.appendChild(newFormListElement);
         console.log(formList);
     });

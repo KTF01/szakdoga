@@ -1,5 +1,6 @@
 package hu.hkristof.parkingapp.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -31,6 +32,7 @@ public class Sector {
 	@NotNull
 	int floor;
 	
+	@NotNull
 	@OneToMany(mappedBy = "sector", cascade = CascadeType.ALL)
 	List<ParkingLot> parkingLots;
 	
@@ -38,6 +40,9 @@ public class Sector {
 	@ManyToOne
 	ParkHouse parkHouse;
 	
+	Sector(){
+		this.parkingLots = new ArrayList<>();
+	}
 	public void addParkingLot(ParkingLot parkingLot) {
 		parkingLots.add(parkingLot);
 		parkingLot.setSector(this);

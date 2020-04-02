@@ -4,6 +4,8 @@
     --dark-background: rgb(43, 97, 36);
     --light-color: rgb(182, 206, 182);
     --spinner-color: rgb(30, 56, 30);
+    --add-btn-color: blue;
+    --add-btn-hover-color: lightblue;
 }
 
 body{
