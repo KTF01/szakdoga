@@ -6,6 +6,9 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,12 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
+import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.TimeLog;
 import hu.hkristof.parkingapp.repositoris.CarRepository;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.repositoris.TimeLogRepository;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/parkingLots")
 public class ParkingLotController {
@@ -36,29 +41,39 @@ public class ParkingLotController {
 	@Autowired
 	TimeLogRepository timeLogRepository;
 	
-	// Get All ParkingLots
+	
 	@GetMapping("/all")
 	public List<ParkingLot> getAllNotes() {
+		System.out.println("Parkoló helyek lekérdezve!");
 	    return plRepository.findAll();
 	}
 	
 	@GetMapping("{id}")
 	public ParkingLot getParkingLotById(@PathVariable Long id) {
+		System.out.println(id+" számú parkolóhely lekérdezve!");
 		return plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
 	}
 	
-	
-	// Create a new Parking Lot
 	@PostMapping("/newPl")
 	public ParkingLot createNote(@Valid @RequestBody ParkingLot pl) {
 		System.out.println(pl.getName()+" nevű parkolóhely létrehozva!");
 	    return plRepository.save(pl);
 	}
 	
-	@DeleteMapping("/deletePl/{id}")
-	public void deletePrakingLot(@PathVariable Long id) {
+	@PutMapping("update/{id}")
+	public ParkingLot updateParkingLot(@PathVariable Long id, @RequestBody String newName) {
+		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
+		String oldName = pl.getName();
+		pl.setName(newName);
+		System.out.println(oldName+" parkolóhelynek új név lett beállítva: "+ pl.getName());
+		return plRepository.save(pl);
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<Long> deletePrakingLot(@PathVariable Long id) {
 		System.out.println(id + " számú parkolóhely törölve!");
 		plRepository.deleteById(id);
+		return new ResponseEntity<>(id, HttpStatus.OK);
 	}
 	
 	@PutMapping("/parkIn/{id}")
