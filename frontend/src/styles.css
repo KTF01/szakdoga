@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+button{
+  border: none;
+}
+
+ul{
+  list-style: none;
+  padding: 0;
+}
+
+.delete-btn{
+  border-radius: 4px;
+  color: var(--danger);
+  padding: 0.5em;
+  font-size: large;
+}
+.delete-btn:hover{
+  color: white;
+  background-color: var(--danger);
+}

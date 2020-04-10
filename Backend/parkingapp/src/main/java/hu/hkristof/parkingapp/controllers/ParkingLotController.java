@@ -2,6 +2,7 @@ package hu.hkristof.parkingapp.controllers;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
-import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.TimeLog;
 import hu.hkristof.parkingapp.repositoris.CarRepository;
