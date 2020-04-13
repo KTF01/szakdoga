@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 
 import { AppRoutingModule } from './app-routing.module';
@@ -14,6 +15,7 @@ import { ParkingLotListComponent } from './components/parking-lot-list/parking-l
 import { AddButtonComponent } from './components/add-button/add-button.component';
 import { ParkingLotDetailComponent } from './components/parking-lot-detail/parking-lot-detail.component';
 import { PopUpComponent } from './components/pop-up/pop-up.component';
+import { LoadingSpinnerComponent } from './components/common/loading-spinner/loading-spinner.component';
 
 @NgModule({
   declarations: [
@@ -26,13 +28,15 @@ import { PopUpComponent } from './components/pop-up/pop-up.component';
     ParkingLotListComponent,
     AddButtonComponent,
     ParkingLotDetailComponent,
-    PopUpComponent
+    PopUpComponent,
+    LoadingSpinnerComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -69,7 +69,6 @@ public class SectorController {
 		Sector sector = sectorRepository.findById(id).orElseThrow(()->new SectorNotFoundException(id));
 		sectorRepository.delete(sector);
 		System.out.println(sector.getParkHouse().getName()+ " parkolóház "+ sector.getName()+" nevű szektora eltávolításra került.");
-		
 		return new ResponseEntity<>(id, HttpStatus.OK);
 	}
 	

@@ -5,6 +5,8 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +23,7 @@ import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.repositoris.ParkHouseRepository;
 
 @RestController
-@RequestMapping("auth/parkHouses")
+@RequestMapping("parkHouses")
 public class ParkHouseController {
 
 	@Autowired
@@ -78,12 +80,12 @@ public class ParkHouseController {
 	
 	@CrossOrigin
 	@DeleteMapping("delete/{id}")
-	public void deleteParkHouse(@PathVariable Long id) {
+	public ResponseEntity<Long> deleteParkHouse(@PathVariable Long id) {
 
 		ParkHouse ph = parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 		System.out.println(ph.getName()+" nevű parkolóház törölve!");
 		parkHouseRepository.delete(ph);
-		
+		return new ResponseEntity<Long>(id, HttpStatus.OK);
 	}
 	
 }

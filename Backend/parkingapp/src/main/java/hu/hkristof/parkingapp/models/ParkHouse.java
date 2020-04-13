@@ -25,9 +25,9 @@ public class ParkHouse {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 	
+	@NotBlank
 	String name;
 	
-	@NotBlank
 	String address;
 	
 	@NotNull
