@@ -1,9 +1,48 @@
-<p>login works!</p>
-<button class="btn btn-secondary" (click)="logIn()">Bejelentkezés</button>
-<div class="alert alert-danger" *ngIf="error">
-  <h2>Hiba!</h2>
-  <p>{{error}}</p>
+<div class="card ">
+  <div class="card-body">
+    <form #authForm="ngForm" (ngSubmit)="onSubmit()">
+      <div class="name-inputs" *ngIf="!isLoginMode">
+        <div class="form-group ">
+          <label for="firstName">Vezetéknév:</label>
+          <input class="form-control" type="text" name="firstNameInput" id="firstName" ngModel required #firstName="ngModel">
+          <span class="text-danger" *ngIf="!firstName.valid&&firstName.touched">Nem lehet üres</span>
+        </div>
+        <div class="form-group">
+          <label for="lastName">Keresztnév:</label>
+          <input class="form-control" type="text" name="lastNameInput" id="lastName" ngModel required #lastName="ngModel">
+          <span class="text-danger" *ngIf="!lastName.valid&&lastName.touched">Nem lehet üres</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">E-mail:</label>
+        <input class="form-control" type="email" name="emailInput" id="emial" ngModel required email #emailModel="ngModel">
+        <span class="text-danger" *ngIf="!emailModel.valid&&emailModel.touched">Nem érvényes email!</span>
+      </div>
+      <div class="form-group">
+        <label for="password">Jelszó</label>
+        <input class="form-control" type="password" name="passwordInput" id="password" ngModel required minlength=6 #password="ngModel">
+        <span class="text-danger" *ngIf="!password.valid&&password.touched&&!isLoginMode">Minimum 6 karakter</span>
+      </div>
+      <div class="form-group" *ngIf="isLoginMode==false">
+        <label for="password-confirm">Jelszó ismét</label>
+        <input class="form-control" type="password" name="passwordConfirmInput" id="password-confirm" ngModel required minlength=6 #passwordConfirm="ngModel">
+        <span class="text-danger" *ngIf="!passwordConfirm.valid&&passwordConfirm.touched">Minimum 6 karakter</span>
+      </div>
+      <div class="text-danger text-center" *ngIf="error">
+        <p>{{error}}</p>
+      </div>
+      <div class="action-container">
+        <button type="submit" class="btn btn-secondary">{{isLoginMode? 'Bejelentkezés':'Küld'}}</button>
+        <div id="reg-link" (click)="switchMode()">
+          <span>{{isLoginMode? 'Regisztráció':'Bejelentkezés'}}</span>
+        </div>
+      </div>
+    </form>
+
+
+  </div>
 </div>
-<app-pop-up *ngIf="isLoading" [actionButtons]="false" [nobackGround]="true">
+
+<app-pop-up *ngIf="commonService.isLoading" [actionButtons]="false" [nobackGround]="true">
   <app-loading-spinner></app-loading-spinner>
 </app-pop-up>

@@ -1,1 +1,29 @@
 
+.card{
+  width: 15%;
+  min-width: 20rem;
+  margin: 40px auto;
+}
+
+.action-container{
+  display: flex;
+  justify-content: space-between;
+}
+#reg-link{
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+#reg-link:hover{
+  color: var(--secondary);
+}
+
+.name-inputs{
+  display: flex;
+  justify-content: space-between;
+}
+.name-inputs .form-group{
+  width: 45%;
+}

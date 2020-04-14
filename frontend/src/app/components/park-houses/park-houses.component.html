@@ -14,7 +14,9 @@
       <ul>
         <app-list-tile
           *ngFor="let parkHouse of parkHouses; let i = index"
-          (elementDeleted)="deleteParkHouse(parkHouse, i)" #listTile>
+          (elementDeleted)="deleteParkHouse(parkHouse, i)"
+          #listTile
+        >
           <div class="col-md-11" (click)="openParkHouseDetail(parkHouse)">
             <h3 class="text-primary card-title">{{ parkHouse.name }}</h3>
             <span class="text-primary col-md-7">{{ parkHouse.address }}</span>
@@ -23,25 +25,54 @@
       </ul>
       <app-add-button (addEvent)="openPopUp()"></app-add-button>
 
-      <app-pop-up *ngIf="popupIsOpen" [alertPopup]="false" (okEvent)="submitForm()" (closeEvent)="closePopup()" >
+      <app-pop-up
+        *ngIf="popupIsOpen"
+        [alertPopup]="false"
+        (okEvent)="submitForm()"
+        (closeEvent)="closePopup()"
+      >
         <form (ngSubmit)="onSubmit()" #f="ngForm">
           <h3>Parkolóház hozzáadása</h3>
           <div>
-            <input type="text" placeholder="Név" ngModel name="parkHouseNameInput"  #phName="ngModel"/>
-            <span class="form-text text-danger" *ngIf="!phName.valid && (phName.touched || formChecked)">
+            <input
+              type="text"
+              placeholder="Név"
+              ngModel
+              name="parkHouseNameInput"
+              #phName="ngModel"
+            />
+            <span
+              class="form-text text-danger"
+              *ngIf="!phName.valid && (phName.touched || formChecked)"
+            >
               A név nem lehet üres!
-              </span>
+            </span>
           </div>
           <div>
-            <input type="text" placeholder="Cím" ngModel name="parkHouseAddressInput"/>
+            <input
+              type="text"
+              placeholder="Cím"
+              ngModel
+              name="parkHouseAddressInput"
+            />
           </div>
           <div>
-            <input type="number" name="numFloorInput" id="numberOfFloors" ngModel required #numFloor="ngModel"/>
-            <span class="form-text text-danger" *ngIf="!numFloor.valid && (numFloor.touched || formChecked)">
+            <input
+              type="number"
+              name="numFloorInput"
+              id="numberOfFloors"
+              ngModel
+              required
+              #numFloor="ngModel"
+            />
+            <span
+              class="form-text text-danger"
+              *ngIf="!numFloor.valid && (numFloor.touched || formChecked)"
+            >
               Az emeletszám nem lehet üres!
             </span>
           </div>
-          <div class="text-danger">{{errorText}}</div>
+          <div class="text-danger">{{ errorText }}</div>
         </form>
       </app-pop-up>
     </div>

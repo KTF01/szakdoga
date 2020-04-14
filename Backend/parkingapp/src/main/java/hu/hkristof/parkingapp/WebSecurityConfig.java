@@ -21,6 +21,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private MyUserDetailService userDetailService;
 	
+	
 	@Override
     protected void configure(HttpSecurity http) throws Exception {
 	    http.cors().and().csrf().disable()
@@ -30,7 +31,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .httpBasic().authenticationEntryPoint(getBasicAuthEntryPoint())
         .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }    
-
 
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

@@ -23,7 +23,7 @@ import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.repositoris.ParkHouseRepository;
 
 @RestController
-@RequestMapping("parkHouses")
+@RequestMapping("auth/parkHouses")
 public class ParkHouseController {
 
 	@Autowired

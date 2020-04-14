@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -42,6 +43,7 @@ public class User {
 	private Role role;
 	
 	@NotBlank
+	@Email
 	private String email;
 
 	@OneToMany(mappedBy = "owner")

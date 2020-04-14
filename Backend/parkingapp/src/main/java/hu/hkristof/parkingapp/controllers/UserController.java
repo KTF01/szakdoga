@@ -26,7 +26,7 @@ import hu.hkristof.parkingapp.repositoris.UserRepository;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/users")
+@RequestMapping
 public class UserController {
 	
 	@Autowired
@@ -39,12 +39,12 @@ public class UserController {
 	private AuthenticatedUser authenticatedUser;
 	
 	
-	@GetMapping("/all")
+	@GetMapping("/auth/users/all")
 	public List<User> getAllNotes() {
 	    return (List<User>) userRepository.findAll();
 	}
 
-	@PostMapping("/register")
+	@PostMapping("/users/signUp")
 	public ResponseEntity<User> register(@RequestBody User newUser) {
 		Optional<User> optUser = userRepository.findByEmail(newUser.getEmail());
 		
@@ -59,7 +59,7 @@ public class UserController {
 		return ResponseEntity.ok( userRepository.save(newUser));
 	}
 	
-	@PostMapping("/login")
+	@PostMapping("/auth/users/login")
 	public ResponseEntity<User> login(@RequestBody String email) {
 		User loggedInUser = userRepository.findByEmail(email)
 				.orElseThrow(()->new UsernameNotFoundException(email+" emaillel nincs felhasználó regisztrálva."));

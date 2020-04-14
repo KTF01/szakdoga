@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 
 import { AppRoutingModule } from './app-routing.module';
@@ -16,6 +16,8 @@ import { AddButtonComponent } from './components/add-button/add-button.component
 import { ParkingLotDetailComponent } from './components/parking-lot-detail/parking-lot-detail.component';
 import { PopUpComponent } from './components/pop-up/pop-up.component';
 import { LoadingSpinnerComponent } from './components/common/loading-spinner/loading-spinner.component';
+import { SideNavComponent } from './components/common/side-nav/side-nav.component';
+import { AuthInterceptorService } from './services/auth-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -29,16 +31,18 @@ import { LoadingSpinnerComponent } from './components/common/loading-spinner/loa
     AddButtonComponent,
     ParkingLotDetailComponent,
     PopUpComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    SideNavComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     FontAwesomeModule,
-    HttpClientModule
+    HttpClientModule,
+
   ],
-  providers: [],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

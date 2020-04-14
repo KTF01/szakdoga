@@ -1,16 +1,17 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnInit, ErrorHandler } from '@angular/core';
 import { ParkHouse } from '../models/ParkHouse';
 import { Sector } from '../models/Sector';
-import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { CommonData } from '../common-data';
 import { Observable, Subject } from 'rxjs';
 import { CommonService } from './common.service';
 import { SectorService } from './sector.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ParkHouseService {
+export class ParkHouseService extends ErrorHandler{
 
   loadedParkHouses: Subject<boolean> = new Subject<boolean>();
   deletedParkHouse: Subject<boolean> = new Subject<boolean>();
@@ -23,12 +24,14 @@ export class ParkHouseService {
   parkHouses: ParkHouse[] = [
   ]
 
-  constructor(private http: HttpClient, private commonService:CommonService, private sectorService:SectorService) {
+  constructor(private http: HttpClient, private commonService:CommonService, private sectorService:SectorService,
+    private authService: AuthService) {
+    super();
   }
 
   loadParkHouses(): void {
     this.commonService.isLoading=true;
-    this.http.get<ParkHouse[]>(CommonData.hostUri + 'parkHouses/all').subscribe(
+    this.http.get<ParkHouse[]>(CommonData.hostUri + 'auth/parkHouses/all').subscribe(
       response => {
         this.commonService.isLoading=false;
         this.parkHouses = response
@@ -43,7 +46,7 @@ export class ParkHouseService {
   }
   removeParkHouse(parkHouse: ParkHouse) {
     this.commonService.isLoading=true;
-    this.http.delete(CommonData.hostUri + 'parkHouses/delete/' + parkHouse.id).subscribe(response => {
+    this.http.delete(CommonData.hostUri + 'auth/parkHouses/delete/' + parkHouse.id).subscribe(response => {
       this.commonService.isLoading=false;
       console.log(response);
       let index = this.parkHouses.indexOf(parkHouse);
@@ -55,7 +58,7 @@ export class ParkHouseService {
 
   addNewParkHouse(newParkHouse: ParkHouse) {
     this.commonService.isLoading=true;
-    this.http.post<ParkHouse>(CommonData.hostUri + 'parkHouses/newPH', newParkHouse).subscribe(response => {
+    this.http.post<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/newPH', newParkHouse).subscribe(response => {
       this.commonService.isLoading=false;
       this.parkHouses.push(response);
       this.addedParkHouse.next(true);
@@ -68,7 +71,7 @@ export class ParkHouseService {
   updateParkHouse(parkHouse: ParkHouse): void {
     this.commonService.isLoading=true;
     let index = this.parkHouses.findIndex(ph => ph.id === parkHouse.id);
-    this.http.put<ParkHouse>(CommonData.hostUri + 'parkHouses/updatePH/' + parkHouse.id, parkHouse).subscribe(response => {
+    this.http.put<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/updatePH/' + parkHouse.id, parkHouse).subscribe(response => {
       this.commonService.isLoading=false;
       this.parkHouses[index] = response;
       this.updatedParkHouse.next(response);
@@ -84,7 +87,7 @@ export class ParkHouseService {
 
     let index = this.parkHouses.findIndex(ph => ph.id === parkHouse.id);
     this.commonService.isLoading=true;
-    this.http.put<ParkHouse>(CommonData.hostUri + 'parkHouses/addSectors/' + parkHouse.id, [newSector]).subscribe(response => {
+    this.http.put<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/addSectors/' + parkHouse.id, [newSector]).subscribe(response => {
       this.commonService.isLoading=false;
       this.parkHouses[index] = response;
       this.addedSectorToParkHouse.next(response);
@@ -103,13 +106,15 @@ export class ParkHouseService {
       this.removedSectorToParkHouse.next(true);
     }, error=>this.handleError(error));
   }
-
   handleError(error:HttpErrorResponse){
     this.commonService.isLoading=false;
+    console.log(error);
     switch(error.status){
       case 400: this.errorOccured.next(error.error.error);break;
+      case 401: this.errorOccured.next(error.error);break;
       case 500: this.errorOccured.next(error.error.error);break;
       default: this.errorOccured.next(error.message);
     }
   }
+
 }
