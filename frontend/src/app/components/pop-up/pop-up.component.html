@@ -1,0 +1,15 @@
+
+
+
+
+<div class="backdrop" (click)="onClose()"></div>
+<div class="popup-box" [ngClass]="{transparent:nobackGround}">
+  <ng-content *ngIf="!commonSevice.isLoading;else spinner"></ng-content>
+  <ng-template #spinner>
+    <app-loading-spinner></app-loading-spinner>
+  </ng-template>
+  <div *ngIf="actionButtons" class="popup-actions">
+    <button *ngIf="!alertPopup" class="btn btn-primary" (click)="onOk()">{{okText}}</button>
+    <button class="btn btn-primary" (click)="onClose()">Mégse</button>
+  </div>
+</div>

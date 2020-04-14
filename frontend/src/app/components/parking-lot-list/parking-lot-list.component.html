@@ -1,0 +1,32 @@
+<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="submitAddPlForm()">
+  <form #form="ngForm">
+    <div *ngFor="let inputNum of inputCount; let i=index" class="nameInput">
+      <input type="text" name="parkingLotNameInput{{i}}" placeholder="Parkoló neve" ngModel #plName="ngModel">
+    </div>
+  </form>
+  <div class="add-remove-buttons">
+    <div (click)="addInputToForm()" >
+      <span>+</span>
+    </div>
+    <div (click)="removeInputFromForm()">
+      <span>-</span>
+    </div>
+  </div>
+</app-pop-up>
+
+
+<div *ngIf="parkingLotsVisible">
+  <ul class="pl-list">
+    <li *ngFor="let parkingLot of parkigLots" class="card" (click)="novigateToParkingLotDetail(parkingLot)">
+      <div class="card-body">
+        <h3>{{parkingLot.name}}</h3>
+        <div class="car-icon">
+          <fa-icon [icon]="faCar"></fa-icon>
+        </div>
+      </div>
+    </li>
+    <li class="add-btn-slot">
+      <app-add-button (addEvent)="openPopUp()"></app-add-button>
+    </li>
+  </ul>
+</div>

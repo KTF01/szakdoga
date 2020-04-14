@@ -1,0 +1,17 @@
+<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="deleteElementEvent()">
+  <p>Biztosan törlöd?</p>
+  <p class="text-danger">{{errorDisplay}}</p>
+</app-pop-up>
+
+<li class="card mb-2">
+  <div class="card-body">
+    <div class="row">
+        <ng-content class="col-md-11"></ng-content>
+      <div class="col-md-1">
+        <button class="delete-btn" (click)="openPopUp()">
+          <fa-icon [icon]="trashIcon"></fa-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</li>

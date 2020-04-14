@@ -1,0 +1,9 @@
+<p>login works!</p>
+<button class="btn btn-secondary" (click)="logIn()">Bejelentkezés</button>
+<div class="alert alert-danger" *ngIf="error">
+  <h2>Hiba!</h2>
+  <p>{{error}}</p>
+</div>
+<app-pop-up *ngIf="isLoading" [actionButtons]="false" [nobackGround]="true">
+  <app-loading-spinner></app-loading-spinner>
+</app-pop-up>

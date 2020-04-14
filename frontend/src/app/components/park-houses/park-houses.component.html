@@ -1,0 +1,49 @@
+<!-- <app-pop-up *ngIf="isLoading" [actionButtons]="false" [nobackGround]="true">
+  <app-loading-spinner></app-loading-spinner>
+</app-pop-up> -->
+
+<header>
+  <h1>Parking App</h1>
+</header>
+<main>
+  <div class="container">
+    <div>
+      <h2>Parkolóházak</h2>
+    </div>
+    <div>
+      <ul>
+        <app-list-tile
+          *ngFor="let parkHouse of parkHouses; let i = index"
+          (elementDeleted)="deleteParkHouse(parkHouse, i)" #listTile>
+          <div class="col-md-11" (click)="openParkHouseDetail(parkHouse)">
+            <h3 class="text-primary card-title">{{ parkHouse.name }}</h3>
+            <span class="text-primary col-md-7">{{ parkHouse.address }}</span>
+          </div>
+        </app-list-tile>
+      </ul>
+      <app-add-button (addEvent)="openPopUp()"></app-add-button>
+
+      <app-pop-up *ngIf="popupIsOpen" [alertPopup]="false" (okEvent)="submitForm()" (closeEvent)="closePopup()" >
+        <form (ngSubmit)="onSubmit()" #f="ngForm">
+          <h3>Parkolóház hozzáadása</h3>
+          <div>
+            <input type="text" placeholder="Név" ngModel name="parkHouseNameInput"  #phName="ngModel"/>
+            <span class="form-text text-danger" *ngIf="!phName.valid && (phName.touched || formChecked)">
+              A név nem lehet üres!
+              </span>
+          </div>
+          <div>
+            <input type="text" placeholder="Cím" ngModel name="parkHouseAddressInput"/>
+          </div>
+          <div>
+            <input type="number" name="numFloorInput" id="numberOfFloors" ngModel required #numFloor="ngModel"/>
+            <span class="form-text text-danger" *ngIf="!numFloor.valid && (numFloor.touched || formChecked)">
+              Az emeletszám nem lehet üres!
+            </span>
+          </div>
+          <div class="text-danger">{{errorText}}</div>
+        </form>
+      </app-pop-up>
+    </div>
+  </div>
+</main>

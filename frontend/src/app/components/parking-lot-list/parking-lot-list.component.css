@@ -1,0 +1,49 @@
+.pl-list{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.card{
+  width: 6rem;
+  height: 8rem;
+  margin: 10px 20px 10px 0 ;
+  text-align: center;
+  cursor: pointer;
+}
+.card:hover{
+  background-color: var(--secondary);
+}
+
+.car-icon{
+  font-size: 30px;
+}
+
+.add-btn-slot{
+  margin:auto 0;
+}
+
+form div{
+  width: fit-content;
+  margin-bottom: 10px;
+}
+
+.add-remove-buttons div{
+  background-color: var(--secondary);
+  border-radius: 5px;
+  width: 40%;
+  cursor: pointer;
+  text-align: center;
+}
+
+.add-remove-buttons div:hover{
+  background-color: var(--dark);
+  color: var(--secondary);
+}
+
+.add-remove-buttons{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-bottom: 10px;
+}

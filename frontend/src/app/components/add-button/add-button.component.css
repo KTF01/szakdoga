@@ -1,0 +1,13 @@
+.add-btn{
+  margin: auto;
+  width: fit-content;
+  padding: 0.5em;
+  border-radius: 4px;
+  text-align: center;
+  color: var(--secondary);
+  cursor: pointer;
+}
+.add-btn:hover{
+  color: white;
+  background-color: var(--secondary);
+}

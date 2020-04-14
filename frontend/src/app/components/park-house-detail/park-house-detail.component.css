@@ -1,0 +1,41 @@
+.down-btn{
+  border-radius: 4px;
+  font-size: x-large;
+  cursor: pointer;
+}
+.down-btn:hover{
+  background-color: var(--light);
+}
+
+.arrow{
+  transform: rotate(180deg);
+}
+
+button{
+  text-align: center;
+  font-size: large;
+  margin-right: 5px;
+  width: 50px;
+}
+button fa-icon{
+  display: block;
+  margin: 0 auto;
+  width: fit-content;
+}
+
+form div{
+  width: fit-content;
+  margin-bottom: 10px;
+}
+form div input{
+  margin: 0 auto;
+}
+input.ng-invalid.ng-touched{
+  border: 1px solid var(--danger)
+}
+
+#floor-num-input{
+  width: 100%;
+}
+
+
