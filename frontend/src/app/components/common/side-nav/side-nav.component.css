@@ -17,13 +17,13 @@
   display: block;
   transition: 0.3s;
   user-select: none;
+  border-radius: 5px;
 }
 .sidenav span{
-
+  margin: 10px;
   font-size: 20px;
 
 }
-
 
 .sidenav span:hover{
   color: var(--secondary);
@@ -31,4 +31,8 @@
 
 .main-content{
   margin-left: 100px;
+}
+
+span.active{
+  background-color: rgba(46, 66, 238, 0.685);
 }

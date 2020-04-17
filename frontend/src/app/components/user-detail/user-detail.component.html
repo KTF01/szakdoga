@@ -1,0 +1,54 @@
+<!-- <main *ngIf="authService.isLogedIn"> -->
+<main>
+  <!-- <h1>{{authService.loggedInUser.firstName}} {{authService.loggedInUser.lastName}}</h1> -->
+  <h1>Horváth Kristóf</h1>
+  <div class="container">
+    <div class="car-container">
+      <ul class="car-list">
+        <app-list-tile
+          [isDeletable]="false"
+          *ngFor="let car of authService.loggedInUser.ownedCars"
+          (click)="selectedCar = car"
+        >
+          <div class="inf-cont" [ngClass]="{ selected: selectedCar == car }">
+            <div class="car-icon">
+              <fa-icon [icon]="faCar"></fa-icon>
+            </div>
+            <div class="car-info">{{ car.plateNumber }}</div>
+          </div>
+        </app-list-tile>
+      </ul>
+    </div>
+    <div class="pl-container">
+      <div class="car-details" *ngIf="selectedCar">
+        <h1>{{ selectedCar.plateNumber }}</h1>
+        <div class="custom-container">
+          <div>
+            <p>
+              Tulaj: {{ selectedCar.owner.firstName }}
+              {{ selectedCar.owner.lastName }}
+            </p>
+          </div>
+          <div class="pl-details"
+            *ngIf="selectedCar.occupiedParkingLot; else noPl">
+            <h3>Parkoló: {{selectedCar.occupiedParkingLot.name}}</h3>
+            <p>Parkolóház: {{selectedCar.occupiedParkingLot.sector.parkHouse.name}}</p>
+            <p>Szektor: {{selectedCar.occupiedParkingLot.sector.name}}</p>
+            <button class="btn btn-primary" (click)="openPopUp()">Kiállás</button>
+          </div>
+          <ng-template #noPl>
+            <div><p>Ez az autó nem foglal jelenleg parkolót.</p></div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="parkOut()">
+  <h3>Kiáll a parkolóbol?</h3>
+</app-pop-up>
+
+<app-pop-up *ngIf="commonService.isLoading" [actionButtons]="false" [nobackGround]="true">
+  <app-loading-spinner></app-loading-spinner>
+</app-pop-up>

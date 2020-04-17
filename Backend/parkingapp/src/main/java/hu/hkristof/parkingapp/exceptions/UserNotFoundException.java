@@ -9,4 +9,7 @@ public class UserNotFoundException extends RuntimeException{
 	public UserNotFoundException(String userName) {
 		super(String.format("%s nevű felhasználó nem található!", userName));
 	}
+	public UserNotFoundException(Long userId) {
+		super(String.format("%d id-vel nem található felhasználó!", userId));
+	}
 }

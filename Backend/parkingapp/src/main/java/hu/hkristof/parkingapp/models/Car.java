@@ -3,22 +3,40 @@ package hu.hkristof.parkingapp.models;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+
+
 @Entity
 @Table(name = "cars")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Car {
 	
 	@Id
 	@NotBlank
 	String plateNumber;
 	
-	//@NotBlank
+	@JsonIdentityReference(alwaysAsId = true)
 	@ManyToOne
 	User owner;
 	
-	Long plId;
+	@JsonIdentityReference(alwaysAsId = true)
+	@OneToOne
+	ParkingLot occupiedParkingLot;
+
+	public ParkingLot getOccupiedParkingLot() {
+		return occupiedParkingLot;
+	}
+
+	public void setOccupiedParkingLot(ParkingLot occupiedParkingLot) {
+		this.occupiedParkingLot = occupiedParkingLot;
+	}
 
 	public String getPlateNumber() {
 		return plateNumber;
@@ -36,13 +54,6 @@ public class Car {
 		this.owner = owner;
 	}
 
-	public Long getPlId() {
-		return plId;
-	}
-
-	public void setPlId(Long plId) {
-		this.plId = plId;
-	}
 	
 
 }

@@ -18,6 +18,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit {
   parkHouses: ParkHouse[];
   formChecked: boolean = false;
   errorText: string=null;
+  error:string=null;
 
   @ViewChild('f') form: NgForm;
   @ViewChildren('listTile') tile:QueryList<ListTileComponent>;
@@ -26,7 +27,15 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit {
     public commonService:CommonService) { super(); }
 
   ngOnInit(): void {
-    this.parkHouses = this.parkHouseService.parkHouses;
+    this.parkHouseService.loadParkHouses();
+      this.parkHouseService.loadedParkHouses.subscribe(_=>{
+        this.parkHouses = this.parkHouseService.parkHouses;
+      });
+      this.parkHouseService.errorOccured.subscribe(errorMessage=>{
+        this.error=errorMessage;
+        console.log(this.error);
+      });
+
 
   }
   addParkHouse(parkHouse: ParkHouse): void {

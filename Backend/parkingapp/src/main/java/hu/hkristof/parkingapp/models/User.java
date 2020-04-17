@@ -2,6 +2,7 @@ package hu.hkristof.parkingapp.models;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,14 +15,17 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import hu.hkristof.parkingapp.Role;
 
 @Entity
 @Table(name = "users")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 	
 	@Id
@@ -46,8 +50,15 @@ public class User {
 	@Email
 	private String email;
 
-	@OneToMany(mappedBy = "owner")
+	
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	List<Car> ownedCars;
+	
+	
+	public void addCar(Car car) {
+		car.owner=this;
+		this.ownedCars.add(car);
+	}
 	
 	public Long getId() {
 		return id;

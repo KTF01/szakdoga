@@ -1,9 +1,11 @@
 <div id="mySidenav" class="sidenav" *ngIf="router.url!='/login'">
-  <h3 href="#">{{authService.loggedInUser.firstName}} {{authService.loggedInUser.lastName}}</h3>
+  <h3 *ngIf="authService.isLogedIn">{{authService.loggedInUser.firstName}} {{authService.loggedInUser.lastName}}</h3>
   <hr style="background-color: var(--light);">
-  <span href="#">Parkoló házak</span>
-  <span href="#">Saját parkolók</span>
-  <span href="#">Napló</span><!--admin-->
+  <span (click)="navigateToParkHouses()"
+  [ngClass]="{active: router.url=='/frame/parkHouses'}" >Parkoló házak</span>
+  <span (click)="navigateToUserDetail()"
+  [ngClass]="{active: router.url=='/frame/userDetail'}">Saját adatok</span>
+  <span >Napló</span><!--admin-->
   <span (click)="fireLogout()">Kilépés</span><!--admin-->
 </div>
 

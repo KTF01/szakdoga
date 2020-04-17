@@ -18,6 +18,7 @@ import { PopUpComponent } from './components/pop-up/pop-up.component';
 import { LoadingSpinnerComponent } from './components/common/loading-spinner/loading-spinner.component';
 import { SideNavComponent } from './components/common/side-nav/side-nav.component';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
+import { UserDetailComponent } from './components/user-detail/user-detail.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
     ParkingLotDetailComponent,
     PopUpComponent,
     LoadingSpinnerComponent,
-    SideNavComponent
+    SideNavComponent,
+    UserDetailComponent
   ],
   imports: [
     BrowserModule,

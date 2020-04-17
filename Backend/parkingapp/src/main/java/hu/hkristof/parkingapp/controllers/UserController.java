@@ -6,12 +6,12 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import hu.hkristof.parkingapp.AuthenticatedUser;
 import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.UserAlreadyExistEception;
+import hu.hkristof.parkingapp.exceptions.UserNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.User;
 import hu.hkristof.parkingapp.repositoris.UserRepository;
@@ -37,11 +38,18 @@ public class UserController {
 	
 	@Autowired 
 	private AuthenticatedUser authenticatedUser;
-	
-	
-	@GetMapping("/auth/users/all")
+		
+	@GetMapping("auth/users/all")
 	public List<User> getAllNotes() {
 	    return (List<User>) userRepository.findAll();
+	}
+	
+	@GetMapping("auth/users/{id}")
+	public User getAllNotes(@PathVariable Long id) {
+		User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
+		System.out.println(user.getFirstName()+" adatai lekérdezve!");
+		
+	    return user;
 	}
 
 	@PostMapping("/users/signUp")

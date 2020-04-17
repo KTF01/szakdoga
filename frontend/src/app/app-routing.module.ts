@@ -6,6 +6,7 @@ import { ParkHouseDetailComponent } from './components/park-house-detail/park-ho
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ParkingLotDetailComponent } from './components/parking-lot-detail/parking-lot-detail.component';
 import { SideNavComponent } from './components/common/side-nav/side-nav.component';
+import { UserDetailComponent } from './components/user-detail/user-detail.component';
 
 
 const routes: Routes = [
@@ -13,6 +14,7 @@ const routes: Routes = [
   {path: '', redirectTo:'login',pathMatch: 'full'},
   {path: 'frame', component:SideNavComponent, children:[
     {path: 'parkHouses', component: ParkHousesComponent},
+    {path: 'userDetail', component: UserDetailComponent},
     {path: 'parkHouses/parkHouse/:id', component: ParkHouseDetailComponent},
     {path: 'parkHouses/parkHouse/:id/parkingLot/:id', component: ParkingLotDetailComponent},
   ]},

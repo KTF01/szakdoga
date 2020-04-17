@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Sector } from '../models/Sector';
 import { ParkingLot } from '../models/ParkingLot';
-import { ParkingLotService } from './parking-lot.service';
 
 @Injectable({
   providedIn: 'root'

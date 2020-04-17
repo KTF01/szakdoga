@@ -14,6 +14,8 @@ export class ListTileComponent extends PopUpContainer implements OnInit {
   errorDisplay:string=null;
 
   trashIcon = faTrash;
+
+  @Input() isDeletable:boolean=true;
   constructor() { super(); }
 
   ngOnInit(): void {

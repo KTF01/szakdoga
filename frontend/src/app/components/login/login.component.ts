@@ -1,23 +1,26 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { FormControl, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ParkHouseService } from '../../services/park-house.service';
 import { CommonService } from '../../services/common.service';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/User';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   error:string= null;
 
   isLoginMode: boolean=true;
 
   @ViewChild('authForm') authForm:NgForm;
+
+  private logInSub: Subscription;
 
 
   constructor(private router: Router, private parkHouseService: ParkHouseService, public commonService: CommonService, private authService:AuthService) { }
@@ -37,14 +40,8 @@ export class LoginComponent implements OnInit {
     this.authService.errorOccured.subscribe(errorMessage=>{
       this.error=errorMessage;
     });
-    this.authService.loggedIn.subscribe(_=>{
-      this.parkHouseService.loadParkHouses();
-      this.parkHouseService.loadedParkHouses.subscribe(_=>{
-        this.router.navigate(['frame/parkHouses']);
-      });
-      this.parkHouseService.errorOccured.subscribe(errorMessage=>{
-        this.error=errorMessage;
-      });
+    this.logInSub= this.authService.loggedIn.subscribe(_=>{
+      this.router.navigate(['frame/parkHouses']);
     });
   }
 
@@ -66,7 +63,6 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(){
-    console.log(this.authForm);
     if(this.authForm.valid){
       if(this.isLoginMode){
         this.logIn();
@@ -89,4 +85,7 @@ export class LoginComponent implements OnInit {
     return this.authForm.value.passwordInput===this.authForm.value.passwordConfirmInput;
   }
 
+  ngOnDestroy(){
+    this.logInSub.unsubscribe();
+  }
 }

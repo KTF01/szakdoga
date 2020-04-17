@@ -20,7 +20,7 @@
     <li *ngFor="let parkingLot of parkigLots" class="card" (click)="novigateToParkingLotDetail(parkingLot)">
       <div class="card-body">
         <h3>{{parkingLot.name}}</h3>
-        <div class="car-icon">
+        <div class="car-icon" *ngIf="parkingLot.occupiingCar">
           <fa-icon [icon]="faCar"></fa-icon>
         </div>
       </div>

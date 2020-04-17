@@ -7,6 +7,7 @@ import { Observable, Subject } from 'rxjs';
 import { CommonService } from './common.service';
 import { SectorService } from './sector.service';
 import { AuthService } from './auth.service';
+import { ParkingLot } from '../models/ParkingLot';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +25,7 @@ export class ParkHouseService extends ErrorHandler{
   parkHouses: ParkHouse[] = [
   ]
 
-  constructor(private http: HttpClient, private commonService:CommonService, private sectorService:SectorService,
-    private authService: AuthService) {
+  constructor(private http: HttpClient, private commonService:CommonService, private sectorService:SectorService) {
     super();
   }
 
@@ -33,9 +33,11 @@ export class ParkHouseService extends ErrorHandler{
     this.commonService.isLoading=true;
     this.http.get<ParkHouse[]>(CommonData.hostUri + 'auth/parkHouses/all').subscribe(
       response => {
+        console.log(response);
         this.commonService.isLoading=false;
         this.parkHouses = response
         for(let ph of this.parkHouses){
+          this.adjustSectors(ph);
           for(let sector of ph.sectors){
             this.sectorService.adjustParkingLots(sector);
           }
@@ -44,6 +46,13 @@ export class ParkHouseService extends ErrorHandler{
       }, error=>this.handleError(error)
     );
   }
+
+  adjustSectors(parkHouse:ParkHouse){
+    for(let sector of parkHouse.sectors){
+      sector.parkHouse=parkHouse;
+    }
+  }
+
   removeParkHouse(parkHouse: ParkHouse) {
     this.commonService.isLoading=true;
     this.http.delete(CommonData.hostUri + 'auth/parkHouses/delete/' + parkHouse.id).subscribe(response => {
@@ -106,6 +115,21 @@ export class ParkHouseService extends ErrorHandler{
       this.removedSectorToParkHouse.next(true);
     }, error=>this.handleError(error));
   }
+
+
+  getParkingLot(id: number): ParkingLot {
+    for (let parkHouse of this.parkHouses) {
+      for (let sector of parkHouse.sectors) {
+        let pl: ParkingLot = sector.parkingLots.find(pl => pl.id === id);
+        if (pl) {
+          return pl;
+        }
+      }
+    }
+  }
+
+
+
   handleError(error:HttpErrorResponse){
     this.commonService.isLoading=false;
     console.log(error);

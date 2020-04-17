@@ -9,13 +9,12 @@ export class AuthInterceptorService implements HttpInterceptor{
 
   constructor(private authService: AuthService){}
   intercept(request: HttpRequest<any>, next: HttpHandler){
-    console.log('Request küldés! '+ request.url);
-    console.log(request.headers);
-    if(request.url.match(/parkHouses+/)==null){
-      return next.handle(request);
-    }else{
+    if(request.url.match(/parkHouses+/)!=null){
       const modifiedRequest: HttpRequest<any> = request.clone({headers: request.headers.append('Authorization', `Basic ${this.authService.authToken}`)});
       return next.handle(modifiedRequest);
+
+    }else{
+      return next.handle(request);
 
     }
 

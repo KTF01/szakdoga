@@ -11,8 +11,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 @Entity
 @Table(name = "parkingLots")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ParkingLot {
 	
 	@Id
@@ -22,10 +27,12 @@ public class ParkingLot {
 	@NotBlank
 	String name;
 	
-	@OneToOne(cascade = CascadeType.DETACH)
+	//@JsonIdentityReference(alwaysAsId = true)
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name= "plate_number")
 	Car occupiingCar;
 	
+	@JsonIdentityReference(alwaysAsId = true)
 	@ManyToOne
 	Sector sector;
 

@@ -2,13 +2,13 @@ package hu.hkristof.parkingapp.controllers;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import hu.hkristof.parkingapp.exceptions.CarNotFoundException;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkingLot;
@@ -72,17 +73,29 @@ public class ParkingLotController {
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Long> deletePrakingLot(@PathVariable Long id) {
 		System.out.println(id + " számú parkolóhely törölve!");
+		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
+		if(pl.getOccupiingCar()!=null) {
+			pl.getOccupiingCar().setOccupiedParkingLot(null);
+			carRepository.save(pl.getOccupiingCar());
+			pl.setOccupiingCar(null);
+		}
 		plRepository.deleteById(id);
 		return new ResponseEntity<>(id, HttpStatus.OK);
 	}
 	
-	@PutMapping("/parkIn/{id}")
-	public ParkingLot parkIn(@Valid @RequestBody Car car, @PathVariable Long id ) {
-		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
+	@Transactional
+	@PutMapping("/parkIn/{plId}/{carPlate}")
+	public ResponseEntity<ParkingLot> parkIn(@PathVariable Long plId, @PathVariable String carPlate ) {
+		ParkingLot pl = plRepository.findById(plId).orElseThrow(()->new ParkingLotNotFoundException(plId));
+		Car car = carRepository.findById(carPlate).orElseThrow(()->new CarNotFoundException(carPlate));
+		if(car.getOccupiedParkingLot()!=null) {
+			parkOut(car.getOccupiedParkingLot().getId());
+		}
 		pl.setOccupiingCar(car);
-		car.setPlId(id);
+		car.setOccupiedParkingLot(pl);
 		plRepository.save(pl);
 		carRepository.save(car);
+
 		
 		TimeLog timeLog = new TimeLog();
 		timeLog.setIsParkedIn(true);
@@ -90,7 +103,7 @@ public class ParkingLotController {
 		timeLog.setCar(car);
 		timeLogRepository.save(timeLog);
 		System.out.println("A "+ car.getPlateNumber()+" rendszámú autó beparkolt a "+ pl.getName()+" nevű parkolóhelyre.");
-		return pl;
+		return new ResponseEntity<>(pl, HttpStatus.OK);
 	}
 	
 	@PutMapping("/parkOut/{id}")
@@ -98,7 +111,7 @@ public class ParkingLotController {
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
 		if(pl.getOccupiingCar()!=null) {
 			Car car = pl.getOccupiingCar();
-			car.setPlId(null);
+			car.setOccupiedParkingLot(null);
 			carRepository.save(car);
 			pl.setOccupiingCar(null);
 			plRepository.save(pl);
@@ -107,6 +120,7 @@ public class ParkingLotController {
 			timeLog.setTime(new Timestamp(System.currentTimeMillis()));
 			timeLog.setCar(car);
 			timeLogRepository.save(timeLog);
+			System.out.println(pl.getName()+" parkolóból kiállt a "+ car.getPlateNumber()+" rendszámú autó!");
 		}
 		return pl;
 	}
