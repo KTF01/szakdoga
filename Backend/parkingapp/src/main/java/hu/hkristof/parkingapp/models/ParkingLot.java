@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "parkingLots")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ParkingLot {
 	
 	@Id
@@ -27,7 +27,7 @@ public class ParkingLot {
 	@NotBlank
 	String name;
 	
-	//@JsonIdentityReference(alwaysAsId = true)
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name= "plate_number")
 	Car occupiingCar;

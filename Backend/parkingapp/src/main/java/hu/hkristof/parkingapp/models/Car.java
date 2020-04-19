@@ -1,5 +1,6 @@
 package hu.hkristof.parkingapp.models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -15,19 +16,19 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "cars")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "plateNumber")
 public class Car {
 	
 	@Id
 	@NotBlank
 	String plateNumber;
 	
-	@JsonIdentityReference(alwaysAsId = true)
-	@ManyToOne
+	
+	@ManyToOne(cascade = CascadeType.DETACH)
 	User owner;
 	
-	@JsonIdentityReference(alwaysAsId = true)
-	@OneToOne
+	//@JsonIdentityReference(alwaysAsId = true)
+	@OneToOne(cascade = CascadeType.DETACH)
 	ParkingLot occupiedParkingLot;
 
 	public ParkingLot getOccupiedParkingLot() {

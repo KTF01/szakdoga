@@ -8,8 +8,7 @@
         <app-list-tile
           [isDeletable]="false"
           *ngFor="let car of authService.loggedInUser.ownedCars"
-          (click)="selectedCar = car"
-        >
+          (click)="selectedCar = car">
           <div class="inf-cont" [ngClass]="{ selected: selectedCar == car }">
             <div class="car-icon">
               <fa-icon [icon]="faCar"></fa-icon>
@@ -17,6 +16,7 @@
             <div class="car-info">{{ car.plateNumber }}</div>
           </div>
         </app-list-tile>
+        <app-add-button (click)="openPopUp2()" *ngIf="authService.loggedInUser.ownedCars.length<5"></app-add-button>
       </ul>
     </div>
     <div class="pl-container">
@@ -39,6 +39,9 @@
           <ng-template #noPl>
             <div><p>Ez az autó nem foglal jelenleg parkolót.</p></div>
           </ng-template>
+          <button class="delete-btn" (click)="openPopUp3()">
+            <fa-icon [icon] = "deleteIson"></fa-icon>
+          </button>
         </div>
       </div>
     </div>
@@ -49,6 +52,19 @@
   <h3>Kiáll a parkolóbol?</h3>
 </app-pop-up>
 
-<app-pop-up *ngIf="commonService.isLoading" [actionButtons]="false" [nobackGround]="true">
+<app-pop-up *ngIf="popUp2IsOpen" (closeEvent)="closePopUp2()" (okEvent)="addNewCar(plateNumb)">
+  <h2>Új autó</h2>
+  <div class="form-group ">
+    <label for="plateNumber">Rendszám:</label>
+    <input class="form-control" type="text" name="plateNumberInpur" id="plateNumber" ngModel required #plateNumb="ngModel">
+    <span class="text-danger" *ngIf="!plateNumb.valid&&plateNumb.touched">Nem lehet üres</span>
+  </div>
+</app-pop-up>
+
+<app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" (okEvent)="removeCar(selectedCar)">
+  <h2>Biztos törli az autót?</h2>
+</app-pop-up>
+
+<app-pop-up *ngIf="commonService.isLoading && !popUp2IsOpen && !popupIsOpen &&!popUp3IsOpen" [actionButtons]="false" [nobackGround]="true">
   <app-loading-spinner></app-loading-spinner>
 </app-pop-up>

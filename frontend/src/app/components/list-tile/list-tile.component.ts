@@ -1,6 +1,8 @@
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { PopUpContainer } from '../pop-up/PopUpContainer';
+import { AuthService } from '../../services/auth.service';
+import { Role } from '../../models/Role';
 
 @Component({
   selector: 'app-list-tile',
@@ -16,9 +18,12 @@ export class ListTileComponent extends PopUpContainer implements OnInit {
   trashIcon = faTrash;
 
   @Input() isDeletable:boolean=true;
-  constructor() { super(); }
+  constructor( private authService:AuthService) { super(); }
 
   ngOnInit(): void {
+    if(this.authService.loggedInUser && this.isDeletable==true){
+      this.isDeletable = !(this.authService.loggedInUser.role==Role.ROLE_USER);
+    }
   }
 
   deleteElementEvent(){

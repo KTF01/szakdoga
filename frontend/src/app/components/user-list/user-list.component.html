@@ -1,0 +1,25 @@
+<h1>A rendszerben regisztrált felhasználók</h1>
+<div class="container-fluid">
+  <div class="user-display">
+    <ul class="user-list">
+      <li *ngFor="let user of userService.users" class="user-list-item">
+        <div>
+          <span class="user-icon"><fa-icon [icon] = "getUserIcon(user)"></fa-icon></span>
+          <span class="user-name">{{user.firstName}} {{user.lastName}}</span>
+          <span class="user-email">{{user.email}}</span>
+          <span class="user-cars-numb">{{user.ownedCars.length}}</span>
+          <span class="admin-button">
+            <button class="btn btn-primary "(click)="adminBtnPressed(user)" *ngIf="!(user.role==FIRST_USER_ROLE)">
+              {{user.role==USER_ROLE?'ADMIN' :'DEADMIN'}}
+            </button>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+<app-pop-up *ngIf="commonService.isLoading" [actionButtons]="false" [nobackGround]="true">
+  <app-loading-spinner></app-loading-spinner>
+</app-pop-up>

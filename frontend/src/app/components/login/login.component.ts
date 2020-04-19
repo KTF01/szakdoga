@@ -6,6 +6,7 @@ import { CommonService } from '../../services/common.service';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/User';
 import { Subscription } from 'rxjs';
+import { UserServiceService } from '../../services/user-service.service';
 
 @Component({
   selector: 'app-login',
@@ -23,9 +24,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   private logInSub: Subscription;
 
 
-  constructor(private router: Router, private parkHouseService: ParkHouseService, public commonService: CommonService, private authService:AuthService) { }
+  constructor(private router: Router, public commonService: CommonService, private authService:AuthService, private userService:UserServiceService) { }
 
   ngOnInit(): void {
+    if(this.userService.users!=null)this.userService.users = null;
   }
 
   switchMode(){

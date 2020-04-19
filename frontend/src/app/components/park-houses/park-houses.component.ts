@@ -7,6 +7,8 @@ import { PopUpContainer } from '../pop-up/PopUpContainer';
 import { Sector } from '../../models/Sector';
 import { CommonService } from '../../services/common.service';
 import { ListTileComponent } from '../list-tile/list-tile.component';
+import { AuthService } from '../../services/auth.service';
+import { Role } from '../../models/Role';
 
 @Component({
   selector: 'app-park-houses',
@@ -35,8 +37,6 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit {
         this.error=errorMessage;
         console.log(this.error);
       });
-
-
   }
   addParkHouse(parkHouse: ParkHouse): void {
     this.commonService.isLoading=true;

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { ParkHouseService } from './park-house.service';
 import { ParkingLot } from '../models/ParkingLot';
 import { Sector } from '../models/Sector';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { CommonData } from '../common-data';
 import { CommonService } from './common.service';
 import { Subject } from 'rxjs';
 import { SectorService } from './sector.service';
 import { Car } from '../models/Car';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,6 @@ export class ParkingLotService {
 
   addParkingLots(sector: Sector, newPls: ParkingLot[]): void {
     this.commonService.isLoading = true;
-    console.log(newPls);
     this.http.put<Sector>(CommonData.hostUri + 'sectors/addParkingLot/' + sector.id, newPls).subscribe(response => {
       console.log(response);
       this.commonService.isLoading = false;
@@ -37,7 +37,7 @@ export class ParkingLotService {
     }, error => this.handleError(error));
   }
 
-  getParkingLot(id): ParkingLot {
+  getParkingLot(id:number): ParkingLot {
     for (let parkHouse of this.parkHouseService.parkHouses) {
       for (let sector of parkHouse.sectors) {
 
@@ -51,18 +51,22 @@ export class ParkingLotService {
 
   removeParkingLot(parkinglot: ParkingLot): void {
     this.commonService.isLoading = true;
-    this.http.delete<number>(CommonData.hostUri + 'parkingLots/delete/' + parkinglot.id).subscribe(response => {
-      console.log(response);
+    this.http.delete<number>(CommonData.hostUri + 'auth/parkingLots/delete/' + parkinglot.id,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response => {
       this.commonService.isLoading = false;
       let index = parkinglot.sector.parkingLots.findIndex(elem => elem.id == response);
       parkinglot.sector.parkingLots.splice(index, 1);
       this.parkingLotsDeleted.next(true);
+      console.log(response);
     }, error => this.handleError(error));
   }
 
   updateParkingLotName(parkinglot: ParkingLot, newName: string) {
     this.commonService.isLoading = true;
-    this.http.put<ParkingLot>(CommonData.hostUri + 'parkingLots/update/' + parkinglot.id, newName).subscribe(response => {
+    this.http.put<ParkingLot>(CommonData.hostUri + 'auth/parkingLots/update/' + parkinglot.id, newName,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response => {
       this.commonService.isLoading = false;
       console.log(response);
       let index = parkinglot.sector.parkingLots.findIndex(elem => elem.id == response.id);
@@ -75,7 +79,9 @@ export class ParkingLotService {
   parkOut(parkingLot: ParkingLot) {
     if (parkingLot.occupiingCar) {
       this.commonService.isLoading = true;
-      this.http.put<ParkingLot>(CommonData.hostUri + 'parkingLots/parkOut/' + parkingLot.id, null).subscribe(response => {
+      this.http.put<ParkingLot>(CommonData.hostUri + 'auth/parkingLots/parkOut/' + parkingLot.id, null,{
+        headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+      }).subscribe(response => {
         let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.id);
         response.sector = parkingLot.sector;
         parkingLot.sector.parkingLots[index] = response;
@@ -87,17 +93,23 @@ export class ParkingLotService {
 
   parkIn(parkingLot:ParkingLot, car:Car){
     this.commonService.isLoading=true;
-    this.http.put<ParkingLot>(CommonData.hostUri+'parkingLots/parkIn/'+parkingLot.id+'/'+car.plateNumber, null).subscribe(response=>{
-      let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.id);
-      response.sector = parkingLot.sector;
-      parkingLot.sector.parkingLots[index] = response;
+    this.http.put<{parkingLot:ParkingLot, car:Car}>(CommonData.hostUri+'auth/parkingLots/parkIn/'+parkingLot.id+'/'+car.plateNumber, null,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response=>{
+      response.parkingLot.occupiingCar=response.car;
+      response.car.occupiedParkingLot=response.parkingLot;
+      let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.parkingLot.id);
+      response.parkingLot.sector = parkingLot.sector;
+      parkingLot.sector.parkingLots[index] = response.parkingLot;
+
       this.commonService.isLoading=false;
-      this.parkedIn.next(response);
+      this.parkedIn.next(response.parkingLot);
     }, error=>this.handleError(error));
   }
 
   handleError(error: HttpErrorResponse) {
     this.commonService.isLoading = false;
+    console.log(error);
     switch (error.status) {
       case 400: this.errorOccured.next(error.error.error); break;
       case 500: this.errorOccured.next(error.error.error); break;

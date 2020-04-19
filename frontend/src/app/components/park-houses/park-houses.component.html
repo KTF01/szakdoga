@@ -63,12 +63,10 @@
               id="numberOfFloors"
               ngModel
               required
-              #numFloor="ngModel"
-            />
+              #numFloor="ngModel"/>
             <span
               class="form-text text-danger"
-              *ngIf="!numFloor.valid && (numFloor.touched || formChecked)"
-            >
+              *ngIf="!numFloor.valid && (numFloor.touched || formChecked)">
               Az emeletszám nem lehet üres!
             </span>
           </div>

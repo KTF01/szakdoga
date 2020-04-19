@@ -46,14 +46,17 @@
       <h1>Üres</h1>
     </ng-template>
     <div>
-      <button class="btn btn-primary" (click)="parkingLot.occupiingCar? parkOut() :openPopUp3()">{{parkingLot.occupiingCar?'Kiállás':'Beállás'}}</button>
+      <button class="btn btn-primary" (click)="parkingLot.occupiingCar? parkOut() :openPopUp3()"
+      *ngIf="isParkActionShown">{{parkingLot.occupiingCar?'Kiállás':'Beállás'}}</button>
     </div>
   </div>
 
-  <button class="btn btn-primary" (click)="openPopUp2()">
-    <fa-icon [icon]="editIcon"></fa-icon>
-  </button>
-  <button class="btn delete-btn" (click)="openPopUp()">
-    <fa-icon [icon]="trashIcon"></fa-icon>
-  </button>
+  <div *ngIf="isAdmin">
+    <button class="btn btn-primary" (click)="openPopUp2()">
+      <fa-icon [icon]="editIcon"></fa-icon>
+    </button>
+    <button class="btn delete-btn" (click)="openPopUp()">
+      <fa-icon [icon]="trashIcon"></fa-icon>
+    </button>
+  </div>
 </div>

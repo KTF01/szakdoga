@@ -6,7 +6,9 @@ import { Subject } from 'rxjs';
 import { CommonService } from './common.service';
 import { Router } from '@angular/router';
 import { ParkingLotService } from './parking-lot.service';
-import { ParkHouseService } from './park-house.service';
+import { Car } from '../models/Car';
+import { Role } from '../models/Role';
+import { UserServiceService } from './user-service.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,7 @@ export class AuthService {
   loggedIn: Subject<User> = new Subject<User>();
 
   loggedInUser: User = null;
-  authToken:string=null;
+
   isLogedIn:boolean=false;
 
   constructor(private http:HttpClient, private commonService:CommonService, private router: Router, private parkingLotService:ParkingLotService) { }
@@ -26,24 +28,21 @@ export class AuthService {
   login(email:string, password:string){
     const token:string = btoa(`${email}:${password}`);
 
-    this.http.post<User>(CommonData.hostUri+'auth/users/login', email,{
+    this.http.post<{user:User, userCars:Car[]}>(CommonData.hostUri+'auth/users/login', email,{
       headers: new HttpHeaders({'Authorization': `Basic ${token}`})
     }).subscribe(response=>{
-
-      for(let car of response.ownedCars){
-        car.owner=response;
-      }
-
-      this.loggedInUser=response;
-      this.authToken=token;
+      response.user = this.setUpUserCars(response);
+      response.user.role= (<any>Role)[response.user.role];
+      this.loggedInUser=response.user;
+      this.commonService.authToken=token;
       this.isLogedIn=true;
-      this.loggedIn.next(response);
+      this.loggedIn.next(response.user);
     }, error=>this.handleError(error));
   }
 
   logout(){
     this.loggedInUser=null;
-    this.authToken=null;
+    this.commonService.authToken=null;
     this.isLogedIn=false;
     this.router.navigate(['login']);
   }
@@ -58,21 +57,26 @@ export class AuthService {
 
   refreshLoggedInUserData(){
     this.commonService.isLoading=true;
-    this.http.get<User>(CommonData.hostUri+'auth/users/'+this.loggedInUser.id, {
-      headers: new HttpHeaders({'Authorization': `Basic ${this.authToken}`})
+    this.http.get<{user:User, userCars:Car[]}>(CommonData.hostUri+'auth/users/'+this.loggedInUser.id, {
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
-      for(let car of response.ownedCars){
-        car.owner=response;
-        if(car.occupiedParkingLot){
-          car.occupiedParkingLot=this.parkingLotService.getParkingLot(car.occupiedParkingLot);
-        }
-      }
-      this.loggedInUser=response;
+      response.user = this.setUpUserCars(response);
+      response.user.role= (<any>Role)[response.user.role];
+      this.loggedInUser=response.user;
       this.commonService.isLoading=false;
     }, error=>this.handleError(error));
   }
 
-
+  setUpUserCars(userData:{user:User, userCars:Car[]}){
+    for(let car of userData.userCars){
+      car.owner=userData.user;
+      userData.user.ownedCars=userData.userCars;
+      if(car.occupiedParkingLot){
+        car.occupiedParkingLot=this.parkingLotService.getParkingLot(car.occupiedParkingLot.id);
+      }
+    }
+    return userData.user;
+  }
   handleError(error:HttpErrorResponse){
     this.commonService.isLoading=false;
     console.log(error);

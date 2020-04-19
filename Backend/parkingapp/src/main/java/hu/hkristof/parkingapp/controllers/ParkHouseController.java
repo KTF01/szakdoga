@@ -1,5 +1,6 @@
 package hu.hkristof.parkingapp.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -7,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.exceptions.ParkHouseNotFoundException;
+import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkHouse;
+import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.Sector;
+import hu.hkristof.parkingapp.repositoris.CarRepository;
 import hu.hkristof.parkingapp.repositoris.ParkHouseRepository;
+import hu.hkristof.parkingapp.responsetypes.AllParkHousesResponse;
 
 @RestController
 @RequestMapping("auth/parkHouses")
@@ -29,6 +35,10 @@ public class ParkHouseController {
 	@Autowired
 	ParkHouseRepository parkHouseRepository;
 	
+	@Autowired
+	CarRepository carRespository;
+	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@PostMapping("/newPH")
 	public ParkHouse createNote(@Valid @RequestBody ParkHouse ph) {
@@ -38,10 +48,26 @@ public class ParkHouseController {
 	
 	@CrossOrigin
 	@GetMapping("/all")
-	public List<ParkHouse> getAllParkhouse(){
-
+	public AllParkHousesResponse getAllParkhouse(){
+		AllParkHousesResponse response =  new AllParkHousesResponse();
+		List<ParkHouse> parkHouses =  parkHouseRepository.findAll();
+		List<Car> cars =  new ArrayList<>();
+		
+		for(ParkHouse ph : parkHouses) {
+			for(Sector sector : ph.getSectors()) {
+				for(ParkingLot pl : sector.getParkingLots()) {
+					if(pl.getOccupiingCar()!=null) {
+						cars.add(pl.getOccupiingCar());
+					}
+				}
+			}
+		}
+		
+		response.setParkHouses(parkHouses);
+		response.setCars(cars);
 		System.out.println("Parkolóházak lekérdezve!");
-		return parkHouseRepository.findAll();
+		
+		return response;
 	}
 	
 	@CrossOrigin
@@ -52,6 +78,7 @@ public class ParkHouseController {
 		return parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@PutMapping("/updatePH/{id}")
 	public ParkHouse updateParkHouse(@PathVariable Long id, @Valid @RequestBody ParkHouse ph) {
@@ -66,6 +93,7 @@ public class ParkHouseController {
 		return parkHouseRepository.save(editPH);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@PutMapping("/addSectors/{id}")
 	public ParkHouse addSectors(@PathVariable Long id, @Valid @RequestBody List<Sector> newSections) {
@@ -78,6 +106,7 @@ public class ParkHouseController {
 		return parkHouseRepository.save(ph);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@DeleteMapping("delete/{id}")
 	public ResponseEntity<Long> deleteParkHouse(@PathVariable Long id) {

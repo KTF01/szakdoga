@@ -1,4 +1,6 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+import { Role } from '../../models/Role';
 
 @Component({
   selector: 'app-add-button',
@@ -9,9 +11,13 @@ export class AddButtonComponent implements OnInit {
 
   @Output() addEvent:EventEmitter<string> = new EventEmitter<string>();
 
-  constructor() { }
+  isAdmin:boolean;
+  constructor(private authService:AuthService) { }
 
   ngOnInit(): void {
+    if(this.authService.loggedInUser){
+      this.isAdmin = this.authService.loggedInUser.role==Role.ROLE_ADMIN;
+    }
   }
 
   addElement(){

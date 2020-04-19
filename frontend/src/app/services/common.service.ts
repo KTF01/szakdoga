@@ -6,6 +6,6 @@ import { Injectable } from '@angular/core';
 export class CommonService {
 
   isLoading:boolean=false;
-
+  authToken:string=null;
   constructor() { }
 }

@@ -25,7 +25,6 @@ import hu.hkristof.parkingapp.Role;
 
 @Entity
 @Table(name = "users")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 	
 	@Id
@@ -50,7 +49,7 @@ public class User {
 	@Email
 	private String email;
 
-	
+	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	List<Car> ownedCars;
 	
@@ -58,6 +57,11 @@ public class User {
 	public void addCar(Car car) {
 		car.owner=this;
 		this.ownedCars.add(car);
+	}
+	
+	public void removeCar(Car car) {
+		car.owner=null;
+		this.ownedCars.remove(car);
 	}
 	
 	public Long getId() {

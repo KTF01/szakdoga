@@ -7,16 +7,22 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { ParkingLotDetailComponent } from './components/parking-lot-detail/parking-lot-detail.component';
 import { SideNavComponent } from './components/common/side-nav/side-nav.component';
 import { UserDetailComponent } from './components/user-detail/user-detail.component';
+import { TimeLogComponent } from './components/time-log/time-log.component';
+import { AuthGuard } from './auth-guard';
+import { Role } from './models/Role';
+import { UserListComponent } from './components/user-list/user-list.component';
 
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: '', redirectTo:'login',pathMatch: 'full'},
-  {path: 'frame', component:SideNavComponent, children:[
+  {path: 'frame', component:SideNavComponent, canActivate:[AuthGuard],children:[
     {path: 'parkHouses', component: ParkHousesComponent},
     {path: 'userDetail', component: UserDetailComponent},
     {path: 'parkHouses/parkHouse/:id', component: ParkHouseDetailComponent},
     {path: 'parkHouses/parkHouse/:id/parkingLot/:id', component: ParkingLotDetailComponent},
+    {path: 'diary', component: TimeLogComponent,canActivate:[AuthGuard],  data:{permissions:[Role.ROLE_ADMIN, Role.ROLE_FIRST_USER]}},
+    {path: 'userList', component: UserListComponent,canActivate:[AuthGuard],  data:{permissions:[Role.ROLE_ADMIN, Role.ROLE_FIRST_USER]}},
   ]},
 
   {path: 'notFound', component: NotFoundComponent},

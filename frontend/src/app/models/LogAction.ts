@@ -1,0 +1,3 @@
+export enum LogAction{
+  PARK_IN, PARK_OUT, CAR_DELETE, CAR_CREATE, USER_LOG_IN,USER_SIGN_UP
+}

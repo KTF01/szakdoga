@@ -1,0 +1,41 @@
+.felx-form{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 10px;
+}
+label{
+  margin: 0;
+}
+
+.submit-btn{
+  align-self: flex-end;
+}
+
+.log-display{
+  border: black solid 1px;
+  width: 100%;
+  margin: 0 auto;
+  height: 80vh;
+  border-radius: 5px;
+  user-select: none;
+  font-size: large;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.log-list-item div{
+  display: flex;
+  border-bottom: 1px solid black;
+}
+
+.log-time{
+  width: 30%;
+}
+.log-message{
+  width: 70%;
+}
+
+.log-list-item span{
+  display: inline-block;
+}

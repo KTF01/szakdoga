@@ -8,6 +8,7 @@ import { CommonService } from './common.service';
 import { SectorService } from './sector.service';
 import { AuthService } from './auth.service';
 import { ParkingLot } from '../models/ParkingLot';
+import { Car } from '../models/Car';
 
 @Injectable({
   providedIn: 'root'
@@ -31,17 +32,16 @@ export class ParkHouseService extends ErrorHandler{
 
   loadParkHouses(): void {
     this.commonService.isLoading=true;
-    this.http.get<ParkHouse[]>(CommonData.hostUri + 'auth/parkHouses/all').subscribe(
+    this.http.get<{parkHouses: ParkHouse[],cars: Car[]}>(CommonData.hostUri + 'auth/parkHouses/all').subscribe(
       response => {
-        console.log(response);
-        this.commonService.isLoading=false;
-        this.parkHouses = response
+        this.parkHouses = response.parkHouses;
         for(let ph of this.parkHouses){
           this.adjustSectors(ph);
           for(let sector of ph.sectors){
-            this.sectorService.adjustParkingLots(sector);
+            this.sectorService.adjustParkingLotsWithCars(sector, response.cars);
           }
         }
+        this.commonService.isLoading=false;
         this.loadedParkHouses.next(true);
       }, error=>this.handleError(error)
     );

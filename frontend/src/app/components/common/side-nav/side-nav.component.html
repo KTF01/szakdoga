@@ -5,8 +5,12 @@
   [ngClass]="{active: router.url=='/frame/parkHouses'}" >Parkoló házak</span>
   <span (click)="navigateToUserDetail()"
   [ngClass]="{active: router.url=='/frame/userDetail'}">Saját adatok</span>
-  <span >Napló</span><!--admin-->
-  <span (click)="fireLogout()">Kilépés</span><!--admin-->
+  <span (click)="navigatetToUserList()"
+  [ngClass]="{active: router.url=='/frame/userList'}" *ngIf="isAdmin">Felhasználók</span><!--admin-->
+  <span (click)="navigatetToDiary()"
+  [ngClass]="{active: router.url=='/frame/diary'}" *ngIf="isAdmin">Napló</span><!--admin-->
+
+  <span (click)="fireLogout()">Kilépés</span>
 </div>
 
 <div class="main-content">

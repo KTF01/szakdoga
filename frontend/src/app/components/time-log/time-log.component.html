@@ -1,0 +1,46 @@
+<h1>Napló</h1>
+<div class="container-fluid">
+  <div class="filters">
+    <form class="felx-form" #filterForm="ngForm" (ngSubmit)="submitFilterForm(filterForm)">
+      <div>
+        <label for="sartTime">Mettől</label>
+        <input type="datetime-local" name="statTimeInput" id="sartTime" class="form-control" ngModel>
+      </div>
+      <div>
+        <label for="endTime">Meddig</label>
+        <input type="datetime-local" name="endTimeInput" id="endTime" class="form-control" ngModel>
+      </div>
+      <div>
+        <label for="userName">Végrehajtó</label>
+        <input type="text" name="userNameInput" id="userName" class="form-control" ngModel>
+      </div>
+      <div>
+        <label for="actionSelect">Tevékenység</label>
+        <select name="actionSelectInput" id="actionSelect" class="form-control" [ngModel]="'ALL'">
+          <option value="PARK_IN">Beparkolás</option>
+          <option value="PARK_OUT">Kiállás</option>
+          <option value="USER_SIGN_UP">Regisztráció</option>
+          <option value="ALL">Mind</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary submit-btn">
+        <fa-icon [icon]="searchIcon"></fa-icon>
+      </button>
+    </form>
+  </div>
+  <div class="log-display">
+    <ul class="time-log-list">
+      <li *ngFor="let timeLog of timeLogService.timeLogs" class="log-list-item">
+        <div>
+          <span class="log-time">{{convertDate(timeLog.time)}}</span>
+          <span class="log-message">{{timeLog.message}}</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+<app-pop-up *ngIf="commonService.isLoading" [actionButtons]="false" [nobackGround]="true">
+  <app-loading-spinner></app-loading-spinner>
+</app-pop-up>

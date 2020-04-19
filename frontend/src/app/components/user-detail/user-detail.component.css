@@ -13,7 +13,7 @@
 
 .container{
   display: flex;
-  height: 50vh;
+  height: 55vh;
 
 }
 .car-container, .pl-container{
@@ -24,6 +24,11 @@
   border-radius: 5px;
   user-select: none;
 }
+.car-container{
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 
 .car-info{
   margin-left: 20px;

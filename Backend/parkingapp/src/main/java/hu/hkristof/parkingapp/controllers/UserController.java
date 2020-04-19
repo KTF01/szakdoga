@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,13 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import hu.hkristof.parkingapp.AuthenticatedUser;
 import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.UserAlreadyExistEception;
 import hu.hkristof.parkingapp.exceptions.UserNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.User;
 import hu.hkristof.parkingapp.repositoris.UserRepository;
+import hu.hkristof.parkingapp.responsetypes.UserDataResponse;
+import hu.hkristof.parkingapp.responsetypes.UsersDataResponse;
+import hu.hkristof.parkingapp.services.TimeLogService;
 
 @CrossOrigin
 @RestController
@@ -36,20 +37,32 @@ public class UserController {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 	
-	@Autowired 
-	private AuthenticatedUser authenticatedUser;
+	@Autowired
+	TimeLogService timeLogService;
 		
 	@GetMapping("auth/users/all")
-	public List<User> getAllNotes() {
-	    return (List<User>) userRepository.findAll();
+	public ResponseEntity<UsersDataResponse> getAllUsers() {
+		UsersDataResponse response = new UsersDataResponse();
+	     List<User> users = (List<User>) userRepository.findAll();
+	     List<UserDataResponse> usersData = new ArrayList<>();
+	     for(User user : users) {
+	    	 UserDataResponse userData = getUser(user.getId()).getBody();
+	    	 usersData.add(userData);
+	     }
+	     response.setUsersData(usersData);
+	     return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("auth/users/{id}")
-	public User getAllNotes(@PathVariable Long id) {
+	public ResponseEntity<UserDataResponse> getUser(@PathVariable Long id) {
+		UserDataResponse response = new UserDataResponse();
 		User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
 		System.out.println(user.getFirstName()+" adatai lekérdezve!");
 		
-	    return user;
+		response.setUser(user);
+		response.setUserCars(user.getOwnedCars());
+		
+	    return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/users/signUp")
@@ -63,19 +76,20 @@ public class UserController {
 		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 		newUser.setRole(Role.ROLE_USER);
 		System.out.println(newUser.getFirstName()+" "+newUser.getLastName() +" beregisztrált "+newUser.getEmail()+" email címmel.");
-
+		timeLogService.saveSignUpLog(newUser);
 		return ResponseEntity.ok( userRepository.save(newUser));
 	}
 	
 	@PostMapping("/auth/users/login")
-	public ResponseEntity<User> login(@RequestBody String email) {
+	public ResponseEntity<UserDataResponse> login(@RequestBody String email) {
+		UserDataResponse response = new UserDataResponse();
+		
 		User loggedInUser = userRepository.findByEmail(email)
 				.orElseThrow(()->new UsernameNotFoundException(email+" emaillel nincs felhasználó regisztrálva."));
+		response.setUser(loggedInUser);
+		response.setUserCars(loggedInUser.getOwnedCars());
 		System.out.println(loggedInUser.getFirstName()+" "+loggedInUser.getLastName()+ " bejelentkezett!");
-	    return ResponseEntity.ok(loggedInUser);
+	    return ResponseEntity.ok(response);
 	} 
 	
-	public User getAuthenticatedUser(Authentication authentication) {
-	    return authenticatedUser.getUser();
-	}
 }

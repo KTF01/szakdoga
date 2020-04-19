@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,7 @@ public class SectorController {
 	    return sectorRepository.findAll();
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@PostMapping("/newSector")
 	public Sector createSection(@Valid @RequestBody Sector sector) {
 		
@@ -51,6 +53,7 @@ public class SectorController {
 	    return newSector ;
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@PutMapping("/addParkingLot/{id}")
 	public Sector addParkingLot(@PathVariable Long id, @Valid @RequestBody List<ParkingLot> newParkingLots) {
@@ -62,6 +65,7 @@ public class SectorController {
 		return sectorRepository.save(sector);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Long> deleteSector(@PathVariable Long id)

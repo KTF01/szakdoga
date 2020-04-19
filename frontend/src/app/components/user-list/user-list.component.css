@@ -1,0 +1,43 @@
+.user-display{
+  border: black solid 1px;
+  width: 100%;
+  margin: 0 auto;
+  height: 80vh;
+  border-radius: 5px;
+  user-select: none;
+  font-size: large;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.user-list-item div{
+  display: flex;
+  border-bottom: 1px solid black;
+  align-items: center;
+}
+
+.user-icon{
+  width: 10%;
+  padding: 5px;
+  margin-left: 5px;
+}
+.user-name{
+  width: 20%;
+}
+.user-email{
+  width: 40%;
+}
+
+.user-cars-numb{
+  width: 30%;
+}
+.admin-button{
+  width: 10%;
+  padding: 5px;
+}
+.admin-button button{
+  width: 100%;
+}
+.user-list-item span{
+  display: inline-block;
+}

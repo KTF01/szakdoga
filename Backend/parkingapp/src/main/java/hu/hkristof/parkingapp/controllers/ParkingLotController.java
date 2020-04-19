@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,18 +20,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import hu.hkristof.parkingapp.AuthenticatedUser;
+import hu.hkristof.parkingapp.LogAction;
+import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.CarNotFoundException;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.TimeLog;
+import hu.hkristof.parkingapp.models.User;
 import hu.hkristof.parkingapp.repositoris.CarRepository;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.repositoris.TimeLogRepository;
+import hu.hkristof.parkingapp.responsetypes.ParkInResponse;
+import hu.hkristof.parkingapp.services.ParkingLotService;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/parkingLots")
+@RequestMapping("/auth/parkingLots")
 public class ParkingLotController {
 
 	@Autowired
@@ -41,6 +48,12 @@ public class ParkingLotController {
 	
 	@Autowired
 	TimeLogRepository timeLogRepository;
+	
+	@Autowired
+	ParkingLotService parkingLotService;
+	
+	@Autowired 
+	private AuthenticatedUser authenticatedUser;
 	
 	
 	@GetMapping("/all")
@@ -55,12 +68,14 @@ public class ParkingLotController {
 		return plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@PostMapping("/newPl")
 	public ParkingLot createNote(@Valid @RequestBody ParkingLot pl) {
 		System.out.println(pl.getName()+" nevű parkolóhely létrehozva!");
 	    return plRepository.save(pl);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@PutMapping("update/{id}")
 	public ParkingLot updateParkingLot(@PathVariable Long id, @RequestBody String newName) {
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
@@ -70,6 +85,7 @@ public class ParkingLotController {
 		return plRepository.save(pl);
 	}
 	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Long> deletePrakingLot(@PathVariable Long id) {
 		System.out.println(id + " számú parkolóhely törölve!");
@@ -85,44 +101,29 @@ public class ParkingLotController {
 	
 	@Transactional
 	@PutMapping("/parkIn/{plId}/{carPlate}")
-	public ResponseEntity<ParkingLot> parkIn(@PathVariable Long plId, @PathVariable String carPlate ) {
-		ParkingLot pl = plRepository.findById(plId).orElseThrow(()->new ParkingLotNotFoundException(plId));
-		Car car = carRepository.findById(carPlate).orElseThrow(()->new CarNotFoundException(carPlate));
-		if(car.getOccupiedParkingLot()!=null) {
-			parkOut(car.getOccupiedParkingLot().getId());
+	public ResponseEntity<ParkInResponse> parkIn(@PathVariable Long plId, @PathVariable String carPlate ) {
+		ParkInResponse response = parkingLotService.parkIn(plId, carPlate);
+		if(response==null) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		pl.setOccupiingCar(car);
-		car.setOccupiedParkingLot(pl);
-		plRepository.save(pl);
-		carRepository.save(car);
-
-		
-		TimeLog timeLog = new TimeLog();
-		timeLog.setIsParkedIn(true);
-		timeLog.setTime(new Timestamp(System.currentTimeMillis()));
-		timeLog.setCar(car);
-		timeLogRepository.save(timeLog);
-		System.out.println("A "+ car.getPlateNumber()+" rendszámú autó beparkolt a "+ pl.getName()+" nevű parkolóhelyre.");
-		return new ResponseEntity<>(pl, HttpStatus.OK);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
+	@Transactional
 	@PutMapping("/parkOut/{id}")
-	public ParkingLot parkOut(@PathVariable Long id) {
-		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
-		if(pl.getOccupiingCar()!=null) {
-			Car car = pl.getOccupiingCar();
-			car.setOccupiedParkingLot(null);
-			carRepository.save(car);
-			pl.setOccupiingCar(null);
-			plRepository.save(pl);
-			TimeLog timeLog = new TimeLog();
-			timeLog.setIsParkedIn(false);
-			timeLog.setTime(new Timestamp(System.currentTimeMillis()));
-			timeLog.setCar(car);
-			timeLogRepository.save(timeLog);
-			System.out.println(pl.getName()+" parkolóból kiállt a "+ car.getPlateNumber()+" rendszámú autó!");
+	public ResponseEntity<ParkingLot> parkOut(@PathVariable Long id) {
+		if(authenticatedUser.getUser().getRole().equals(Role.ROLE_USER)) {
+			ParkingLot pl = parkingLotService.parkOutSelf(id);
+			if(pl!=null) {
+				return new ResponseEntity<>(pl, HttpStatus.OK);
+			}else {
+				System.out.println(authenticatedUser.getUser().getFirstName() + " nem admin, nem állhat ki más nevében!");
+				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			}
+			
 		}
-		return pl;
+		return new ResponseEntity<>(parkingLotService.parkOut(id), HttpStatus.OK);
 	}
+	
 
 }

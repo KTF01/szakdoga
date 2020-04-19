@@ -9,6 +9,8 @@ import { ParkingLotListComponent } from '../parking-lot-list/parking-lot-list.co
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { PopUpContainer } from '../pop-up/PopUpContainer';
 import { NgForm } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { Role } from '../../models/Role';
 
 @Component({
   selector: 'app-park-house-detail',
@@ -29,11 +31,17 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
   editIcon = faEdit;
   deleteIcon = faTrash;
 
-  constructor(private location:Location,private route: ActivatedRoute, private parkHouseService: ParkHouseService) { super();}
+  isAdmin:boolean;
+
+  constructor(private location:Location,private route: ActivatedRoute, private parkHouseService: ParkHouseService,
+    private authService:AuthService) { super();}
 
   ngOnInit(): void {
     let id = +this.route.snapshot.params['id'];
     this.parkHouse= this.parkHouseService.getParkHouse(id);
+    if(this.authService.loggedInUser){
+      this.isAdmin = !(this.authService.loggedInUser.role==Role.ROLE_USER);
+    }
   }
 
   addNewSector(sector:Sector){

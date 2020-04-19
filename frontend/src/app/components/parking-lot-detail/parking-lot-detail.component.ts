@@ -10,6 +10,8 @@ import { UserServiceService } from '../../services/user-service.service';
 import { User } from '../../models/User';
 import { Car } from '../../models/Car';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { Role } from '../../models/Role';
 
 @Component({
   selector: 'app-parking-lot-detail',
@@ -27,25 +29,42 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
 
   isUsersView:boolean=true;
   selectedUser:User=null;
+  isAdmin:boolean;
 
+  isParkActionShown:boolean;
   @ViewChild('form') editForm: NgForm;
 
   constructor(private parkingLotService: ParkingLotService, private route:ActivatedRoute, private location:Location,
-    private router: Router, public userService:UserServiceService) { super();}
+    private router: Router, public userService:UserServiceService, private authService:AuthService) { super();}
 
   ngOnInit(): void {
     let id = +this.route.snapshot.params['id'];
     this.parkingLot=this.parkingLotService.getParkingLot(id);
-    this.userService.loadUsers();
+
+    if(this.authService.loggedInUser){
+      this.isAdmin = !(this.authService.loggedInUser.role==Role.ROLE_USER);
+      this.isUsersView = this.isAdmin;
+      if(this.isAdmin){
+        this.userService.loadUsers();
+      }else{
+        this.selectedUser=this.authService.loggedInUser;
+      }
+      if(this.parkingLot.occupiingCar){
+        this.isParkActionShown = this.isAdmin || (!this.isAdmin&&this.parkingLot.occupiingCar.owner.id===this.authService.loggedInUser.id)
+      }else{
+        this.isParkActionShown=true;
+      }
+
+    }
   }
 
   changeView(user:User){
     this.isUsersView=!this.isUsersView;
-    this.selectedUser=user;
+    this.selectedUser = user;
   }
   closePopUp3(){
     this.popUp3IsOpen=false;
-    this.isUsersView=true;
+    this.isUsersView=this.isAdmin;
   }
   deleteParkingLot(){
     this.parkingLotService.removeParkingLot(this.parkingLot);
