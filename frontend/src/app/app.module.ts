@@ -21,6 +21,8 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
 import { UserDetailComponent } from './components/user-detail/user-detail.component';
 import { TimeLogComponent } from './components/time-log/time-log.component';
 import { UserListComponent } from './components/user-list/user-list.component';
+import { CarListComponent } from './components/car-list/car-list.component';
+import { HeaderNavComponent } from './components/common/header-nav/header-nav.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import { UserListComponent } from './components/user-list/user-list.component';
     SideNavComponent,
     UserDetailComponent,
     TimeLogComponent,
-    UserListComponent
+    UserListComponent,
+    CarListComponent,
+    HeaderNavComponent
   ],
   imports: [
     BrowserModule,

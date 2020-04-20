@@ -40,7 +40,7 @@ public class CarController {
 	@Autowired
 	ParkingLotService parkingLotService;
 	
-	@Secured({"ROLE_ADMIN"})
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@GetMapping("/all")
 	public List<Car> getAllNotes() {
 		List<Car> cars = carRepository.findAll();
@@ -53,7 +53,7 @@ public class CarController {
 		return carRepository.findById(plateNumber).orElseThrow(()->new CarNotFoundException(plateNumber));
 	}
 	
-	@Secured({"ROLE_ADMIN"})
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@PostMapping("/newCar")
 	public Car createCar(@Valid @RequestBody Car car) {
 		System.out.println("Új autó lett felvéve a rendszerbe: "+car.getPlateNumber());

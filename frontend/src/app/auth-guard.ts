@@ -10,7 +10,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):boolean | UrlTree {
     let isAuthorized:boolean = true;
-    if(this.authService.loggedInUser.role===Role.ROLE_USER){
+    if(route.data.permissions&&this.authService.loggedInUser.role===Role.ROLE_USER){
       isAuthorized=false;
     }
     const isAuth:boolean = this.authService.loggedInUser!=null;

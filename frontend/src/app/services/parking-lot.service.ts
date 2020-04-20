@@ -28,7 +28,9 @@ export class ParkingLotService {
 
   addParkingLots(sector: Sector, newPls: ParkingLot[]): void {
     this.commonService.isLoading = true;
-    this.http.put<Sector>(CommonData.hostUri + 'sectors/addParkingLot/' + sector.id, newPls).subscribe(response => {
+    this.http.put<Sector>(CommonData.hostUri + 'auth/sectors/addParkingLot/' + sector.id, newPls,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response => {
       console.log(response);
       this.commonService.isLoading = false;
       this.sectorService.adjustParkingLots(response);

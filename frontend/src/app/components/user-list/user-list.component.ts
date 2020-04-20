@@ -4,45 +4,53 @@ import { CommonService } from '../../services/common.service';
 import { faUser, faUserEdit, faUserCog } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../models/User';
 import { Role } from '../../models/Role';
-import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { PopUpContainer } from '../pop-up/PopUpContainer';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css']
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent extends PopUpContainer implements OnInit {
 
   userIcon =faUser;
 
   FIRST_USER_ROLE: Role = Role.ROLE_FIRST_USER;
   USER_ROLE: Role = Role.ROLE_USER;
 
-  constructor(private authService:AuthService,public userService:UserServiceService, public commonService:CommonService) { }
+  selectedUser:User;
+
+  constructor(private router:Router,public userService:UserServiceService, public commonService:CommonService) {super(); }
 
   ngOnInit(): void {
     this.userService.loadUsers();
   }
 
+  navigateToUserDetail(id:number){
+    this.router.navigate(["frame/userDetail/"+id]);
+  }
+
   getUserIcon(user:User){
-    switch (user.role){
-        case Role.ROLE_USER: this.userIcon =faUser; break;
-        case Role.ROLE_ADMIN: this.userIcon=faUserEdit; break;
-        case Role.ROLE_FIRST_USER: this.userIcon=faUserCog; break;
-      }
-      return this.userIcon;
+    return this.userService.getUserIcon(user);
   }
 
   adminBtnPressed(user:User){
     if(user.role==Role.ROLE_USER){
       console.log(user.firstName +' Admin lett!');
-      user.role=Role.ROLE_ADMIN;
+      this.userService.setRole(user, Role.ROLE_ADMIN);
     }else if(user.role==Role.ROLE_ADMIN){
       console.log(user.firstName +' elvesztette adminságát!');
-      user.role=Role.ROLE_USER;
+      this.userService.setRole(user, Role.ROLE_USER);
     }else{
       console.log(user.firstName +' az első User, nem módosítható!');
     }
+    this.closePopUp();
+  }
+
+  openPopUpCustom(user:User){
+    this.popupIsOpen=true;
+    this.selectedUser= user;
   }
 
 }

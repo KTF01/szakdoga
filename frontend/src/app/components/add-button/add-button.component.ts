@@ -16,7 +16,7 @@ export class AddButtonComponent implements OnInit {
 
   ngOnInit(): void {
     if(this.authService.loggedInUser){
-      this.isAdmin = this.authService.loggedInUser.role==Role.ROLE_ADMIN;
+      this.isAdmin = this.authService.loggedInUser.role==Role.ROLE_ADMIN || this.authService.loggedInUser.role==Role.ROLE_FIRST_USER;
     }
   }
 

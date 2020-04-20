@@ -1,3 +1,13 @@
+.head-components{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-group{
+  margin: auto 0;
+}
+
 .data-display{
   border: black solid 1px;
   width: 100%;
@@ -10,13 +20,14 @@
   overflow-x: hidden;
 }
 
-.user-list-item> div{
+
+.car-list-item> div{
   display: flex;
   border-bottom: 1px solid black;
   align-items: center;
 }
 
-.user-info{
+.car-info{
   width: 85%;
   display: flex;
   align-items: center;
@@ -24,36 +35,31 @@
   border-radius: 5px;
   margin: 5px;
 }
-.user-info:hover{
-  background-color: var(--secondary);
-  color: var(--light);
+
+.park-out-button{
+  width: 10%;
+  padding: 5px;
+  align-self: flex-end;
 }
 
-.admin-button{
-  width: 15%;
-  padding: 5px;
-  min-width: 200px;
-}
-.admin-button button{
+.park-out-button button{
   width: 100%;
 }
 
-.user-icon{
-  width: 10%;
+.car-icon{
+  width: 5%;
   padding: 5px;
   margin-left: 5px;
 }
-.user-name{
+.car-plate{
+  text-align: center;
   width: 20%;
 }
-.user-email{
+.car-owner{
   width: 40%;
 }
 
-.user-cars-numb{
+.car-pl{
+  text-align: center;
   width: 30%;
-}
-
-.user-list-item span{
-  display: inline-block;
 }

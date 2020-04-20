@@ -1,13 +1,29 @@
 <!-- <main *ngIf="authService.isLogedIn"> -->
-<main>
-  <!-- <h1>{{authService.loggedInUser.firstName}} {{authService.loggedInUser.lastName}}</h1> -->
-  <h1>Horváth Kristóf</h1>
-  <div class="container">
+<main class="">
+  <div class="user-info container">
+    <div class="user-data">
+      <div class="user-icon">
+        <fa-icon [icon]="userService.getUserIcon(displayedUser)"></fa-icon>
+      </div>
+      <div>
+        <h1 style="display: inline;">{{displayedUser.firstName}} {{displayedUser.lastName}}</h1><span *ngIf="displayedUser.role!=1"> (Admin)</span>
+        <h4>{{displayedUser.email}}</h4>
+      </div>
+    </div>
+    <div class="fu-btn" *ngIf="loggedInUserFirstUser&&!sameuser" (click)="openPopUp4()">
+      <button class="btn btn-primary">Fő admin jog átadása</button>
+    </div>
+    <div class="password-btn" >
+      <button class="btn btn-primary" (click)="openPopUp5()">Jelszó változtatás</button>
+    </div>
+  </div>
+
+  <div class="container my-container">
     <div class="car-container">
       <ul class="car-list">
         <app-list-tile
           [isDeletable]="false"
-          *ngFor="let car of authService.loggedInUser.ownedCars"
+          *ngFor="let car of displayedUser.ownedCars"
           (click)="selectedCar = car">
           <div class="inf-cont" [ngClass]="{ selected: selectedCar == car }">
             <div class="car-icon">
@@ -16,7 +32,7 @@
             <div class="car-info">{{ car.plateNumber }}</div>
           </div>
         </app-list-tile>
-        <app-add-button (click)="openPopUp2()" *ngIf="authService.loggedInUser.ownedCars.length<5"></app-add-button>
+        <app-add-button (click)="openPopUp2()" *ngIf="displayedUser.ownedCars.length<5"></app-add-button>
       </ul>
     </div>
     <div class="pl-container">
@@ -65,6 +81,35 @@
   <h2>Biztos törli az autót?</h2>
 </app-pop-up>
 
-<app-pop-up *ngIf="commonService.isLoading && !popUp2IsOpen && !popupIsOpen &&!popUp3IsOpen" [actionButtons]="false" [nobackGround]="true">
+<app-pop-up *ngIf="popUp4IsOpen" (closeEvent)="closePopUp4()" (okEvent)="passFirstUser()">
+  <h4>Biztos átadja {{displayedUser.firstName}} {{displayedUser.lastName}} részére a Fő Admin jogot?
+    Ezután ön már nem fog rendelkezni ezzel a jogosultsággal.
+  </h4>
+</app-pop-up>
+
+<app-pop-up *ngIf="popUp5IsOpen" (closeEvent)="closePopUp5()" (okEvent)="newPasswordSubmit(newPasswordForm)">
+  <form #newPasswordForm="ngForm" (ngSubmit)="onPasswordFormSubmit(newPasswordForm)">
+    <div class="form-group">
+      <label for="">Régi jelszó:</label>
+      <input type="password" class="form-control" name="oldPasswordInput" ngModel required #oldPassword="ngModel">
+      <span class="text-danger" *ngIf="!oldPassword.valid&&oldPassword.touched">Ki kell tölteni</span>
+    </div>
+    <div class="form-group">
+      <label for="">Új jelszó</label>
+      <input type="password" class="form-control" name="newPasswordInput" ngModel required minlength=6 #newPassword="ngModel">
+      <span class="text-danger" *ngIf="!newPassword.valid&&newPassword.touched">Ki kell tölteni, minimum 6 karakter</span>
+    </div>
+    <div class="form-group">
+      <label for="">Új jelszó ismét</label>
+      <input type="password" class="form-control" name="newPasswordConfirmInput" ngModel required minlength=6 #newPasswordConfirm="ngModel">
+      <span class="text-danger" *ngIf="!newPasswordConfirm.valid&&newPasswordConfirm.touched">Ki kell tölteni, minimum 6 karakter</span>
+    </div>
+    <span *ngIf="error!=''" class="text-danger">{{error}}</span>
+  </form>
+
+</app-pop-up>
+
+
+<app-pop-up *ngIf="commonService.isLoading && !popUp2IsOpen && !popupIsOpen &&!popUp3IsOpen &&!popUp4IsOpen &&!popUp5IsOpen" [actionButtons]="false" [nobackGround]="true">
   <app-loading-spinner></app-loading-spinner>
 </app-pop-up>

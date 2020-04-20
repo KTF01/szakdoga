@@ -18,12 +18,13 @@ export class AuthService {
   errorOccured: Subject<string> = new Subject<string>();
   signUpSubject: Subject<User> = new Subject<User>();
   loggedIn: Subject<User> = new Subject<User>();
+  changedPassword: Subject<boolean> = new Subject<boolean>();
 
   loggedInUser: User = null;
 
   isLogedIn:boolean=false;
 
-  constructor(private http:HttpClient, private commonService:CommonService, private router: Router, private parkingLotService:ParkingLotService) { }
+  constructor(private http:HttpClient, private commonService:CommonService, private router: Router, private userService:UserServiceService) { }
 
   login(email:string, password:string){
     const token:string = btoa(`${email}:${password}`);
@@ -31,7 +32,7 @@ export class AuthService {
     this.http.post<{user:User, userCars:Car[]}>(CommonData.hostUri+'auth/users/login', email,{
       headers: new HttpHeaders({'Authorization': `Basic ${token}`})
     }).subscribe(response=>{
-      response.user = this.setUpUserCars(response);
+      response.user = this.userService.setUpUserCars(response);
       response.user.role= (<any>Role)[response.user.role];
       this.loggedInUser=response.user;
       this.commonService.authToken=token;
@@ -60,23 +61,35 @@ export class AuthService {
     this.http.get<{user:User, userCars:Car[]}>(CommonData.hostUri+'auth/users/'+this.loggedInUser.id, {
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
-      response.user = this.setUpUserCars(response);
+      response.user = this.userService.setUpUserCars(response);
       response.user.role= (<any>Role)[response.user.role];
       this.loggedInUser=response.user;
       this.commonService.isLoading=false;
     }, error=>this.handleError(error));
   }
 
-  setUpUserCars(userData:{user:User, userCars:Car[]}){
-    for(let car of userData.userCars){
-      car.owner=userData.user;
-      userData.user.ownedCars=userData.userCars;
-      if(car.occupiedParkingLot){
-        car.occupiedParkingLot=this.parkingLotService.getParkingLot(car.occupiedParkingLot.id);
+  changePassword(oldPassword:string, newPassword:string){
+    this.commonService.isLoading=true;
+    const token:string = btoa(`${this.loggedInUser.email}:${oldPassword}`);
+    const headers = new HttpHeaders({'Authorization': `Basic ${token}`, 'Content-Type': 'text/plain; charset=utf-8'});
+    this.http.put<any>(CommonData.hostUri+'auth/users/changePassword/'+this.loggedInUser.id, newPassword,{
+      headers,
+      responseType: 'text' as 'json'
+    }).subscribe(response=>{
+      console.log(response);
+      this.changedPassword.next(true);
+      this.commonService.isLoading=false;
+    }, error=>{
+      this.commonService.isLoading=false;
+      console.log(error);
+      if(error.status===401){
+        this.errorOccured.next('Helytelen a régi jelszó!');
+      }else{
+        this.errorOccured.next('Hiba történt! Státuszkód: '+error.status);
       }
-    }
-    return userData.user;
+    });
   }
+
   handleError(error:HttpErrorResponse){
     this.commonService.isLoading=false;
     console.log(error);

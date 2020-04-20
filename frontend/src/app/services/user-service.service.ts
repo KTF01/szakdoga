@@ -7,6 +7,8 @@ import { AuthService } from './auth.service';
 import { Car } from '../models/Car';
 import { Subject } from 'rxjs';
 import { Role } from '../models/Role';
+import { faUser, faUserEdit, faUserCog } from '@fortawesome/free-solid-svg-icons';
+import { ParkingLotService } from './parking-lot.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,21 +16,33 @@ import { Role } from '../models/Role';
 export class UserServiceService {
 
   users:User[];
+  cars:Car[]=[];
 
   carAdded: Subject<Car> = new Subject<Car>();
   carRemoved: Subject<Car[]> = new Subject<Car[]>();
+  roleSet: Subject<Role> = new Subject<Role>();
   errorOccured: Subject<string> = new Subject<string>();
 
-  constructor(private http:HttpClient, private authService:AuthService, private commonService:CommonService) { }
+  constructor(private http:HttpClient, private commonService:CommonService, private parkingLotService:ParkingLotService) { }
+
+  getById(id:number){
+    let index:number = this.users.findIndex(user=>user.id==id);
+    return this.users[index];
+  }
+
 
   loadUsers(){
     this.http.get<{usersData:{user:User, userCars:Car[]}[]}>(CommonData.hostUri+'auth/users/all',{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
       this.users=[];
+      this.cars=[];
       for(let userData of response.usersData){
         userData.user.role= (<any>Role)[userData.user.role];
-        let user:User = this.authService.setUpUserCars(userData);
+        let user:User = this.setUpUserCars(userData);
+        for(let car of user.ownedCars){
+          this.cars.push(car);
+        }
         this.users.push(user);
       }
     })
@@ -55,6 +69,46 @@ export class UserServiceService {
       this.commonService.isLoading=false;
       this.carRemoved.next(car.owner.ownedCars);
     }, error=>this.handleError(error));
+  }
+
+  setRole(user:User, role:Role){
+    this.commonService.isLoading=true;
+
+    let endpointString: string="";
+    switch (role){
+      case Role.ROLE_ADMIN: endpointString = "grantAdmin/"; break;
+      case Role.ROLE_USER: endpointString = "depriveAdmin/"; break;
+      case Role.ROLE_FIRST_USER: endpointString = "passFirstUser/";break;
+    }
+    this.http.put<User>(CommonData.hostUri+'auth/users/'+endpointString+user.id, null,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response=>{
+      response.role=(<any>Role)[response.role];
+      user.role=response.role;
+      this.commonService.isLoading=false;
+      this.roleSet.next(response.role);
+    }, error=>this.handleError(error));
+  }
+
+  getUserIcon(user:User){
+    let userIcon;
+    switch (user.role){
+        case Role.ROLE_USER: userIcon =faUser; break;
+        case Role.ROLE_ADMIN: userIcon=faUserEdit; break;
+        case Role.ROLE_FIRST_USER: userIcon=faUserCog; break;
+      }
+      return userIcon;
+  }
+
+  setUpUserCars(userData:{user:User, userCars:Car[]}){
+    for(let car of userData.userCars){
+      car.owner=userData.user;
+      userData.user.ownedCars=userData.userCars;
+      if(car.occupiedParkingLot){
+        car.occupiedParkingLot=this.parkingLotService.getParkingLot(car.occupiedParkingLot.id);
+      }
+    }
+    return userData.user;
   }
 
   handleError(error:HttpErrorResponse){

@@ -12,12 +12,14 @@ import { Role } from '../../../models/Role';
 export class SideNavComponent implements OnInit, OnChanges {
 
   isAdmin: boolean;
+  logedInuserId: number;
 
   constructor(public authService:AuthService, public router:Router, public commonService:CommonService) { }
 
   ngOnInit(): void {
     if(this.authService.loggedInUser){
       this.isAdmin = !(this.authService.loggedInUser.role==Role.ROLE_USER);
+      this.logedInuserId = this.authService.loggedInUser.id;
     }
 
   }
@@ -38,7 +40,7 @@ export class SideNavComponent implements OnInit, OnChanges {
     this.router.navigate(['frame/diary']);
   }
   navigatetToUserList(){
-    this.router.navigate(['frame/userList']);
+    this.router.navigate(['frame/dataList/userList']);
   }
 
   fireLogout(){

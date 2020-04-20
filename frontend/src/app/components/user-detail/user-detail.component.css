@@ -6,6 +6,24 @@
   align-items: center;
 }
 
+.user-info{
+  display: flex;
+  justify-content: space-between;
+
+}
+.user-data{
+  display: flex;
+  align-items: center;
+}
+.user-icon{
+  font-size: 60px;
+  margin: 10px;
+}
+
+.fu-btn, .password-btn{
+  margin: 10px;
+}
+
 .selected{
   background-color: var(--secondary);
   color: var(--light);
@@ -13,8 +31,9 @@
 
 .container{
   display: flex;
+}
+.my-container{
   height: 55vh;
-
 }
 .car-container, .pl-container{
   border: black solid 1px;

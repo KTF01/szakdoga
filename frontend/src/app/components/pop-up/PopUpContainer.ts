@@ -3,6 +3,7 @@ export class PopUpContainer {
   popUp2IsOpen: boolean = false;
   popUp3IsOpen: boolean = false;
   popUp4IsOpen: boolean = false;
+  popUp5IsOpen: boolean = false;
   openPopUp() {
     this.popupIsOpen = true;
   }
@@ -26,12 +27,18 @@ export class PopUpContainer {
     this.popUp3IsOpen = false;
   }
   openPopUp4() {
-    console.log('OPEN POPUP');
     this.popUp4IsOpen = true;
   }
 
   closePopUp4() {
     this.popUp4IsOpen = false;
+  }
+  openPopUp5() {
+    this.popUp5IsOpen = true;
+  }
+
+  closePopUp5() {
+    this.popUp5IsOpen = false;
   }
 
 }
