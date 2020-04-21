@@ -28,6 +28,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
   carAddSub:Subscription=null;
   carRemoveSub:Subscription=null;
   passwordChangeSub:Subscription=null;
+  userRefreshedSub:Subscription=null;
   errorSub:Subscription = null;
 
   displayedUser: User;
@@ -49,6 +50,10 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
         this.sameuser=true;
         this.authService.refreshLoggedInUserData();
         this.displayedUser=this.authService.loggedInUser;
+        this.userRefreshedSub = this.authService.refreshedLoggedInUser.subscribe(_=>{
+          this.displayedUser=_;
+        });
+
     }
     this.loggedInUserFirstUser = this.authService.loggedInUser.role==Role.ROLE_FIRST_USER
 

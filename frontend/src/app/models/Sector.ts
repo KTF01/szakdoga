@@ -7,4 +7,5 @@ export class Sector{
   floor: number;
   parkingLots : ParkingLot[];
   parkHouse: ParkHouse;
+  freePlCount?: number;
 }

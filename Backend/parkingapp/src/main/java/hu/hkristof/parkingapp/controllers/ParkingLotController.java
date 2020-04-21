@@ -1,6 +1,5 @@
 package hu.hkristof.parkingapp.controllers;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -21,14 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
-import hu.hkristof.parkingapp.LogAction;
 import hu.hkristof.parkingapp.Role;
-import hu.hkristof.parkingapp.exceptions.CarNotFoundException;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
-import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkingLot;
-import hu.hkristof.parkingapp.models.TimeLog;
-import hu.hkristof.parkingapp.models.User;
 import hu.hkristof.parkingapp.repositoris.CarRepository;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.repositoris.TimeLogRepository;
@@ -88,15 +82,7 @@ public class ParkingLotController {
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Long> deletePrakingLot(@PathVariable Long id) {
-		System.out.println(id + " számú parkolóhely törölve!");
-		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
-		if(pl.getOccupiingCar()!=null) {
-			pl.getOccupiingCar().setOccupiedParkingLot(null);
-			carRepository.save(pl.getOccupiingCar());
-			pl.setOccupiingCar(null);
-		}
-		plRepository.deleteById(id);
-		return new ResponseEntity<>(id, HttpStatus.OK);
+		return new ResponseEntity<>(parkingLotService.deletePrakingLot(id), HttpStatus.OK);
 	}
 	
 	@Transactional

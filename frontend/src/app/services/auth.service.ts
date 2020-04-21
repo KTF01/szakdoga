@@ -18,6 +18,7 @@ export class AuthService {
   errorOccured: Subject<string> = new Subject<string>();
   signUpSubject: Subject<User> = new Subject<User>();
   loggedIn: Subject<User> = new Subject<User>();
+  refreshedLoggedInUser: Subject<User> = new Subject<User>();
   changedPassword: Subject<boolean> = new Subject<boolean>();
 
   loggedInUser: User = null;
@@ -36,6 +37,7 @@ export class AuthService {
       response.user.role= (<any>Role)[response.user.role];
       this.loggedInUser=response.user;
       this.commonService.authToken=token;
+      this.commonService.loggedInId = response.user.id;
       this.isLogedIn=true;
       this.loggedIn.next(response.user);
     }, error=>this.handleError(error));
@@ -64,6 +66,7 @@ export class AuthService {
       response.user = this.userService.setUpUserCars(response);
       response.user.role= (<any>Role)[response.user.role];
       this.loggedInUser=response.user;
+      this.refreshedLoggedInUser.next(response.user);
       this.commonService.isLoading=false;
     }, error=>this.handleError(error));
   }

@@ -1,6 +1,5 @@
 package hu.hkristof.parkingapp.models;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,13 +10,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 @Entity
 @Table(name = "parkingLots")
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class ParkingLot {
 	
 	@Id
@@ -28,7 +23,7 @@ public class ParkingLot {
 	String name;
 	
 	@JsonIdentityReference(alwaysAsId = true)
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne
 	@JoinColumn(name= "plate_number")
 	Car occupiingCar;
 	

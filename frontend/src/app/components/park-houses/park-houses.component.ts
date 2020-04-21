@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, OnDestroy } from '@angular/core';
 import { ParkHouse } from '../../models/ParkHouse';
 import { ParkHouseService } from '../../services/park-house.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,13 +9,14 @@ import { CommonService } from '../../services/common.service';
 import { ListTileComponent } from '../list-tile/list-tile.component';
 import { AuthService } from '../../services/auth.service';
 import { Role } from '../../models/Role';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-park-houses',
   templateUrl: './park-houses.component.html',
   styleUrls: ['./park-houses.component.css']
 })
-export class ParkHousesComponent extends PopUpContainer implements OnInit {
+export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDestroy {
 
   parkHouses: ParkHouse[];
   formChecked: boolean = false;
@@ -25,6 +26,8 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit {
   @ViewChild('f') form: NgForm;
   @ViewChildren('listTile') tile:QueryList<ListTileComponent>;
 
+  errorSub:Subscription = new Subscription();
+
   constructor(private parkHouseService: ParkHouseService, private route: ActivatedRoute, private router: Router,
     public commonService:CommonService) { super(); }
 
@@ -33,7 +36,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit {
       this.parkHouseService.loadedParkHouses.subscribe(_=>{
         this.parkHouses = this.parkHouseService.parkHouses;
       });
-      this.parkHouseService.errorOccured.subscribe(errorMessage=>{
+      this.errorSub= this.parkHouseService.errorOccured.subscribe(errorMessage=>{
         this.error=errorMessage;
         console.log(this.error);
       });
@@ -92,5 +95,9 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit {
   closePopup(): void {
     this.formChecked = false;
     this.popupIsOpen = false;
+  }
+
+  ngOnDestroy(){
+    if(this.errorSub) this.errorSub.unsubscribe();
   }
 }

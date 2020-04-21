@@ -7,5 +7,6 @@ export class CommonService {
 
   isLoading:boolean=false;
   authToken:string=null;
+  loggedInId:number = null;
   constructor() { }
 }

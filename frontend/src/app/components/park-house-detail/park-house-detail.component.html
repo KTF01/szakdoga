@@ -68,8 +68,9 @@
       <app-list-tile *ngFor="let sector of parkHouse.sectors" (elementDeleted)="removeSector(sector)">
         <div class="col-md-11" >
           <div class="row down-btn" (click)="hidePlList(plList)">
-            <h3 class="text-primary card-title col-md-6">{{sector.name}}</h3>
-            <span class="text-primary col-md-5">{{sector.floor}}</span>
+            <h3 class="text-primary card-title col-md-4">{{sector.name}}</h3>
+            <span class="text-primary col-md-3">{{sector.floor}}</span>
+            <span class="text-primary col-md-4">Szabad parkolók: {{sector.freePlCount}}</span>
             <span class="col-md-1">
               <fa-icon *ngIf="!plList.parkingLotsVisible;else upArrow" [icon]="faCaretDownIcon"></fa-icon>
               <ng-template #upArrow><fa-icon  [icon]="faCaretUpIcon"></fa-icon></ng-template>

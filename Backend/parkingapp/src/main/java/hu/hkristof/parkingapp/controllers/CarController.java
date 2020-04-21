@@ -18,13 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import hu.hkristof.parkingapp.exceptions.CarNotFoundException;
-import hu.hkristof.parkingapp.exceptions.UserNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
-import hu.hkristof.parkingapp.models.User;
-import hu.hkristof.parkingapp.repositoris.CarRepository;
-import hu.hkristof.parkingapp.repositoris.UserRepository;
-import hu.hkristof.parkingapp.services.ParkingLotService;
+import hu.hkristof.parkingapp.services.CarService;
 
 @CrossOrigin
 @RestController
@@ -32,65 +27,27 @@ import hu.hkristof.parkingapp.services.ParkingLotService;
 public class CarController {
 	
 	@Autowired
-	CarRepository carRepository;
-	
-	@Autowired
-	UserRepository userRepository;
-	
-	@Autowired
-	ParkingLotService parkingLotService;
+	CarService carService;
 	
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@GetMapping("/all")
-	public List<Car> getAllNotes() {
-		List<Car> cars = carRepository.findAll();
-		
-	    return cars;
-	}
-	
-	@GetMapping("/{plateNumber}")
-	public Car getCarById(@PathVariable String plateNumber) {
-		return carRepository.findById(plateNumber).orElseThrow(()->new CarNotFoundException(plateNumber));
-	}
-	
-	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
-	@PostMapping("/newCar")
-	public Car createCar(@Valid @RequestBody Car car) {
-		System.out.println("Új autó lett felvéve a rendszerbe: "+car.getPlateNumber());
-	    return carRepository.save(car);
+	public List<Car> getAllCars() {
+	    return carService.getAllCars();
 	}
 	
 	@PostMapping("/newCarToUser/{userId}")
 	public ResponseEntity<Car> addCarToUser(@PathVariable Long userId, @Valid @RequestBody Car car) {
-		User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException(userId));
-		if(user.getOwnedCars().size()<5) {
-			user.addCar(car);
-		}else {
+		 Car modifiedCar = carService.addCarToUser(userId, car);
+		if(modifiedCar==null) {
 			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+		}else {
+			return new ResponseEntity<Car>(car, HttpStatus.OK);
 		}
 		
-		userRepository.save(user);
-		System.out.println(user.getFirstName() +" felhasználónak új autó lett felvéve!");
-		return new ResponseEntity<Car>(car, HttpStatus.OK);
-	}
-	
-	@GetMapping("/user/{id}")
-	public List<Car> getCrasByUser(@PathVariable Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException(userId));
-		System.out.println(user.getFirstName() +" felhasználó autói lekérdezve.");
-		return user.getOwnedCars();
 	}
 	
 	@DeleteMapping("delete/{plateNumber}")
 	public ResponseEntity<List<Car>> deleteCar(@PathVariable String plateNumber){
-		Car car = carRepository.findById(plateNumber).orElseThrow(()->new CarNotFoundException(plateNumber));
-		User owner = car.getOwner();
-		car.getOwner().removeCar(car);
-		if(car.getOccupiedParkingLot()!=null) {
-			parkingLotService.parkOut(car.getOccupiedParkingLot().getId());
-		}
-		carRepository.delete(car);
-		System.out.println(plateNumber + " rendszámú autó törölve!");
-		return new ResponseEntity<>(owner.getOwnedCars(), HttpStatus.OK);
+		return new ResponseEntity<>(carService.deleteCar(plateNumber), HttpStatus.OK);
 	}
 }

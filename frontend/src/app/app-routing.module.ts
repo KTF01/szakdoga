@@ -30,7 +30,8 @@ const routes: Routes = [
       {path:'carList', component: CarListComponent}
     ]},
   ]},
-
+  {path: 'notFound', component: NotFoundComponent},
+  {path: '**', redirectTo: 'notFound'},
 
 
 ];

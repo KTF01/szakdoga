@@ -18,12 +18,13 @@ export class UserServiceService {
   users:User[];
   cars:Car[]=[];
 
+  usersLoaded: Subject<boolean> = new Subject<boolean>();
   carAdded: Subject<Car> = new Subject<Car>();
   carRemoved: Subject<Car[]> = new Subject<Car[]>();
   roleSet: Subject<Role> = new Subject<Role>();
   errorOccured: Subject<string> = new Subject<string>();
 
-  constructor(private http:HttpClient, private commonService:CommonService, private parkingLotService:ParkingLotService) { }
+  constructor( private http:HttpClient, private commonService:CommonService, private parkingLotService:ParkingLotService) { }
 
   getById(id:number){
     let index:number = this.users.findIndex(user=>user.id==id);
@@ -43,9 +44,12 @@ export class UserServiceService {
         for(let car of user.ownedCars){
           this.cars.push(car);
         }
-        this.users.push(user);
+          this.users.push(user);
+
+
+        this.usersLoaded.next();
       }
-    })
+    }, error=>this.handleError(error))
   }
 
   addCarToUser(user:User, newCar:Car){
@@ -96,7 +100,7 @@ export class UserServiceService {
         case Role.ROLE_USER: userIcon =faUser; break;
         case Role.ROLE_ADMIN: userIcon=faUserEdit; break;
         case Role.ROLE_FIRST_USER: userIcon=faUserCog; break;
-      }
+    }
       return userIcon;
   }
 

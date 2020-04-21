@@ -12,7 +12,7 @@ import { ListTileComponent } from './components/list-tile/list-tile.component';
 import { ParkHouseDetailComponent } from './components/park-house-detail/park-house-detail.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ParkingLotListComponent } from './components/parking-lot-list/parking-lot-list.component';
-import { AddButtonComponent } from './components/add-button/add-button.component';
+import { AddButtonComponent } from './components/common/add-button/add-button.component';
 import { ParkingLotDetailComponent } from './components/parking-lot-detail/parking-lot-detail.component';
 import { PopUpComponent } from './components/pop-up/pop-up.component';
 import { LoadingSpinnerComponent } from './components/common/loading-spinner/loading-spinner.component';

@@ -33,36 +33,32 @@
   display: flex;
 }
 .my-container{
-  height: 55vh;
+  height: 70vh;
 }
 .car-container, .pl-container{
-  border: black solid 1px;
   width: 50%;
   margin: 10px;
   height: 100%;
-  border-radius: 5px;
   user-select: none;
 }
 .car-container{
   overflow-x: hidden;
   overflow-y: auto;
 }
-
-
 .car-info{
   margin-left: 20px;
 }
-
 .car-icon{
   font-size: 30px;
   text-align: center;
   padding: 5px;
 }
-
 .car-details h1{
   text-align: center;
 }
-
 .custom-container{
   margin: 20px;
+}
+.delete-btn{
+  margin: 5px;
 }

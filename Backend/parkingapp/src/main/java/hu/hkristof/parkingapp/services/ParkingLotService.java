@@ -1,5 +1,8 @@
 package hu.hkristof.parkingapp.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,19 @@ public class ParkingLotService {
 	@Autowired
 	AuthenticatedUser authenticateduser;
 
+	public void massParkOut(List<ParkingLot> parkingLots) {
+		List<Car> cars= new ArrayList<>();
+		for(ParkingLot parkingLot: parkingLots) {
+			if(parkingLot.getOccupiingCar()!=null) {
+				Car car = parkingLot.getOccupiingCar();
+				car.setOccupiedParkingLot(null);
+				parkingLot.setOccupiingCar(null);
+				cars.add(car);
+			}
+		}
+		carRepository.saveAll(cars);
+		plRepository.saveAll(parkingLots);
+	}
 	
 	public ParkingLot parkOut(Long id) {
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
@@ -92,5 +108,16 @@ public class ParkingLotService {
 		response.setCar(car);
 		response.setParkingLot(pl);
 		return response;
+	}
+
+	public Long deletePrakingLot(Long id) {
+		
+		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
+		if(pl.getOccupiingCar()!=null) {
+			parkOut(pl.getId());
+		}
+		System.out.println(id + " számú parkolóhely törölve!");
+		plRepository.deleteById(id);
+		return id;
 	}
 }

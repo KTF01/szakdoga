@@ -22,6 +22,11 @@ public class TimeLogService {
 	@Autowired 
 	private AuthenticatedUser authenticatedUser;
 	
+	public List<TimeLog> getAllLogs(){
+		System.out.println("Logok lekérdezve!");
+		return timeLogRepository.findAllByOrderByTimeDescIdDesc();
+	}
+	
 	public void saveLog(LogAction logAction, Car car,ParkingLot pl) {
 		TimeLog timeLog = new TimeLog();
 		timeLog.setAction(logAction);

@@ -35,6 +35,7 @@ export class ParkingLotService {
       this.commonService.isLoading = false;
       this.sectorService.adjustParkingLots(response);
       sector.parkingLots = response.parkingLots;
+      sector.freePlCount=response.freePlCount
       this.parkingLotsAdded.next(true);
     }, error => this.handleError(error));
   }
@@ -59,6 +60,7 @@ export class ParkingLotService {
       this.commonService.isLoading = false;
       let index = parkinglot.sector.parkingLots.findIndex(elem => elem.id == response);
       parkinglot.sector.parkingLots.splice(index, 1);
+      parkinglot.sector.freePlCount--;
       this.parkingLotsDeleted.next(true);
       console.log(response);
     }, error => this.handleError(error));

@@ -15,10 +15,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import hu.hkristof.parkingapp.Role;

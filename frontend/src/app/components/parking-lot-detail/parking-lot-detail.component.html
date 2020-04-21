@@ -10,11 +10,13 @@
 
 <app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" [actionButtons]="false">
   <ul class="user-list" *ngIf="isUsersView;else carView">
+    <h3>Felhasználók</h3>
     <li *ngFor="let user of userService.users" (click)="changeView(user)">
       <div class="card user-list-item">{{user.firstName}} {{user.lastName}}</div>
     </li>
   </ul>
   <ng-template #carView>
+    <h3>Autók:</h3>
     <ul class="car-list" *ngIf="selectedUser.ownedCars.length>0;else noCar">
       <li *ngFor="let car of selectedUser.ownedCars" (click)="parkIn(car)">
         <div class="card car-list-item">

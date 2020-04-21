@@ -6,7 +6,7 @@
   <span (click)="navigateToUserDetail()"
   [ngClass]="{active: router.url=='/frame/userDetail'}">Saját adatok</span>
   <span (click)="navigatetToUserList()"
-  [ngClass]="{active: router.url.includes('/frame/dataList')}" *ngIf="isAdmin">Felhasználók</span><!--admin-->
+  [ngClass]="{active: router.url.includes('/frame/dataList')}" *ngIf="isAdmin">Nyilvántartás</span><!--admin-->
   <span (click)="navigatetToDiary()"
   [ngClass]="{active: router.url=='/frame/diary'}" *ngIf="isAdmin">Napló</span><!--admin-->
 

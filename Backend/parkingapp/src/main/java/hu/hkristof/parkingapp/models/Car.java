@@ -9,10 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
-
 
 @Entity
 @Table(name = "cars")
@@ -27,8 +24,7 @@ public class Car {
 	@ManyToOne(cascade = CascadeType.DETACH)
 	User owner;
 	
-	//@JsonIdentityReference(alwaysAsId = true)
-	@OneToOne(cascade = CascadeType.DETACH)
+	@OneToOne(cascade = CascadeType.PERSIST)
 	ParkingLot occupiedParkingLot;
 
 	public ParkingLot getOccupiedParkingLot() {

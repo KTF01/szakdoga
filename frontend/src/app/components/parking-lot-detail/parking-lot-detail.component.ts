@@ -27,6 +27,8 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
 
   parkInSub: Subscription;
 
+  usersSub: Subscription;
+
   isUsersView:boolean=true;
   selectedUser:User=null;
   isAdmin:boolean;
@@ -34,7 +36,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
   isParkActionShown:boolean;
   @ViewChild('form') editForm: NgForm;
 
-  constructor(private parkingLotService: ParkingLotService, private route:ActivatedRoute, private location:Location,
+  constructor(private parkingLotService: ParkingLotService, private route:ActivatedRoute,
     private router: Router, public userService:UserServiceService, private authService:AuthService) { super();}
 
   ngOnInit(): void {
@@ -46,6 +48,9 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
       this.isUsersView = this.isAdmin;
       if(this.isAdmin){
         this.userService.loadUsers();
+        // this.usersSub = this.userService.usersLoaded.subscribe(_=>{
+
+        // });
       }else{
         this.selectedUser=this.authService.loggedInUser;
       }

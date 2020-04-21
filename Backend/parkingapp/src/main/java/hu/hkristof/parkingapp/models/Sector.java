@@ -10,12 +10,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.Formula;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
@@ -25,25 +29,29 @@ public class Sector {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 	
 	@NotBlank
-	String name;
+	private String name;
 	
 	@NotNull
-	int floor;
+	private int floor;
 	
 	@NotNull
 	@OneToMany(mappedBy = "sector", cascade = CascadeType.ALL)
-	List<ParkingLot> parkingLots;
+	private List<ParkingLot> parkingLots;
 	
 	@NotNull
 	@ManyToOne
-	ParkHouse parkHouse;
+	private ParkHouse parkHouse;
+	
+	@Formula("(select count(p.id) from parking_lots p where p.plate_number is null and p.sector_id=id)")
+	private int freePlCount;
 	
 	Sector(){
 		this.parkingLots = new ArrayList<>();
 	}
+	
 	public void addParkingLot(ParkingLot parkingLot) {
 		parkingLots.add(parkingLot);
 		parkingLot.setSector(this);
@@ -88,6 +96,20 @@ public class Sector {
 	public void setParkingLots(List<ParkingLot> parkingLots) {
 		this.parkingLots = parkingLots;
 	}
+
+	public int getFreePlCount() {
+		return freePlCount;
+	}
+
+	public void setFreePlCount(int freePlCount) {
+		this.freePlCount = freePlCount;
+	}
 	
+	public void increasePlCount() {
+		this.freePlCount++;
+	}
+	public void decraseCount() {
+		this.freePlCount--;
+	}
 	
 }
