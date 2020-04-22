@@ -13,12 +13,13 @@ import { Role } from './models/Role';
 import { UserListComponent } from './components/user-list/user-list.component';
 import { CarListComponent } from './components/car-list/car-list.component';
 import { HeaderNavComponent } from './components/common/header-nav/header-nav.component';
+import { FrameComponent } from './components/common/frame/frame.component';
 
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: '', redirectTo:'login',pathMatch: 'full'},
-  {path: 'frame', component:SideNavComponent, canActivate:[AuthGuard],children:[
+  {path: 'frame', component:FrameComponent, canActivate:[AuthGuard],children:[
     {path: 'parkHouses', component: ParkHousesComponent},
     {path: 'userDetail', component: UserDetailComponent},
     {path: 'userDetail/:id', component: UserDetailComponent},

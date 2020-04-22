@@ -87,6 +87,7 @@ export class ParkingLotService {
         headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
       }).subscribe(response => {
         let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.id);
+        parkingLot.sector.freePlCount--;
         response.sector = parkingLot.sector;
         parkingLot.sector.parkingLots[index] = response;
         this.commonService.isLoading = false;
@@ -104,6 +105,7 @@ export class ParkingLotService {
       response.car.occupiedParkingLot=response.parkingLot;
       let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.parkingLot.id);
       response.parkingLot.sector = parkingLot.sector;
+      response.parkingLot.sector.freePlCount++;
       parkingLot.sector.parkingLots[index] = response.parkingLot;
 
       this.commonService.isLoading=false;

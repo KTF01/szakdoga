@@ -60,6 +60,7 @@ public class ParkingLotService {
 		car.setOccupiedParkingLot(null);
 		carRepository.save(car);
 		pl.setOccupiingCar(null);
+		pl.getSector().decraseCount();
 		plRepository.save(pl);
 		timeLogService.saveLog(LogAction.PARK_OUT,car, pl);
 		System.out.println(pl.getName()+" parkolóból kiállt a "+ car.getPlateNumber()+" rendszámú autó!");
@@ -70,6 +71,7 @@ public class ParkingLotService {
 			parkOut(car.getOccupiedParkingLot().getId());
 		}
 		pl.setOccupiingCar(car);
+		pl.getSector().increasePlCount();
 		car.setOccupiedParkingLot(pl);
 		plRepository.save(pl);
 		carRepository.save(car);

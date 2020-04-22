@@ -1,0 +1,17 @@
+
+.sidenav{
+  width: 200px;
+}
+
+.main-content{
+  margin-left: 200px;
+}
+
+@media only screen and (max-width: 500px) {
+  .sidenav {
+    width: 50px;
+  }
+  .main-content{
+    margin-left: 50px;
+  }
+}

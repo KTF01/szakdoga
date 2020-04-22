@@ -19,6 +19,8 @@ export class UserListComponent extends PopUpContainer implements OnInit {
   FIRST_USER_ROLE: Role = Role.ROLE_FIRST_USER;
   USER_ROLE: Role = Role.ROLE_USER;
 
+  nameFilter:string="";
+
   selectedUser:User;
 
   constructor(private router:Router,public userService:UserServiceService, public commonService:CommonService) {super(); }
@@ -46,6 +48,18 @@ export class UserListComponent extends PopUpContainer implements OnInit {
       console.log(user.firstName +' az első User, nem módosítható!');
     }
     this.closePopUp();
+  }
+
+  filteredUserList():User[]{
+    if(this.nameFilter===""){
+      return this.userService.users;
+    }else{
+      return this.userService.users.filter(elem=>{
+        let text = elem.firstName+" "+elem.lastName+" "+elem.email;
+        return text.toLocaleLowerCase().includes(this.nameFilter.toLowerCase()) ;
+      });
+    }
+
   }
 
   openPopUpCustom(user:User){

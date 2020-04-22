@@ -23,6 +23,7 @@ import { TimeLogComponent } from './components/time-log/time-log.component';
 import { UserListComponent } from './components/user-list/user-list.component';
 import { CarListComponent } from './components/car-list/car-list.component';
 import { HeaderNavComponent } from './components/common/header-nav/header-nav.component';
+import { FrameComponent } from './components/common/frame/frame.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { HeaderNavComponent } from './components/common/header-nav/header-nav.co
     TimeLogComponent,
     UserListComponent,
     CarListComponent,
-    HeaderNavComponent
+    HeaderNavComponent,
+    FrameComponent
   ],
   imports: [
     BrowserModule,

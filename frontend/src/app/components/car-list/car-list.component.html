@@ -6,21 +6,29 @@
         <label for="plateFilterText" >Szűrés:</label>
         <input type="text" id="plateFilterText" [(ngModel)]="plateFilter" placeholder="Rendszám">
       </div>
-      <!-- <div class="btn btn-primary">
-        <fa-icon [icon] = "searchIcon"></fa-icon>
-      </div> -->
     </div>
   </div>
 
   <div class="data-display">
     <ul class="car-list">
+      <li class="car-list-item">
+        <div >
+          <div class="car-info">
+            <span class="car-icon"></span>
+            <span class="car-plate"><strong>Rendszám</strong></span>
+            <span class="car-owner"><strong>Tulajdonos</strong></span>
+            <span class="car-pl"><strong>Parkoló</strong></span>
+          </div>
+          <div class="park-out-button">
+          </div>
+        </div>
       <li *ngFor="let car of filterEdCarList(); let i = index" class="car-list-item">
         <div >
           <div class="car-info">
             <span class="car-icon"><fa-icon [icon] = "carIcon"></fa-icon></span>
             <span class="car-plate">{{car.plateNumber}}</span>
             <span class="car-owner">{{car.owner.firstName}} {{car.owner.lastName}}</span>
-            <span class="car-pl">{{car.occupiedParkingLot? car.occupiedParkingLot.sector.parkHouse.name +": "+car.occupiedParkingLot.name:'Nem foglal parkolóhelyet'}}</span>
+            <span class="car-pl">{{car.occupiedParkingLot? car.occupiedParkingLot.sector.parkHouse.name +"/"+car.occupiedParkingLot.sector.name+": "+car.occupiedParkingLot.name:'Nem foglal parkolóhelyet'}}</span>
           </div>
           <div class="park-out-button">
             <button class="btn btn-primary " *ngIf="car.occupiedParkingLot" (click)="parkOut(car)">
