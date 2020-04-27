@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mobile_app/models/Sector.dart';
 
 class ParkHouse{
-  int id;
+  final int id;
   String name;
   String address;
   int parkingLotCount;
@@ -12,7 +12,6 @@ class ParkHouse{
     if(sectors!=null){
       for(Sector sec in this.sectors){
         sec.parkHouse=this;
-        print('${sec.name} ${this.name}');
       }
     }
   }

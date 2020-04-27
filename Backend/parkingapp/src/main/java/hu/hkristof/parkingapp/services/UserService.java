@@ -85,8 +85,9 @@ public class UserService {
 	}
 	
 	
-	public UserDataResponse login(String email) {
+	public UserDataResponse login() {
 		UserDataResponse response = new UserDataResponse();
+		String email = authenticatedUser.getUser().getEmail();
 		User loggedInUser = userRepository.findByEmail(email)
 				.orElseThrow(()->new UsernameNotFoundException(email+" emaillel nincs felhasználó regisztrálva."));
 		response.setUser(loggedInUser);

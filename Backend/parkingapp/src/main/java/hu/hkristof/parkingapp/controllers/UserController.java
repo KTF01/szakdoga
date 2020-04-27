@@ -1,5 +1,7 @@
 package hu.hkristof.parkingapp.controllers;
 
+import java.net.http.HttpHeaders;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +35,7 @@ public class UserController {
 	
 	@GetMapping("auth/users/{id}")
 	public ResponseEntity<UserDataResponse> getUser(@PathVariable Long id) {
-	    return ResponseEntity.ok(userService.getUser(id));
+	    return ResponseEntity.ok().header("content-type", "application/json; charset=utf-8").body(userService.getUser(id));
 	}
 
 	@PostMapping("/users/signUp")
@@ -42,8 +44,8 @@ public class UserController {
 	}
 	
 	@PostMapping("/auth/users/login")
-	public ResponseEntity<UserDataResponse> login(@RequestBody String email) {
-	    return ResponseEntity.ok(userService.login(email));
+	public ResponseEntity<UserDataResponse> login() {
+	    return ResponseEntity.ok().header("content-type", "application/json; charset=utf-8").body(userService.login());
 	}
 	
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})

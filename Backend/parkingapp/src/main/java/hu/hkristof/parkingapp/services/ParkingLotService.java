@@ -16,6 +16,7 @@ import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.repositoris.CarRepository;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.responsetypes.ParkInResponse;
+import hu.hkristof.parkingapp.responsetypes.ParkOutResponse;
 
 @Service
 public class ParkingLotService {
@@ -47,12 +48,15 @@ public class ParkingLotService {
 		plRepository.saveAll(parkingLots);
 	}
 	
-	public ParkingLot parkOut(Long id) {
+	public ParkOutResponse parkOut(Long id) {
+		ParkOutResponse response = new ParkOutResponse();
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
 		if(pl.getOccupiingCar()!=null) {
 			parkoutProcess(pl);
 		}
-		return pl;
+		response.setParkingLot(pl);
+		response.setFreePlCount(pl.getSector().getFreePlCount());
+		return response;
 	}
 	
 	private void parkoutProcess(ParkingLot pl) {
@@ -60,7 +64,7 @@ public class ParkingLotService {
 		car.setOccupiedParkingLot(null);
 		carRepository.save(car);
 		pl.setOccupiingCar(null);
-		pl.getSector().decraseCount();
+		pl.getSector().increasePlCount();
 		plRepository.save(pl);
 		timeLogService.saveLog(LogAction.PARK_OUT,car, pl);
 		System.out.println(pl.getName()+" parkolóból kiállt a "+ car.getPlateNumber()+" rendszámú autó!");
@@ -71,7 +75,7 @@ public class ParkingLotService {
 			parkOut(car.getOccupiedParkingLot().getId());
 		}
 		pl.setOccupiingCar(car);
-		pl.getSector().increasePlCount();
+		pl.getSector().decraseCount();
 		car.setOccupiedParkingLot(pl);
 		plRepository.save(pl);
 		carRepository.save(car);
@@ -80,7 +84,8 @@ public class ParkingLotService {
 		System.out.println("A "+ car.getPlateNumber()+" rendszámú autó beparkolt a "+ pl.getName()+" nevű parkolóhelyre.");
 	}
 	
-	public ParkingLot parkOutSelf(Long id) {
+	public ParkOutResponse parkOutSelf(Long id) {
+		ParkOutResponse response = new ParkOutResponse();
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
 		if(pl.getOccupiingCar()!=null) {
 			if(authenticateduser.getUser().getId()==pl.getOccupiingCar().getOwner().getId()) {
@@ -89,7 +94,9 @@ public class ParkingLotService {
 				return null;
 			}
 		}
-		return pl;
+		response.setParkingLot(pl);
+		response.setFreePlCount(pl.getSector().getFreePlCount());
+		return response;
 	}
 	
 	public ParkInResponse parkIn(Long plId, String carPlate) {
@@ -109,6 +116,7 @@ public class ParkingLotService {
 		
 		response.setCar(car);
 		response.setParkingLot(pl);
+		response.setSectorPlCount(pl.getSector().getFreePlCount());
 		return response;
 	}
 

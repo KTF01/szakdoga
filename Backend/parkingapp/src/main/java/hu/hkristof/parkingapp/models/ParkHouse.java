@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PostLoad;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -36,6 +37,16 @@ public class ParkHouse {
 	@NotNull
 	@OneToMany(mappedBy = "parkHouse", cascade = CascadeType.ALL)
 	List<Sector> sectors;
+	
+	private int freePlCount;
+	
+	@PostLoad
+	private void countFreePls() {
+		freePlCount = 0;
+		for (Sector sector : sectors) {
+			freePlCount+=sector.getFreePlCount();
+		}
+	}
 	
 	ParkHouse(){
 		this.sectors = new ArrayList<>();
@@ -91,4 +102,13 @@ public class ParkHouse {
 	public void setNumberOfFloors(int numberOfFloors) {
 		this.numberOfFloors = numberOfFloors;
 	}
+
+	public int getFreePlCount() {
+		return freePlCount;
+	}
+
+	public void setFreePlCount(int freePlCount) {
+		this.freePlCount = freePlCount;
+	}
+	
 }

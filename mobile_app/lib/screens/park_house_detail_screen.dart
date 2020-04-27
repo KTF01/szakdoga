@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/ListElem.dart';
 import 'package:mobile_app/models/parkHouse.dart';
+import 'package:mobile_app/sector_list_elem.dart';
 
 class ParkHouseDetail extends StatelessWidget {
   static const routeName = '/parkHouseDetial';
@@ -36,10 +37,8 @@ class ParkHouseDetail extends StatelessWidget {
                 0.7,
             child: ListView.builder(
               itemBuilder: (ctx, index) {
-                return ListElem(
-                  title: parkHouse.sectors[index].name,
-                  subtitle: parkHouse.sectors[index].parkHouse.name,
-                  trailing: parkHouse.sectors[index].freeParkingLotCount.toString(),
+                return SectorListElem(
+                  parkHouse.sectors[index],
                 );
               },
               itemCount: parkHouse.sectors!=null? parkHouse.sectors.length:0,

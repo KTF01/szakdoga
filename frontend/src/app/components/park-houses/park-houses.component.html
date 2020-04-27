@@ -17,9 +17,12 @@
           (elementDeleted)="deleteParkHouse(parkHouse, i)"
           #listTile
         >
-          <div class="col-md-11" (click)="openParkHouseDetail(parkHouse)">
-            <h3 class="text-primary card-title">{{ parkHouse.name }}</h3>
-            <span class="text-primary col-md-7">{{ parkHouse.address }}</span>
+          <div class="row info-area" (click)="openParkHouseDetail(parkHouse)">
+            <div class="col-md-10">
+              <h3 class="text-primary card-title">{{ parkHouse.name }}</h3>
+              <span class="text-primary">{{ parkHouse.address }}</span>
+            </div>
+            <span class="text-primary col-md-2">Szabad helyek: {{ parkHouse.freePlCount }}</span>
           </div>
         </app-list-tile>
       </ul>

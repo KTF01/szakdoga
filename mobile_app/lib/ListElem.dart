@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class ListElem extends StatefulWidget {
   final String title;
   final String subtitle;
-  final String trailing;
+  final Widget trailing;
   final Function clickEvent;
 
-  ListElem({this.title, this.subtitle, this.trailing='', this.clickEvent});
+  ListElem({this.title, this.subtitle, this.trailing, this.clickEvent});
   @override
   _ListElemState createState() => _ListElemState();
 }
@@ -19,13 +19,13 @@ class _ListElemState extends State<ListElem> {
       color: bgColor,
       child: InkWell(
         onTap: widget.clickEvent,
-        highlightColor:Theme.of(context).primaryColorLight,
+        highlightColor: Theme.of(context).primaryColorLight,
         child: ListTile(
           title: Text(widget.title),
-          subtitle: Text(widget.subtitle),
-          trailing: Text(
-            'Szabad helyek: ${widget.trailing}',
+          subtitle: Text(
+            widget.subtitle,
           ),
+          trailing: widget.trailing,
         ),
       ),
     );

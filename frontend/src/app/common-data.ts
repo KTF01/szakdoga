@@ -1,5 +1,5 @@
 export class CommonData{
-  static hostUri: string = "http://localhost:8080/";
+  static hostUri: string = "http://localhost:4000/";
 
   static isLoading:boolean=false;
 }

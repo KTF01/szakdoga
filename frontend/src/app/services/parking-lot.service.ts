@@ -83,30 +83,34 @@ export class ParkingLotService {
   parkOut(parkingLot: ParkingLot) {
     if (parkingLot.occupiingCar) {
       this.commonService.isLoading = true;
-      this.http.put<ParkingLot>(CommonData.hostUri + 'auth/parkingLots/parkOut/' + parkingLot.id, null,{
+      this.http.put<{parkingLot:ParkingLot, freePlCount:number}>(CommonData.hostUri + 'auth/parkingLots/parkOut/' + parkingLot.id, null,{
         headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
       }).subscribe(response => {
-        let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.id);
-        parkingLot.sector.freePlCount--;
-        response.sector = parkingLot.sector;
-        parkingLot.sector.parkingLots[index] = response;
+        let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.parkingLot.id);
+        parkingLot.sector.freePlCount = response.freePlCount;
+        response.parkingLot.sector = parkingLot.sector;
+        parkingLot.sector.parkingLots[index] = response.parkingLot;
         this.commonService.isLoading = false;
-        this.parkedOut.next(response);
+        this.parkedOut.next(response.parkingLot);
       }, error => this.handleError(error));
     }
   }
 
   parkIn(parkingLot:ParkingLot, car:Car){
     this.commonService.isLoading=true;
-    this.http.put<{parkingLot:ParkingLot, car:Car}>(CommonData.hostUri+'auth/parkingLots/parkIn/'+parkingLot.id+'/'+car.plateNumber, null,{
+    this.http.put<{parkingLot:ParkingLot, car:Car, sectorPlCount:number}>(CommonData.hostUri+'auth/parkingLots/parkIn/'+parkingLot.id+'/'+car.plateNumber, null,{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
       response.parkingLot.occupiingCar=response.car;
       response.car.occupiedParkingLot=response.parkingLot;
       let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.parkingLot.id);
       response.parkingLot.sector = parkingLot.sector;
-      response.parkingLot.sector.freePlCount++;
+      response.parkingLot.sector.freePlCount=response.sectorPlCount;
       parkingLot.sector.parkingLots[index] = response.parkingLot;
+
+      if(car.occupiedParkingLot!=null){
+        car.occupiedParkingLot.occupiingCar=null;
+      }
 
       this.commonService.isLoading=false;
       this.parkedIn.next(response.parkingLot);

@@ -6,6 +6,7 @@ import hu.hkristof.parkingapp.models.ParkingLot;
 public class ParkInResponse {
 	private ParkingLot parkingLot;
 	private Car car;
+	private int sectorPlCount;
 	
 	
 	public ParkingLot getParkingLot() {
@@ -20,6 +21,11 @@ public class ParkInResponse {
 	public void setCar(Car car) {
 		this.car = car;
 	}
-	
+	public int getSectorPlCount() {
+		return sectorPlCount;
+	}
+	public void setSectorPlCount(int sectorPlCount) {
+		this.sectorPlCount = sectorPlCount;
+	}
 	
 }

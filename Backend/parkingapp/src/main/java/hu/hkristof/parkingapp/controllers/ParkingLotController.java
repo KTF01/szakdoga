@@ -27,6 +27,7 @@ import hu.hkristof.parkingapp.repositoris.CarRepository;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.repositoris.TimeLogRepository;
 import hu.hkristof.parkingapp.responsetypes.ParkInResponse;
+import hu.hkristof.parkingapp.responsetypes.ParkOutResponse;
 import hu.hkristof.parkingapp.services.ParkingLotService;
 
 @CrossOrigin
@@ -97,13 +98,13 @@ public class ParkingLotController {
 	
 	@Transactional
 	@PutMapping("/parkOut/{id}")
-	public ResponseEntity<ParkingLot> parkOut(@PathVariable Long id) {
+	public ResponseEntity<ParkOutResponse> parkOut(@PathVariable Long id) {
 		if(authenticatedUser.getUser().getRole().equals(Role.ROLE_USER)) {
-			ParkingLot pl = parkingLotService.parkOutSelf(id);
-			if(pl!=null) {
-				return new ResponseEntity<>(pl, HttpStatus.OK);
+			ParkOutResponse response = parkingLotService.parkOutSelf(id);
+			if(response!=null) {
+				return new ResponseEntity<>(response, HttpStatus.OK);
 			}else {
-				System.out.println(authenticatedUser.getUser().getFirstName() + " nem admin, nem állhat ki más nevében!");
+				System.out.println(authenticatedUser.getUser().getFirstName() + " egyszerű felhasználó, nem állhat ki más nevében!");
 				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 			}
 			

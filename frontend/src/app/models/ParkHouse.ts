@@ -5,5 +5,6 @@ export class ParkHouse{
   name: string;
   address: string;
   numberOfFloors: number;
+  freePlCount?: number;
   sectors: Sector[];
 }

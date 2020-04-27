@@ -23,6 +23,10 @@ public class SectorService {
 	@Autowired
 	ParkingLotRepository parkingLotRepository;
 	
+	public List<Sector> getAll(){
+		return sectorRepository.findAll();
+	}
+	
 	public Sector createSector(Sector sector) {
 		Sector newSector = sectorRepository.save(sector);
 		for(ParkingLot pl : sector.getParkingLots()) {
