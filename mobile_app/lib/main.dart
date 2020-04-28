@@ -4,6 +4,7 @@ import 'package:mobile_app/models/providers/auth.dart';
 import 'package:mobile_app/models/providers/parkHouses.dart';
 import 'package:mobile_app/screens/login_screen.dart';
 import 'package:mobile_app/screens/park_houses/park_houses_screen.dart';
+import 'package:mobile_app/screens/splash_screen.dart';
 import 'package:mobile_app/tabs_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -22,24 +23,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (BuildContext context) => ParkHouses(),
-        ),
-        ChangeNotifierProvider(
-          create: (BuildContext ctx) => AuthManager(),
-        )
-      ],
-      child: MaterialApp(
-        title: 'Parking App',
-        theme: ThemeData(primarySwatch: Colors.blue, accentColor: Colors.white),
-        home: AuthScreen(),
-        routes: {
-          ParkHouseDetail.routeName: (ctx) => ParkHouseDetail(),
-          ParkingLotDetailScreen.routeName: (ctx) => ParkingLotDetailScreen(),
-          TabsScreen.routeName: (ctx) => TabsScreen('Parkign App'),
-        },
-      ),
-    );
+        providers: [
+          ChangeNotifierProvider(
+            create: (BuildContext context) => ParkHouses(),
+          ),
+          ChangeNotifierProxyProvider<ParkHouses, AuthManager>(
+            update: (BuildContext ctx, parkHouses, previousAuth) =>
+                AuthManager.withParkHouses(parkHouses),
+            create: (BuildContext ctx) => AuthManager(),
+          )
+        ],
+        child: Consumer<AuthManager>(
+          builder: (context, auth, _) {
+            return MaterialApp(
+              title: 'Parking App',
+              theme: ThemeData(
+                  primarySwatch: Colors.blue, accentColor: Colors.white),
+              home: auth.isAuth? TabsScreen('Parking App') : FutureBuilder(future: auth.autoLogin(),builder: (BuildContext ctx, authResoult){
+                return authResoult.connectionState == ConnectionState.waiting? SplashScreen() : AuthScreen();
+              },),
+              routes: {
+                ParkHouseDetail.routeName: (ctx) => ParkHouseDetail(),
+                ParkingLotDetailScreen.routeName: (ctx) =>
+                    ParkingLotDetailScreen(),
+                TabsScreen.routeName: (ctx) => TabsScreen('Parkign App'),
+              },
+            );
+          },
+        ));
   }
 }

@@ -40,7 +40,7 @@ public class CarService {
 		return car;
 	}
 	
-	public List<Car> deleteCar(String plateNumber) {
+	public String deleteCar(String plateNumber) {
 		Car car = carRepository.findById(plateNumber).orElseThrow(()->new CarNotFoundException(plateNumber));
 		if(car.getOccupiedParkingLot()!=null) {
 			parkingLotService.parkOut(car.getOccupiedParkingLot().getId());
@@ -49,6 +49,6 @@ public class CarService {
 		car.getOwner().removeCar(car);
 		carRepository.delete(car);
 		System.out.println(plateNumber + " rendszámú autó törölve!");
-		return user.getOwnedCars();
+		return car.getPlateNumber();
 	}
 }

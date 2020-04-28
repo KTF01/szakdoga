@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/models/parkingLot.dart';
 
 class ParkedInParkingLotView extends StatelessWidget {
@@ -16,10 +17,10 @@ class ParkedInParkingLotView extends StatelessWidget {
           children: <Widget>[
             FittedBox(
               child: Container(
-                child: Icon(
-                  Icons.directions_car,
-                  size: 300,
-                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: FaIcon(FontAwesomeIcons.car, size: 300,),
+                )
               ),
             ),
             Container(

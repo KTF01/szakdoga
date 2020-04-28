@@ -1,8 +1,7 @@
-import 'dart:math';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/providers/auth.dart';
-import 'package:mobile_app/screens/park_houses/park_houses_screen.dart';
 import 'package:mobile_app/tabs_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -15,9 +14,8 @@ class AuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
       body: GestureDetector(
-        onTap: (){
+        onTap: () {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: Stack(
@@ -72,6 +70,8 @@ class _AuthCardState extends State<AuthCard> {
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
     'email': '',
+    'firstName': '',
+    'lastName': '',
     'password': '',
   };
   var _isLoading = false;
@@ -87,42 +87,57 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
+    AuthManager auth = Provider.of<AuthManager>(context, listen: false);
     if (_authMode == AuthMode.Login) {
-      AuthManager auth = Provider.of<AuthManager>(context, listen: false);
       try {
         await auth.loggIn(_authData['email'], _authData['password']);
-        Navigator.pushNamed(context, TabsScreen.routeName);
+        //Navigator.pushNamed(context, TabsScreen.routeName);
       } catch (error) {
         String errorMessage = "Valami hiba keletkezett!";
         if (error.toString().contains("Failed to parse header value")) {
           errorMessage = "Helytelen bejelentkezési adatok!";
         }
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            content: Text(
-              errorMessage,
-              style: TextStyle(color: Theme.of(context).errorColor),
-            ),
-            actions: <Widget>[
-              RaisedButton(
-                child: Text("Ok"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          ),
-        );
+        _showErrorDialog(errorMessage);
       }
-
-      // Log user in
     } else {
-      // Sign user up
+      try {
+        await auth.signUp(_authData['firstName'], _authData['lastName'],
+            _authData['email'], _authData['password']);
+        _switchAuthMode();
+      } on HttpException catch (error){
+        print(error);
+        String errorMessage = 'Sikertelen regisztráció';
+        if(error.toString().contains('EMAIL_ALREADY_EXIST')){
+          errorMessage = 'Ez az emailcím már foglalt!';
+        }
+        _showErrorDialog(errorMessage);
+      } catch (error) {
+        _showErrorDialog('Ismeeretlen hiba történt');
+      }
     }
     setState(() {
       _isLoading = false;
     });
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: Text(
+          message,
+          style: TextStyle(color: Theme.of(context).errorColor),
+        ),
+        actions: <Widget>[
+          RaisedButton(
+            child: Text("Ok"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
+      ),
+    );
   }
 
   void _switchAuthMode() {
@@ -146,7 +161,7 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 5.0,
       child: Container(
-        height: _authMode == AuthMode.Signup ? 450 : 260,
+        height: _authMode == AuthMode.Signup ? 450 : 280,
         constraints:
             BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
         width: deviceSize.width * 0.75,
@@ -156,14 +171,6 @@ class _AuthCardState extends State<AuthCard> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Vezetéknév'),
-                  ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Keresztnév'),
-                  ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'E-Mail'),
                   keyboardType: TextInputType.emailAddress,
@@ -176,6 +183,30 @@ class _AuthCardState extends State<AuthCard> {
                     _authData['email'] = value;
                   },
                 ),
+                if (_authMode == AuthMode.Signup)
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'Vezetéknév'),
+                    validator: (String value) {
+                      if (value.isEmpty) {
+                        return 'Nem lehet üres!';
+                      }
+                    },
+                    onSaved: (value) {
+                      _authData['firstName'] = value;
+                    },
+                  ),
+                if (_authMode == AuthMode.Signup)
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'Keresztnév'),
+                    validator: (String value) {
+                      if (value.isEmpty) {
+                        return 'Nem lehet üress';
+                      }
+                    },
+                    onSaved: (value) {
+                      _authData['lastName'] = value;
+                    },
+                  ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Jelszó'),
                   obscureText: true,
@@ -197,7 +228,7 @@ class _AuthCardState extends State<AuthCard> {
                     validator: _authMode == AuthMode.Signup
                         ? (value) {
                             if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
+                              return 'A jelszavak nem egyeznek!';
                             }
                           }
                         : null,
@@ -211,8 +242,9 @@ class _AuthCardState extends State<AuthCard> {
                   )
                 else
                   RaisedButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+                    child: Text(_authMode == AuthMode.Login
+                        ? 'Belépés'
+                        : 'Regisztráció'),
                     onPressed: _submit,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),

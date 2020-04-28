@@ -47,7 +47,7 @@ public class CarController {
 	}
 	
 	@DeleteMapping("delete/{plateNumber}")
-	public ResponseEntity<List<Car>> deleteCar(@PathVariable String plateNumber){
+	public ResponseEntity<String> deleteCar(@PathVariable String plateNumber){
 		return new ResponseEntity<>(carService.deleteCar(plateNumber), HttpStatus.OK);
 	}
 }

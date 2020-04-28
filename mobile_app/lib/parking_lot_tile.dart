@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'models/parkingLot.dart';
 import 'screens/parking_lot_detail/parking_lot_detail_screen.dart';
@@ -25,7 +26,7 @@ class ParkingLotTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(parkingLot.name),
-                if(parkingLot.occupiingCar!=null) Icon(Icons.directions_car)
+                if(parkingLot.occupiingCar!=null) FaIcon(FontAwesomeIcons.car)
               ],
             ),
           ),

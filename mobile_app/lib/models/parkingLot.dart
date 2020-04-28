@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/models/Sector.dart';
@@ -24,8 +26,13 @@ class ParkingLot with ChangeNotifier {
             '${Common.hostUri}auth/parkingLots/parkOut/${this.id}',
             headers: {'authorization': Common.authToken});
         print(response.body);
-        this.occupiingCar.occupiedParkingLot = null;
-        this.occupiingCar = null;
+
+        if (response.statusCode != 403) {
+          this.occupiingCar.occupiedParkingLot = null;
+          this.occupiingCar = null;
+        }else{
+          throw HttpException("Csak admin állhat ki más nevében!");
+        }
       } catch (error) {
         print(error);
       }

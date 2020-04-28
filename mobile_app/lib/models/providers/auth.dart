@@ -1,17 +1,27 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/models/common_data.dart';
 import 'package:mobile_app/models/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../car.dart';
 import '../parkingLot.dart';
 import '../role.dart';
+import 'parkHouses.dart';
 
 class AuthManager with ChangeNotifier {
   User _loggedInUser;
+  ParkHouses _parkHousesProvider;
+  AuthManager.withParkHouses(this._parkHousesProvider);
+  AuthManager();
+
+  bool get isAuth{
+    return Common.authToken!=null&&_loggedInUser!=null;
+  }
 
   User get loggedInUser {
     return _loggedInUser;
@@ -19,9 +29,17 @@ class AuthManager with ChangeNotifier {
 
   Future<void> loggIn(String email, String password) async {
     String token = 'Basic ' + base64Encode(utf8.encode('$email:$password'));
-    const String url = "${Common.hostUri}auth/users/login";
     try {
-      final http.Response response = await http.post(url, headers: {
+      _loginWithToken(token);
+    } catch (error) {
+      print('ERROR: $error');
+      throw error;
+    }
+  }
+
+  Future<void> _loginWithToken(String token) async{
+    const String url = "${Common.hostUri}auth/users/login";
+    final http.Response response = await http.post(url, headers: {
         'authorization': token,
         "content-type": "application/json; charset=utf-8"
       });
@@ -30,9 +48,23 @@ class AuthManager with ChangeNotifier {
 
       this._loggedInUser = _extractUser(extractedResponse);
       Common.authToken = token;
-    } catch (error) {
-      print('ERROR: $error');
-      throw error;
+      notifyListeners();
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      pref.setString('token', Common.authToken);
+      pref.setString('loginResponse', response.body);
+  }
+
+  Future<bool> autoLogin() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.containsKey('token')&&prefs.containsKey('loginResponse')){
+      final extractedResponse =
+          json.decode(prefs.get('loginResponse')) as Map<String, dynamic>;
+      this._loggedInUser = _extractUser(extractedResponse);
+      Common.authToken = prefs.get('token');
+      notifyListeners();
+      return true;
+    }else{
+      return false;
     }
   }
 
@@ -56,11 +88,12 @@ class AuthManager with ChangeNotifier {
 
       ParkingLot occupiedParkingLot;
       if (extractedParkingLot != null) {
-        occupiedParkingLot = ParkingLot(
-            id: extractedParkingLot['id'],
-            name: extractedParkingLot['name'],
-            occupiingCar: responseCar);
-        responseCar.occupiedParkingLot = occupiedParkingLot;
+        occupiedParkingLot = _parkHousesProvider
+            .findParkingLotById(extractedParkingLot['id'] as int);
+        if (occupiedParkingLot != null) {
+          occupiedParkingLot.occupiingCar = responseCar;
+          responseCar.occupiedParkingLot = occupiedParkingLot;
+        }
       }
       userCars.add(responseCar);
     });
@@ -82,9 +115,66 @@ class AuthManager with ChangeNotifier {
     }
   }
 
-  void addCar(Car car) {
-    //http kérés
-    _loggedInUser.ownedCars.add(car);
+  Future<void> signUp(String firstName, String lastName, String email, String password) async {
+    try {
+      http.Response response = await http.post(Common.hostUri + 'users/signUp',
+      headers: {
+        "content-type": "application/json; charset=utf-8" 
+      },
+          body: json.encode({
+            'firstName': firstName,
+            'lastName': lastName,
+            'email': email,
+            'password': password,
+          }));
+      if(response.statusCode==409){
+        throw HttpException(response.body);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<void> addCar(Car car) async {
+    try {
+      http.Response response = await http.post(
+          Common.hostUri + 'auth/cars/newCarToUser/${loggedInUser.id}',
+          headers: {
+            'authorization': Common.authToken,
+            "content-type": "application/json; charset=utf-8"
+          },
+          body: json.encode({'plateNumber': car.plareNumber}));
+      _loggedInUser.ownedCars.add(car);
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> removeCar(String plateNumber) async {
+    try {
+      http.Response response = await http.delete(
+        Common.hostUri + 'auth/cars/delete/$plateNumber',
+        headers: {
+          'authorization': Common.authToken,
+          "content-type": "application/json; charset=utf-8"
+        },
+      );
+      this
+          ._loggedInUser
+          .ownedCars
+          .removeWhere((car) => car.plareNumber == response.body);
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> logout() async{
+    Common.authToken = null;
+    _loggedInUser = null;
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     prefs.clear();
     notifyListeners();
   }
 }

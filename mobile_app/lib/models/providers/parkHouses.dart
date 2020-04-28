@@ -13,51 +13,7 @@ import '../role.dart';
 import '../user.dart';
 
 class ParkHouses with ChangeNotifier {
-  List<ParkHouse> _parkHouses = [
-    ParkHouse(
-      id: 1,
-      name: 'Parkház 1',
-      address: 'Szamos utca 4.',
-      sectors: [
-        Sector(id: 0, name: 'sector 1', parkingLots: [
-          ParkingLot(
-            id: 0,
-            name: 'P1',
-            occupiingCar: Car(
-                plareNumber: 'LFX-135',
-                owner: User(
-                    id: 2,
-                    firstName: 'Nemes',
-                    lastName: 'László',
-                    email: 'laci@gmail.com',
-                    role: Role.ROLE_USER)),
-          ),
-          ParkingLot(id: 1, name: 'P2'),
-          ParkingLot(
-            id: 2,
-            name: 'P3',
-            occupiingCar: Car(
-              plareNumber: 'AB-D',
-              owner: User(
-                  id: 1,
-                  firstName: 'Horváth',
-                  lastName: 'Kristóf',
-                  email: 'kristoofhorvath@gmail.com',
-                  role: Role.ROLE_ADMIN),
-            ),
-          ),
-          ParkingLot(id: 2, name: 'P3'),
-        ]),
-        Sector(id: 1, name: 'sector 2'),
-      ],
-    ),
-    ParkHouse(id: 2, name: 'Parkház 2', address: 'Valami cím', sectors: [
-      Sector(id: 2, name: 'Nagy szektor', parkingLots: [
-        ParkingLot(id: 3, name: 'PS'),
-      ]),
-    ]),
-    ParkHouse(id: 3, name: 'Parkiház', address: 'farok'),
-  ];
+  List<ParkHouse> _parkHouses = [];
 
   Future<void> loadParkHouses() async {
     try {
@@ -129,6 +85,18 @@ class ParkHouses with ChangeNotifier {
                     Role.values, car['owner']['role']))));
       });
     return cars;
+  }
+
+  ParkingLot findParkingLotById(int id){
+    for(ParkHouse parkHouse in this._parkHouses){
+      for(Sector sector in parkHouse.sectors){
+        ParkingLot pl = sector.parkingLots.firstWhere((pl)=>pl.id==id, orElse: ()=>null);
+        if(pl!=null){
+          return pl;
+        }
+      }
+    }
+    return null;
   }
 
   List<ParkHouse> get parkHouses {

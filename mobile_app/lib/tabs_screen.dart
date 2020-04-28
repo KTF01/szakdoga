@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/providers/auth.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/park_houses/park_houses_screen.dart';
 import 'screens/user_data_screen.dart';
@@ -14,7 +16,6 @@ class TabsScreen extends StatefulWidget {
 }
 
 class _TabsScreenState extends State<TabsScreen> {
-  
   final List<Widget> _screens = [
     ParkHousesScreen(),
     UserData(),
@@ -22,18 +23,29 @@ class _TabsScreenState extends State<TabsScreen> {
 
   int _selectedPageIndex = 0;
 
-
   @override
   Widget build(BuildContext context) {
+    AuthManager auth = Provider.of<AuthManager>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          FlatButton(
+            child: Icon(
+              Icons.exit_to_app,
+              color: Theme.of(context).accentColor,
+            ),
+            onPressed: () {
+              auth.logout();
+            },
+          )
+        ],
         title: Text(widget.title),
       ),
       body: _screens[_selectedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
-        onTap: (int indexOfTab){
+        onTap: (int indexOfTab) {
           setState(() {
-            _selectedPageIndex =indexOfTab;
+            _selectedPageIndex = indexOfTab;
           });
         },
         backgroundColor: Theme.of(context).primaryColor,

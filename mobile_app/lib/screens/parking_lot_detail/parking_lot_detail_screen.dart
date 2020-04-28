@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/parkingLot.dart';
+import 'package:mobile_app/models/providers/auth.dart';
+import 'package:mobile_app/models/role.dart';
 import 'package:mobile_app/screens/parking_lot_detail/empty_view.dart';
 import 'package:mobile_app/screens/parking_lot_detail/parked_view.dart';
 import 'package:mobile_app/screens/parking_lot_detail/user_car_list.dart';
@@ -30,6 +32,10 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
   Widget build(BuildContext context) {
     ParkingLot parkingLot =
         ModalRoute.of(context).settings.arguments as ParkingLot;
+    AuthManager authManager = Provider.of<AuthManager>(context);
+    bool hasCar = parkingLot.occupiingCar!=null;
+    bool isMyCar = hasCar&&(parkingLot.occupiingCar.owner.id==authManager.loggedInUser.id);
+    bool isAdmin = (authManager.loggedInUser.role!=Role.ROLE_USER);
     return Scaffold(
       appBar: myAppbar,
       body: Column(
@@ -63,7 +69,9 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                     } else {
                       if (parkingLot.occupiingCar != null) {
                         return RaisedButton(
-                          onPressed: ()=>_parkOutStart(parkingLot),
+                          
+                          onPressed: isMyCar || isAdmin
+                          ? ()=>_parkOutStart(parkingLot):null,
                           child: Text('Kiállás'),
                         );
                       } else {
@@ -73,6 +81,10 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                                 context: context,
                                 builder: (_) {
                                   return UserCarList(parkingLot);
+                                }).then((_){
+                                  setState(() {
+                                    
+                                  });
                                 });
                           },
                           child: Text('Beállás'),

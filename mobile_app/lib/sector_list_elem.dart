@@ -36,7 +36,7 @@ class _SectorListElemState extends State<SectorListElem> {
                 subtitle: Text(
                   "Szabad helyek: " + widget.sector.freePlCount.toString(),
                 ),
-                trailing: Icon(Icons.arrow_drop_down),
+                trailing: plListheight==0? Icon(Icons.arrow_drop_down): Icon(Icons.arrow_drop_up),
               ),
             ),
           ),

@@ -18,15 +18,20 @@ class _ParkHousesScreenState extends State<ParkHousesScreen> {
   @override
   void didChangeDependencies(){
     if(_isInit){
+      setState(() {
+        _isLoading=true;
+      });
       Provider.of<ParkHouses>(context).loadParkHouses().then((_){
         setState(() {
-          
+          _isLoading =false;
         });
       });
     }
     _isInit=false;
     super.didChangeDependencies();
   }
+
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +46,7 @@ class _ParkHousesScreenState extends State<ParkHousesScreen> {
               style: TextStyle(fontSize: 30),
             ),
           ),
-          Container(
+          _isLoading? CircularProgressIndicator(backgroundColor: Theme.of(context).primaryColor,): Container(
             height: (MediaQuery.of(context).size.height) * 0.6,
             child: ParkHouseList(),
           ),

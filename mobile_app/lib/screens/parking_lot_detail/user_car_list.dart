@@ -4,10 +4,25 @@ import 'package:mobile_app/models/parkingLot.dart';
 import 'package:mobile_app/models/providers/auth.dart';
 import 'package:provider/provider.dart';
 
-class UserCarList extends StatelessWidget {
-
+class UserCarList extends StatefulWidget {
   final ParkingLot parkingLot;
   UserCarList(this.parkingLot);
+
+  @override
+  _UserCarListState createState() => _UserCarListState();
+}
+
+class _UserCarListState extends State<UserCarList> {
+  bool _isLoading = false;
+
+  void _startParkIn(Car car) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    await widget.parkingLot.parkIn(car);
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,24 +32,29 @@ class UserCarList extends StatelessWidget {
       children: <Widget>[
         Container(
           height: MediaQuery.of(context).size.height * 0.5,
-          child: ListView(
-            children: cars.map((Car car) {
-              return Card(
-                child: InkWell(
-                    onTap: () {
-                      parkingLot.parkIn(car);
-                      Navigator.pop(context);
-                    },
-                    highlightColor: Theme.of(context).primaryColor,
-                    child: ListTile(
-                        leading: Icon(Icons.directions_car),
-                        title: Text(
-                          car.plareNumber,
-                          style: TextStyle(fontSize: 30),
-                        ))),
-              );
-            }).toList(),
-          ),
+          child: _isLoading
+              ? Center(
+                  child: CircularProgressIndicator(
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                )
+              : ListView(
+                  children: cars.map((Car car) {
+                    return Card(
+                      child: InkWell(
+                          onTap: () {
+                            _startParkIn(car);
+                          },
+                          highlightColor: Theme.of(context).primaryColor,
+                          child: ListTile(
+                              leading: Icon(Icons.directions_car),
+                              title: Text(
+                                car.plareNumber,
+                                style: TextStyle(fontSize: 30),
+                              ))),
+                    );
+                  }).toList(),
+                ),
         ),
       ],
     );

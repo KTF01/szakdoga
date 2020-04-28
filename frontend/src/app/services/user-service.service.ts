@@ -69,7 +69,8 @@ export class UserServiceService {
     this.http.delete<Car[]>(CommonData.hostUri+'auth/cars/delete/'+`${car.plateNumber}`,{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
-      car.owner.ownedCars = response;
+      let index:number =  car.owner.ownedCars.findIndex(c=>c.plateNumber==car.plateNumber);
+      car.owner.ownedCars.splice(index, 1);
       this.commonService.isLoading=false;
       this.carRemoved.next(car.owner.ownedCars);
     }, error=>this.handleError(error));
