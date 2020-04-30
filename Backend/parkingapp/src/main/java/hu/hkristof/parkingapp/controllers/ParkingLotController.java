@@ -65,7 +65,7 @@ public class ParkingLotController {
 	
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@PostMapping("/newPl")
-	public ParkingLot createNote(@Valid @RequestBody ParkingLot pl) {
+	public ParkingLot createParkingLot(@Valid @RequestBody ParkingLot pl) {
 		System.out.println(pl.getName()+" nevű parkolóhely létrehozva!");
 	    return plRepository.save(pl);
 	}

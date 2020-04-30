@@ -17,11 +17,12 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
   AppBar myAppbar = AppBar();
   bool _isLoading = false;
 
-  void _parkOutStart(ParkingLot parkingLot) {
+  void _parkOutStart(AuthManager authManager,ParkingLot parkingLot) {
     setState(() {
       _isLoading = true;
     });
     parkingLot.parkOut().then((_) {
+      authManager.cancelNotification(parkingLot.id);
       setState(() {
         _isLoading = false;
       });
@@ -71,7 +72,7 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                         return RaisedButton(
                           
                           onPressed: isMyCar || isAdmin
-                          ? ()=>_parkOutStart(parkingLot):null,
+                          ? ()=>_parkOutStart(authManager,parkingLot):null,
                           child: Text('Kiállás'),
                         );
                       } else {

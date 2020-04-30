@@ -1,6 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
+main{
+  margin-top: 20px;
+}
+
 button{
   border: none;
 }
@@ -13,8 +17,9 @@ ul{
 .delete-btn{
   border-radius: 4px;
   color: var(--danger);
-  padding: 0.5em;
+  padding: 0.1em;
   font-size: large;
+  width: 50px;
 }
 .delete-btn:hover{
   color: white;

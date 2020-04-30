@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/models/common_data.dart';
 import 'package:mobile_app/models/user.dart';
@@ -19,8 +20,11 @@ class AuthManager with ChangeNotifier {
   AuthManager.withParkHouses(this._parkHousesProvider);
   AuthManager();
 
-  bool get isAuth{
-    return Common.authToken!=null&&_loggedInUser!=null;
+  FlutterLocalNotificationsPlugin notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  bool get isAuth {
+    return Common.authToken != null && _loggedInUser != null;
   }
 
   User get loggedInUser {
@@ -37,33 +41,33 @@ class AuthManager with ChangeNotifier {
     }
   }
 
-  Future<void> _loginWithToken(String token) async{
+  Future<void> _loginWithToken(String token) async {
     const String url = "${Common.hostUri}auth/users/login";
     final http.Response response = await http.post(url, headers: {
-        'authorization': token,
-        "content-type": "application/json; charset=utf-8"
-      });
-      final extractedResponse =
-          json.decode(response.body.toString()) as Map<String, dynamic>;
+      'authorization': token,
+      "content-type": "application/json; charset=utf-8"
+    });
+    final extractedResponse =
+        json.decode(response.body.toString()) as Map<String, dynamic>;
 
-      this._loggedInUser = _extractUser(extractedResponse);
-      Common.authToken = token;
-      notifyListeners();
-      SharedPreferences pref = await SharedPreferences.getInstance();
-      pref.setString('token', Common.authToken);
-      pref.setString('loginResponse', response.body);
+    this._loggedInUser = _extractUser(extractedResponse);
+    Common.authToken = token;
+    notifyListeners();
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setString('token', Common.authToken);
+    pref.setString('loginResponse', response.body);
   }
 
-  Future<bool> autoLogin() async{
+  Future<bool> autoLogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.containsKey('token')&&prefs.containsKey('loginResponse')){
+    if (prefs.containsKey('token') && prefs.containsKey('loginResponse')) {
       final extractedResponse =
           json.decode(prefs.get('loginResponse')) as Map<String, dynamic>;
       this._loggedInUser = _extractUser(extractedResponse);
       Common.authToken = prefs.get('token');
       notifyListeners();
       return true;
-    }else{
+    } else {
       return false;
     }
   }
@@ -115,19 +119,18 @@ class AuthManager with ChangeNotifier {
     }
   }
 
-  Future<void> signUp(String firstName, String lastName, String email, String password) async {
+  Future<void> signUp(
+      String firstName, String lastName, String email, String password) async {
     try {
       http.Response response = await http.post(Common.hostUri + 'users/signUp',
-      headers: {
-        "content-type": "application/json; charset=utf-8" 
-      },
+          headers: {"content-type": "application/json; charset=utf-8"},
           body: json.encode({
             'firstName': firstName,
             'lastName': lastName,
             'email': email,
             'password': password,
           }));
-      if(response.statusCode==409){
+      if (response.statusCode == 409) {
         throw HttpException(response.body);
       }
     } catch (error) {
@@ -170,11 +173,43 @@ class AuthManager with ChangeNotifier {
     }
   }
 
-  Future<void> logout() async{
+  Future<void> logout() async {
     Common.authToken = null;
     _loggedInUser = null;
-     SharedPreferences prefs = await SharedPreferences.getInstance();
-     prefs.clear();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    notificationsPlugin.cancelAll();
     notifyListeners();
+  }
+
+  Future<void> _initNotification() async {
+    AndroidInitializationSettings androidInitializationSettings =
+        new AndroidInitializationSettings('icon');
+    IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings();
+    InitializationSettings initializationSettings = InitializationSettings(
+        androidInitializationSettings, initializationSettingsIOS);
+    await notificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> setupNotification(int id, ParkingLot parkingLot) async {
+
+    DateTime scheduledTime = DateTime.now().add(Duration(hours: 10));
+    final btsi = BigTextStyleInformation('Már régóta bent áll a(z) <h1>${parkingLot.sector.parkHouse.name}:${parkingLot.sector.name}/${parkingLot.name}</h1> parkolóban. \nNem felejtett el kiállni?',
+    htmlFormatBigText: true);
+    AndroidNotificationDetails androidNotificationDetails =
+    AndroidNotificationDetails('0', 'teszt-chanel', 'eleg jo',styleInformation: btsi );
+    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
+    NotificationDetails notificationDetails = NotificationDetails( androidNotificationDetails, iosNotificationDetails);
+    Time dailyTime = Time(scheduledTime.hour, scheduledTime.minute, scheduledTime.second);
+    await notificationsPlugin.cancel(id);
+    await notificationsPlugin.showDailyAtTime(
+          id, 'Kiparkolás ${parkingLot.occupiingCar.plareNumber}', 
+          'Mindegy',
+           dailyTime, notificationDetails);
+  }
+
+  Future<void> cancelNotification(int id) async{
+    await notificationsPlugin.cancel(id);
   }
 }

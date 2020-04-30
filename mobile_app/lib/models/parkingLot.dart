@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/models/Sector.dart';
 import 'package:mobile_app/models/common_data.dart';
@@ -30,7 +31,7 @@ class ParkingLot with ChangeNotifier {
         if (response.statusCode != 403) {
           this.occupiingCar.occupiedParkingLot = null;
           this.occupiingCar = null;
-        }else{
+        } else {
           throw HttpException("Csak admin állhat ki más nevében!");
         }
       } catch (error) {
@@ -50,8 +51,9 @@ class ParkingLot with ChangeNotifier {
         print(response.body);
         this.occupiingCar = car;
         car.occupiedParkingLot = this;
+        
       } catch (error) {
-        print(error);
+       throw(error);
       }
 
       notifyListeners();

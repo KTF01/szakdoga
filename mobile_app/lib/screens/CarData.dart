@@ -14,12 +14,14 @@ class CarData extends StatefulWidget {
 
 class _CarDataState extends State<CarData> {
   bool _isLoading = false;
-  void _startParkOut() async {
+  void _startParkOut(AuthManager auth) async {
     setState(() {
       _isLoading = true;
     });
 
+    auth.cancelNotification(widget.car.occupiedParkingLot.id);
     await widget.car.occupiedParkingLot.parkOut();
+    
     setState(() {
       _isLoading = false;
     });
@@ -89,7 +91,7 @@ class _CarDataState extends State<CarData> {
                               children: <Widget>[
                                 RaisedButton(
                                     child: Text('Kiállás'),
-                                    onPressed: _startParkOut),
+                                    onPressed: ()=>_startParkOut(auth)),
                               ],
                             )
                           ],

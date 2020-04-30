@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.hkristof.parkingapp.exceptions.SectorNotFoundException;
+import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
@@ -51,8 +52,10 @@ public class SectorService {
 	{
 		Sector sector = sectorRepository.findById(id).orElseThrow(()->new SectorNotFoundException(id));
 		parkingLotService.massParkOut(sector.getParkingLots());
+		ParkHouse ph = sector.getParkHouse();
+		ph.removeSector(sector);
 		sectorRepository.delete(sector);
-		System.out.println(sector.getParkHouse().getName()+ " parkolóház "+ sector.getName()+" nevű szektora eltávolításra került.");
+		System.out.println(ph.getName()+ " parkolóház "+ sector.getName()+" nevű szektora eltávolításra került.");
 		return id;
 	}
 }

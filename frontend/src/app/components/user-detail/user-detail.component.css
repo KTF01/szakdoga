@@ -9,7 +9,7 @@
 .user-info{
   display: flex;
   justify-content: space-between;
-
+  flex-wrap: wrap;
 }
 .user-data{
   display: flex;

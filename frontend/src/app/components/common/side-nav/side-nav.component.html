@@ -1,14 +1,26 @@
-<div id="mySidenav" class="sidenav" *ngIf="router.url!='/login'">
-  <h3 *ngIf="authService.isLogedIn">{{authService.loggedInUser.firstName}} {{authService.loggedInUser.lastName}}</h3>
-  <hr style="background-color: var(--light);">
-  <span (click)="navigateToParkHouses()"
-  [ngClass]="{active: router.url=='/frame/parkHouses'}" >Parkoló házak</span>
-  <span (click)="navigateToUserDetail()"
-  [ngClass]="{active: router.url=='/frame/userDetail'}">Saját adatok</span>
-  <span (click)="navigatetToUserList()"
-  [ngClass]="{active: router.url.includes('/frame/dataList')}" *ngIf="isAdmin">Nyilvántartás</span><!--admin-->
-  <span (click)="navigatetToDiary()"
-  [ngClass]="{active: router.url=='/frame/diary'}" *ngIf="isAdmin">Napló</span><!--admin-->
-
+<div id="mySidenav" class="sidenav" [ngClass]='{responsive :isCollapsedOpen }' >
+  <div class="brand">
+    <h3>{{ authService.loggedInUser.firstName }} {{ authService.loggedInUser.lastName }}</h3>
+    <span class="bar-icon"(click)="toggleCollapse()" >  <fa-icon [icon]='barIcon'></fa-icon></span>
+  </div>
+  <hr style="background-color: var(--light);" class="line" />
+  <span
+    (click)="navigateToParkHouses()"
+    [ngClass]="{ active: router.url == '/frame/parkHouses'}"
+    >Parkoló házak</span>
+  <span
+    (click)="navigateToUserDetail()"
+    [ngClass]="{ active: router.url == '/frame/userDetail' }"
+    >Saját adatok</span>
+  <span
+    (click)="navigatetToUserList()"
+    [ngClass]="{ active: router.url.includes('/frame/dataList') }"
+    *ngIf="isAdmin">Nyilvántartás</span><!--admin-->
+  <span
+    (click)="navigatetToDiary()"
+    [ngClass]="{ active: router.url == '/frame/diary' }"
+    *ngIf="isAdmin"
+    >Napló</span><!--admin-->
   <span (click)="fireLogout()">Kilépés</span>
+
 </div>

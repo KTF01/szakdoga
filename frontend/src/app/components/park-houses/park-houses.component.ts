@@ -85,6 +85,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
     let newParkhouse: ParkHouse = {
       name: this.form.value.parkHouseNameInput,
       address: this.form.value.parkHouseAddressInput,
+      firstFloor: this.form.value.firstFloorInput,
       numberOfFloors: this.form.value.numFloorInput,
       sectors: []
     }

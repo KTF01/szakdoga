@@ -31,14 +31,15 @@ public class ParkHouseService {
 	
 	public AllParkHousesResponse getAllParkhouses() {
 		AllParkHousesResponse response =  new AllParkHousesResponse();
-		List<ParkHouse> parkHouses =  parkHouseRepository.findAll();
+		List<ParkHouse> parkHouses =  parkHouseRepository.findAllByOrderByNameAsc();
 		List<Car> cars =  new ArrayList<>();
 		
 		for(ParkHouse ph : parkHouses) {
 			for(Sector sector : ph.getSectors()) {
 				sector.getParkingLots().sort(new Comparator<ParkingLot>() {
-					public int compare(ParkingLot obj1, ParkingLot obj2) {
-				        return obj1.getName().compareTo(obj2.getName());
+					@Override
+					public int compare(ParkingLot o1, ParkingLot o2) {
+				        return o1.getName().compareTo(o2.getName());
 				    }
 				});
 				for(ParkingLot pl : sector.getParkingLots()) {
@@ -47,6 +48,19 @@ public class ParkHouseService {
 					}
 				}
 			}
+			ph.getSectors().sort(new Comparator<Sector>() {
+				@Override
+				public int compare(Sector o1, Sector o2) {
+					Integer i1 = o1.getFloor();
+					Integer i2 = o2.getFloor();
+					if(i1.equals(i2)) {
+						return o1.getName().compareTo(o2.getName());
+					}else {
+						return i1.compareTo(i2);
+					}
+					
+				}
+			});;
 		}
 		System.out.println("Parkolóházak lekérdezve!");
 		response.setParkHouses(parkHouses);
@@ -67,7 +81,7 @@ public class ParkHouseService {
 	public ParkHouse addSectors(Long id,List<Sector> newSectors) {
 		ParkHouse ph =  parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 		for(Sector sec : newSectors) {
-			ph.addSection(sec);
+			ph.addSector(sec);
 		}
 		System.out.println(ph.getName()+" parkolóházhoz szektorok lettek hozzáadva!");
 		return parkHouseRepository.save(ph);

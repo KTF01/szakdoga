@@ -5,18 +5,24 @@
 </app-pop-up>
 <app-pop-up *ngIf="popUp2IsOpen" (closeEvent)="closePopUp2()" (okEvent)="submitForm()">
     <form (ngSubmit)="onSubmit()" #ef="ngForm">
-      <h3>Parkolóház hozzáadása</h3>
-      <div>
-        <input type="text" placeholder="Név" [ngModel]="parkHouse.name" name="parkHouseNameInput" required #phName="ngModel"/>
+      <h3>Parkolóház szerkesztése</h3>
+      <div class="form-group">
+        <input class="form-control" id="parkHouseNameInput" type="text" placeholder="Név" [ngModel]="parkHouse.name" name="parkHouseNameInput" required #phName="ngModel"/>
         <span class="form-text text-danger" *ngIf="!phName.valid && (phName.touched || formChecked)">
           A név nem lehet üres!
           </span>
       </div>
       <div>
-        <input type="text" placeholder="Cím" [ngModel]="parkHouse.address" name="parkHouseAddressInput"/>
+        <input class="form-control" id="parkHouseAddressInput" type="text" placeholder="Cím" [ngModel]="parkHouse.address" name="parkHouseAddressInput"/>
       </div>
       <div>
-        <input type="number" name="numFloorInput" id="numberOfFloors" [ngModel]="parkHouse.numberOfFloors" required #numFloor="ngModel"/>
+        <input class="form-control" type="number" id="firstFloorInput" name="numFirstFloorInput" id="firstFloor" placeholder="Első szint" [ngModel]="parkHouse.firstFloor" required #firstFloor="ngModel"/>
+        <span class="form-text text-danger" *ngIf="!firstFloor.valid && (firstFloor.touched || formChecked)">
+          Ez a mező nem lehet üres.
+        </span>
+      </div>
+      <div>
+        <input class="form-control" type="number" id="floorCount" name="numFloorInput" id="numberOfFloors" placeholder="Szintek száma" [ngModel]="parkHouse.numberOfFloors" required #numFloor="ngModel" min="0"/>
         <span class="form-text text-danger" *ngIf="!numFloor.valid && (numFloor.touched || formChecked)">
           Az emeletszám nem lehet üres!
         </span>
@@ -26,60 +32,59 @@
 </app-pop-up>
 <app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" (okEvent)="submitAddForm()">
   <form (ngSubmit)="onAddSubmit()" #af="ngForm">
-    <div><input type="text"  name="sectorNameInput" placeholder="Név" required ngModel #sectorName="ngModel">
+    <div>
+      <input class="form-control" type="text"  name="sectorNameInput" placeholder="Név" required ngModel #sectorName="ngModel">
       <span class="form-text text-danger" *ngIf="!sectorName.valid && (sectorName.touched)">
         A név nem lehet üres!
         </span>
     </div>
     <div style="width: 100%;">
-      <input type="number" id="floor-num-input" name="sectorFloorInput"
-      placeholder="Emelet" min="0" max={{parkHouse.numberOfFloors}} required ngModel #sectorFloor="ngModel">
+      <input class="form-control" type="number" id="floor-num-input" name="sectorFloorInput"
+      placeholder="Emelet" min={{parkHouse.firstFloor}} max={{parkHouse.firstFloor+parkHouse.numberOfFloors}} required ngModel #sectorFloor="ngModel">
       <span class="form-text text-danger" *ngIf="!sectorFloor.valid && (sectorFloor.touched)">
-        (0-{{parkHouse.numberOfFloors}})
+        ({{parkHouse.firstFloor}}-{{parkHouse.firstFloor+parkHouse.numberOfFloors}})
         </span>
     </div>
   </form>
   <p class="text-danger">{{error}}</p>
 </app-pop-up>
 
-<!-- <app-pop-up *ngIf="commonService.isLoading" [nobackGround]="true" [actionButtons]="false">
-  <app-loading-spinner></app-loading-spinner>
-</app-pop-up> -->
-
-<div class="container">
-  <div class="info-edit row">
-    <div class="col-md-10">
-      <h1>{{parkHouse.name}}</h1>
-      <h2>{{parkHouse.address}}</h2>
-      <h3>EMELETEK SZÁMA: {{parkHouse.numberOfFloors}}</h3>
+<main>
+  <div class="container">
+    <div class="info-edit row">
+      <div class="col-md-10">
+        <h1>{{parkHouse.name}}</h1>
+        <h2>{{parkHouse.address}}</h2>
+        <h3>Emeletek: {{parkHouse.firstFloor}}-{{parkHouse.firstFloor+parkHouse.numberOfFloors}}</h3>
+      </div>
+      <div class="buttons col-md-2" *ngIf="isAdmin">
+        <button class="btn btn-primary" (click)="openPopUp2()">
+          <fa-icon [icon]="editIcon"></fa-icon>
+        </button>
+        <button class="btn btn-danger" (click)="openPopUp()">
+          <fa-icon [icon]="deleteIcon"></fa-icon>
+        </button>
+      </div>
     </div>
-    <div class="buttons col-md-2">
-      <button class="btn btn-primary" (click)="openPopUp2()">
-        <fa-icon [icon]="editIcon"></fa-icon>
-      </button>
-      <button class="btn btn-primary" (click)="openPopUp()">
-        <fa-icon [icon]="deleteIcon"></fa-icon>
-      </button>
-    </div>
-  </div>
-  <div>
-    <h2>Szektorok:</h2>
-    <ul>
-      <app-list-tile *ngFor="let sector of parkHouse.sectors" (elementDeleted)="removeSector(sector)">
-        <div class="col-md-11" >
-          <div class="row down-btn" (click)="hidePlList(plList)">
-            <h3 class="text-primary card-title col-md-4">{{sector.name}}</h3>
-            <span class="text-primary col-md-3">{{sector.floor}}</span>
-            <span class="text-primary col-md-4">Szabad parkolók: {{sector.freePlCount}}</span>
-            <span class="col-md-1">
-              <fa-icon *ngIf="!plList.parkingLotsVisible;else upArrow" [icon]="faCaretDownIcon"></fa-icon>
-              <ng-template #upArrow><fa-icon  [icon]="faCaretUpIcon"></fa-icon></ng-template>
-            </span>
+    <div>
+      <h2>Szektorok:</h2>
+      <ul>
+        <app-list-tile *ngFor="let sector of parkHouse.sectors" (elementDeleted)="removeSector(sector)">
+          <div class="col-md-11" >
+            <div class="row down-btn" (click)="hidePlList(plList)">
+              <h3 class="text-primary card-title col-md-4">{{sector.name}}</h3>
+              <span class="text-primary col-md-3">Emelet: {{sector.floor}}</span>
+              <span class="text-primary col-md-4">Szabad parkolók: {{sector.freePlCount}}</span>
+              <span class="col-md-1">
+                <fa-icon *ngIf="!plList.parkingLotsVisible;else upArrow" [icon]="faCaretDownIcon"></fa-icon>
+                <ng-template #upArrow><fa-icon  [icon]="faCaretUpIcon"></fa-icon></ng-template>
+              </span>
+            </div>
+            <app-parking-lot-list #plList [sector] = "sector" [parkigLots]="sector.parkingLots" ></app-parking-lot-list>
           </div>
-          <app-parking-lot-list #plList [sector] = "sector" [parkigLots]="sector.parkingLots" ></app-parking-lot-list>
-        </div>
-         </app-list-tile>
-    </ul>
-    <app-add-button (addEvent)="openPopUp3()"></app-add-button>
+           </app-list-tile>
+      </ul>
+      <app-add-button (addEvent)="openPopUp3()"></app-add-button>
+    </div>
   </div>
-</div>
+</main>

@@ -22,3 +22,8 @@
   background-color: var(--secondary);
   color: var(--light);
 }
+
+.buttons button{
+  margin-top: 5px;
+  margin-right: 5px;
+}

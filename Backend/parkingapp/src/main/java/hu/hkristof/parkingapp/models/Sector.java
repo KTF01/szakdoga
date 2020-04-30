@@ -38,8 +38,7 @@ public class Sector {
 	@OneToMany(mappedBy = "sector", cascade = CascadeType.ALL)
 	private List<ParkingLot> parkingLots;
 	
-	@NotNull
-	@ManyToOne
+	@ManyToOne()
 	private ParkHouse parkHouse;
 	
 	@Formula("(select count(p.id) from parking_lots p where p.plate_number is null and p.sector_id=id)")

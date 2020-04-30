@@ -53,11 +53,11 @@
     </div>
   </div>
 
-  <div *ngIf="isAdmin">
+  <div *ngIf="isAdmin" class="buttons">
     <button class="btn btn-primary" (click)="openPopUp2()">
       <fa-icon [icon]="editIcon"></fa-icon>
     </button>
-    <button class="btn delete-btn" (click)="openPopUp()">
+    <button class="btn btn-danger" (click)="openPopUp()">
       <fa-icon [icon]="trashIcon"></fa-icon>
     </button>
   </div>

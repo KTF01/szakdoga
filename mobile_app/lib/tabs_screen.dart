@@ -35,6 +35,7 @@ class _TabsScreenState extends State<TabsScreen> {
               color: Theme.of(context).accentColor,
             ),
             onPressed: () {
+
               auth.logout();
             },
           )

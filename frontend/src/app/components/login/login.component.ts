@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { FormControl, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ParkHouseService } from '../../services/park-house.service';
 import { CommonService } from '../../services/common.service';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/User';
 import { Subscription } from 'rxjs';
 import { UserServiceService } from '../../services/user-service.service';
+import { CommonData } from '../../common-data';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,7 @@ import { UserServiceService } from '../../services/user-service.service';
 export class LoginComponent implements OnInit, OnDestroy {
 
   error:string= null;
-
+  title:string = CommonData.title;
   isLoginMode: boolean=true;
 
   @ViewChild('authForm') authForm:NgForm;

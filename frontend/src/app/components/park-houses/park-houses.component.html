@@ -2,9 +2,6 @@
   <app-loading-spinner></app-loading-spinner>
 </app-pop-up>
 
-<header>
-  <h1>Parking App</h1>
-</header>
 <main>
   <div class="container">
     <div>
@@ -37,12 +34,13 @@
         <form (ngSubmit)="onSubmit()" #f="ngForm">
           <h3>Parkolóház hozzáadása</h3>
           <div>
-            <input
+            <input class="form-control"
               type="text"
               placeholder="Név"
               ngModel
               name="parkHouseNameInput"
               #phName="ngModel"
+              required
             />
             <span
               class="form-text text-danger"
@@ -52,7 +50,7 @@
             </span>
           </div>
           <div>
-            <input
+            <input class="form-control"
               type="text"
               placeholder="Cím"
               ngModel
@@ -60,12 +58,28 @@
             />
           </div>
           <div>
-            <input
+            <input class="form-control"
+              type="number"
+              name="firstFloorInput"
+              id="firstFloor"
+              ngModel
+              required
+              placeholder="Legalsó szint"
+              #firstFloor="ngModel"/>
+            <span
+              class="form-text text-danger"
+              *ngIf="!firstFloor.valid && (firstFloor.touched || formChecked)">
+              Ez a mező nem lehet üres.
+            </span>
+          </div>
+          <div>
+            <input class="form-control"
               type="number"
               name="numFloorInput"
               id="numberOfFloors"
               ngModel
               required
+              placeholder="Szintek száma"
               #numFloor="ngModel"/>
             <span
               class="form-text text-danger"

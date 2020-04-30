@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,19 +25,23 @@ public class ParkHouse {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 	
 	@NotBlank
-	String name;
+	private String name;
 	
-	String address;
+	private String address;
 	
 	@NotNull
-	int numberOfFloors;
+	@Column(columnDefinition = "integer default 0")
+	private int firstFloor;
+	
+	@NotNull
+	private int numberOfFloors;
 	
 	@NotNull
 	@OneToMany(mappedBy = "parkHouse", cascade = CascadeType.ALL)
-	List<Sector> sectors;
+	private List<Sector> sectors;
 	
 	private int freePlCount;
 	
@@ -52,7 +57,7 @@ public class ParkHouse {
 		this.sectors = new ArrayList<>();
 	}
 	
-	public void addSection(Sector sector) {
+	public void addSector(Sector sector) {
 		sectors.add(sector);
         sector.setParkHouse(this);
     }
@@ -109,6 +114,14 @@ public class ParkHouse {
 
 	public void setFreePlCount(int freePlCount) {
 		this.freePlCount = freePlCount;
+	}
+
+	public int getFirstFloor() {
+		return firstFloor;
+	}
+
+	public void setFirstFloor(int firstFloor) {
+		this.firstFloor = firstFloor;
 	}
 	
 }

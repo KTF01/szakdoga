@@ -13,6 +13,7 @@ class UserData extends StatefulWidget {
 
 class _UserDataState extends State<UserData> {
   bool _isInit = true;
+
   @override
   void didChangeDependencies() {
     if (_isInit) {
@@ -24,19 +25,16 @@ class _UserDataState extends State<UserData> {
     super.didChangeDependencies();
   }
 
-  void _startAddCar( AuthManager authManager) {
+  void _startAddCar(AuthManager authManager) {
     setState(() {
       selectedIndex = -1;
     });
 
-    showDialog(
-        context: context,
-        child: AddCarPopup(authManager));
+    showDialog(context: context, child: AddCarPopup(authManager));
   }
 
   bool _isLoading = false;
   int selectedIndex = -1;
-  
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +88,7 @@ class _UserDataState extends State<UserData> {
                       child: InkWell(
                         onTap: () {
                           setState(() {
-                            selectedIndex = index;
+                             selectedIndex = index;
                           });
                         },
                         highlightColor: Theme.of(context).primaryColor,
@@ -112,7 +110,8 @@ class _UserDataState extends State<UserData> {
                 }),
           );
         }),
-        if (selectedIndex >= 0 && selectedIndex<loggedInUser.ownedCars.length) CarData(loggedInUser.ownedCars[selectedIndex])
+        if (selectedIndex >= 0 && selectedIndex < loggedInUser.ownedCars.length)
+          CarData(loggedInUser.ownedCars[selectedIndex])
       ],
     );
   }

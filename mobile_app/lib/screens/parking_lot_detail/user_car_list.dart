@@ -15,12 +15,18 @@ class UserCarList extends StatefulWidget {
 class _UserCarListState extends State<UserCarList> {
   bool _isLoading = false;
 
-  void _startParkIn(Car car) async {
+  void _startParkIn(AuthManager auth, Car car) async {
     setState(() {
       _isLoading = true;
     });
 
-    await widget.parkingLot.parkIn(car);
+    try{
+      await widget.parkingLot.parkIn(car);
+      auth.setupNotification(car.occupiedParkingLot.id, car.occupiedParkingLot);
+    }catch (error){
+      print(error);
+    }
+    
     Navigator.pop(context);
   }
 
@@ -43,7 +49,7 @@ class _UserCarListState extends State<UserCarList> {
                     return Card(
                       child: InkWell(
                           onTap: () {
-                            _startParkIn(car);
+                            _startParkIn(auth, car);
                           },
                           highlightColor: Theme.of(context).primaryColor,
                           child: ListTile(
