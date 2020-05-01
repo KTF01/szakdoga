@@ -33,6 +33,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
 
   displayedUser: User;
   loggedInUserFirstUser:boolean = false;
+  isLoggedInUser : boolean = true;
   sameuser:boolean;
   error:string = "";
 
@@ -55,6 +56,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
         });
 
     }
+    this.isLoggedInUser = this.authService.loggedInUser.id== this.displayedUser.id;
     this.loggedInUserFirstUser = this.authService.loggedInUser.role==Role.ROLE_FIRST_USER
 
   }

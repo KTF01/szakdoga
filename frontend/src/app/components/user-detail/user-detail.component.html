@@ -53,7 +53,7 @@
             <p>Parkolóház: {{selectedCar.occupiedParkingLot.sector.parkHouse.name}}</p>
             <p>Szektor: {{selectedCar.occupiedParkingLot.sector.name}}</p>
             <button class="btn btn-primary" (click)="openPopUp()">Kiállás</button>
-            <button class="delete-btn" (click)="openPopUp3()">
+            <button class="delete-btn" (click)="openPopUp3()" *ngIf="isLoggedInUser">
               <fa-icon [icon] = "deleteIson"></fa-icon>
             </button>
           </div>

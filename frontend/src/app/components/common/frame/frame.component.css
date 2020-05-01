@@ -10,6 +10,10 @@
   display: none;
 }
 
+.sidenav h3{
+  font-size: 30px;
+}
+
 .sidenav span, .sidenav h3{
   padding: 8px 8px 8px 16px;
   text-decoration: none;
@@ -39,14 +43,12 @@
     width: 100%;
     position: sticky;
     padding-top: 0;
-    /*height: 20px;*/
   }
   .brand{
     height: 50px;
   }
   .sidenav h3{
     display: inline-block;
-    width: 50%;
     min-width: 200px;
   }
 
