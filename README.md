@@ -1,2 +1,2 @@
-# szakdoga
+# Szakdolgozat Horváth Kristóf
 Parking System
