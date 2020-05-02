@@ -20,6 +20,8 @@ class AuthManager with ChangeNotifier {
   AuthManager.withParkHouses(this._parkHousesProvider);
   AuthManager();
 
+  bool loginRunned = false;
+
   FlutterLocalNotificationsPlugin notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -34,29 +36,27 @@ class AuthManager with ChangeNotifier {
   Future<void> loggIn(String email, String password) async {
     String token = 'Basic ' + base64Encode(utf8.encode('$email:$password'));
     try {
-      _loginWithToken(token);
+      const String url = "${Common.hostUri}auth/users/login";
+      final http.Response response = await http.post(url, headers: {
+        'authorization': token,
+        "content-type": "application/json; charset=utf-8"
+      });
+      final extractedResponse =
+          json.decode(response.body.toString()) as Map<String, dynamic>;
+
+      this._loggedInUser = _extractUser(extractedResponse);
+      Common.authToken = token;
+      notifyListeners();
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      pref.setString('token', Common.authToken);
+      pref.setString('loginResponse', response.body);
+      print(response.body);
     } catch (error) {
       print('ERROR: $error');
       throw error;
     }
   }
 
-  Future<void> _loginWithToken(String token) async {
-    const String url = "${Common.hostUri}auth/users/login";
-    final http.Response response = await http.post(url, headers: {
-      'authorization': token,
-      "content-type": "application/json; charset=utf-8"
-    });
-    final extractedResponse =
-        json.decode(response.body.toString()) as Map<String, dynamic>;
-
-    this._loggedInUser = _extractUser(extractedResponse);
-    Common.authToken = token;
-    notifyListeners();
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setString('token', Common.authToken);
-    pref.setString('loginResponse', response.body);
-  }
 
   Future<bool> autoLogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -184,7 +184,7 @@ class AuthManager with ChangeNotifier {
 
   Future<void> _initNotification() async {
     AndroidInitializationSettings androidInitializationSettings =
-        new AndroidInitializationSettings('icon');
+        new AndroidInitializationSettings('ic_launcher');
     IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings();
     InitializationSettings initializationSettings = InitializationSettings(
@@ -193,23 +193,28 @@ class AuthManager with ChangeNotifier {
   }
 
   Future<void> setupNotification(int id, ParkingLot parkingLot) async {
-
     DateTime scheduledTime = DateTime.now().add(Duration(hours: 10));
-    final btsi = BigTextStyleInformation('Már régóta bent áll a(z) <h1>${parkingLot.sector.parkHouse.name}:${parkingLot.sector.name}/${parkingLot.name}</h1> parkolóban. \nNem felejtett el kiállni?',
-    htmlFormatBigText: true);
+    final btsi = BigTextStyleInformation(
+        'Már régóta bent áll a(z) <h1>${parkingLot.sector.parkHouse.name}:${parkingLot.sector.name}/${parkingLot.name}</h1> parkolóban. \nNem felejtett el kiállni?',
+        htmlFormatBigText: true);
     AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails('0', 'teszt-chanel', 'eleg jo',styleInformation: btsi );
+        AndroidNotificationDetails('0', 'teszt-chanel', 'eleg jo',
+            styleInformation: btsi);
     IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
-    NotificationDetails notificationDetails = NotificationDetails( androidNotificationDetails, iosNotificationDetails);
-    Time dailyTime = Time(scheduledTime.hour, scheduledTime.minute, scheduledTime.second);
+    NotificationDetails notificationDetails =
+        NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+    Time dailyTime =
+        Time(scheduledTime.hour, scheduledTime.minute, scheduledTime.second);
     await notificationsPlugin.cancel(id);
     await notificationsPlugin.showDailyAtTime(
-          id, 'Kiparkolás ${parkingLot.occupiingCar.plareNumber}', 
-          'Mindegy',
-           dailyTime, notificationDetails);
+        id,
+        'Kiparkolás ${parkingLot.occupiingCar.plareNumber}',
+        'Mindegy',
+        dailyTime,
+        notificationDetails);
   }
 
-  Future<void> cancelNotification(int id) async{
+  Future<void> cancelNotification(int id) async {
     await notificationsPlugin.cancel(id);
   }
 }

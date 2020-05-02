@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/providers/auth.dart';
-import 'package:mobile_app/tabs_screen.dart';
 import 'package:provider/provider.dart';
 
 enum AuthMode { Signup, Login }
@@ -91,7 +90,6 @@ class _AuthCardState extends State<AuthCard> {
     if (_authMode == AuthMode.Login) {
       try {
         await auth.loggIn(_authData['email'], _authData['password']);
-        //Navigator.pushNamed(context, TabsScreen.routeName);
       } catch (error) {
         String errorMessage = "Valami hiba keletkezett!";
         if (error.toString().contains("Failed to parse header value")) {

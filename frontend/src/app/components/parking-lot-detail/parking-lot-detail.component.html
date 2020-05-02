@@ -3,8 +3,9 @@
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp2IsOpen" (closeEvent)="closePopUp2()" (okEvent)="submitEditForm()">
-  <form #form="ngForm" (ngSubmit)="onEditSubmit()">
-    <input type="text" required name="newNameInput" placeholder="Új név" [ngModel]="parkingLot.name">
+  <form #form="ngForm" (ngSubmit)="onEditSubmit()" class="form-group">
+    <label for="nameEditInput">Név:</label>
+    <input class="form-control" id="nameEditInput" type="text" required name="newNameInput" placeholder="Új név" [ngModel]="parkingLot.name">
   </form>
 </app-pop-up>
 
@@ -29,10 +30,23 @@
 </app-pop-up>
 
 <div class="container">
-  <h1>{{parkingLot.name}}</h1>
-  <h2>Parkolóház: {{parkingLot.sector.parkHouse.name}}</h2>
-  <h2>Szektor: {{parkingLot.sector.name}}</h2>
-  <div class="felx-cont">
+  <div class="row justify-content-sm-between">
+    <div>
+      <h1>{{parkingLot.name}}</h1>
+      <h2>Parkolóház: {{parkingLot.sector.parkHouse.name}}</h2>
+      <h2>Szektor: {{parkingLot.sector.name}}</h2>
+    </div>
+
+    <div *ngIf="isAdmin" class="buttons">
+      <button class="btn btn-primary" (click)="openPopUp2()">
+        <fa-icon [icon]="editIcon"></fa-icon>
+      </button>
+      <button class="btn btn-danger" (click)="openPopUp()">
+        <fa-icon [icon]="trashIcon"></fa-icon>
+      </button>
+    </div>
+  </div>
+  <div class="pl-car-container">
     <div *ngIf="parkingLot.occupiingCar;else emptyPl">
       <div class="car-detail-container row">
         <div class="car-details-icon col-md-4">
@@ -45,20 +59,12 @@
       </div>
     </div>
     <ng-template #emptyPl>
-      <h1>Üres</h1>
+      <div class="no-car"><h1>Üres</h1></div>
     </ng-template>
-    <div>
+    <div class="no-car">
       <button class="btn btn-primary" (click)="parkingLot.occupiingCar? parkOut() :openPopUp3()"
       *ngIf="isParkActionShown">{{parkingLot.occupiingCar?'Kiállás':'Beállás'}}</button>
     </div>
   </div>
 
-  <div *ngIf="isAdmin" class="buttons">
-    <button class="btn btn-primary" (click)="openPopUp2()">
-      <fa-icon [icon]="editIcon"></fa-icon>
-    </button>
-    <button class="btn btn-danger" (click)="openPopUp()">
-      <fa-icon [icon]="trashIcon"></fa-icon>
-    </button>
-  </div>
 </div>
