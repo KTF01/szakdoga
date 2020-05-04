@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TimeLogComponent } from './time-log.component';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('TimeLogComponent', () => {
   let component: TimeLogComponent;
@@ -8,7 +9,8 @@ describe('TimeLogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TimeLogComponent ]
+      declarations: [ TimeLogComponent ],
+      imports: [HttpClientModule]
     })
     .compileComponents();
   }));

@@ -44,7 +44,7 @@ public class Sector {
 	@Formula("(select count(p.id) from parking_lots p where p.plate_number is null and p.sector_id=id)")
 	private int freePlCount;
 	
-	Sector(){
+	public Sector(){
 		this.parkingLots = new ArrayList<>();
 	}
 	

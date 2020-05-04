@@ -17,7 +17,6 @@ import { ParkingLotDetailComponent } from './components/parking-lot-detail/parki
 import { PopUpComponent } from './components/pop-up/pop-up.component';
 import { LoadingSpinnerComponent } from './components/common/loading-spinner/loading-spinner.component';
 import { SideNavComponent } from './components/common/side-nav/side-nav.component';
-import { AuthInterceptorService } from './services/auth-interceptor.service';
 import { UserDetailComponent } from './components/user-detail/user-detail.component';
 import { TimeLogComponent } from './components/time-log/time-log.component';
 import { UserListComponent } from './components/user-list/user-list.component';
@@ -54,7 +53,7 @@ import { FrameComponent } from './components/common/frame/frame.component';
     HttpClientModule,
 
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true}],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

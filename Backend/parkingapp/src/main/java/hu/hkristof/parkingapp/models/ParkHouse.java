@@ -46,14 +46,14 @@ public class ParkHouse {
 	private int freePlCount;
 	
 	@PostLoad
-	private void countFreePls() {
+	public void countFreePls() {
 		freePlCount = 0;
 		for (Sector sector : sectors) {
 			freePlCount+=sector.getFreePlCount();
 		}
 	}
 	
-	ParkHouse(){
+	public ParkHouse(){
 		this.sectors = new ArrayList<>();
 	}
 	

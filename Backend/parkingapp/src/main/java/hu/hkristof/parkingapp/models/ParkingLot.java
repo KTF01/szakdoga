@@ -17,19 +17,19 @@ public class ParkingLot {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 	
 	@NotBlank
-	String name;
+	private String name;
 	
 	@JsonIdentityReference(alwaysAsId = true)
 	@OneToOne
 	@JoinColumn(name= "plate_number")
-	Car occupiingCar;
+	private Car occupiingCar;
 	
 	@JsonIdentityReference(alwaysAsId = true)
 	@ManyToOne
-	Sector sector;
+	private Sector sector;
 
 	public Long getId() {
 		return id;
@@ -59,8 +59,8 @@ public class ParkingLot {
 		return sector;
 	}
 
-	public void setSector(Sector section) {
-		this.sector = section;
+	public void setSector(Sector sector) {
+		this.sector = sector;
 	}
 
 }

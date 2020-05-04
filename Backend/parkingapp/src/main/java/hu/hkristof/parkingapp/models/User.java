@@ -1,5 +1,6 @@
 package hu.hkristof.parkingapp.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -49,16 +50,19 @@ public class User {
 
 	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-	List<Car> ownedCars;
+	private List<Car> ownedCars;
 	
+	public User(){
+		this.ownedCars = new ArrayList<>();
+	}
 	
 	public void addCar(Car car) {
-		car.owner=this;
+		car.setOwner(this);
 		this.ownedCars.add(car);
 	}
 	
 	public void removeCar(Car car) {
-		car.owner=null;
+		car.setOwner(null);
 		this.ownedCars.remove(car);
 	}
 	

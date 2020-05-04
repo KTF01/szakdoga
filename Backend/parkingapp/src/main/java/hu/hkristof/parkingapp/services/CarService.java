@@ -45,7 +45,6 @@ public class CarService {
 		if(car.getOccupiedParkingLot()!=null) {
 			parkingLotService.parkOut(car.getOccupiedParkingLot().getId());
 		}
-		User user = car.getOwner(); 
 		car.getOwner().removeCar(car);
 		carRepository.delete(car);
 		System.out.println(plateNumber + " rendszámú autó törölve!");

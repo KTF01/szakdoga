@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ParkingLotDetailComponent } from './parking-lot-detail.component';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ParkingLotDetailComponent', () => {
   let component: ParkingLotDetailComponent;

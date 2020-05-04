@@ -32,7 +32,9 @@ export class ParkHouseService extends ErrorHandler {
 
   loadParkHouses(): void {
     this.commonService.isLoading = true;
-    this.http.get<{ parkHouses: ParkHouse[], cars: Car[] }>(CommonData.hostUri + 'auth/parkHouses/all').subscribe(
+    this.http.get<{ parkHouses: ParkHouse[], cars: Car[] }>(CommonData.hostUri + 'auth/parkHouses/all', {
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(
       response => {
         this.parkHouses = response.parkHouses;
         for (let ph of this.parkHouses) {
@@ -55,7 +57,9 @@ export class ParkHouseService extends ErrorHandler {
 
   removeParkHouse(parkHouse: ParkHouse) {
     this.commonService.isLoading = true;
-    this.http.delete(CommonData.hostUri + 'auth/parkHouses/delete/' + parkHouse.id).subscribe(response => {
+    this.http.delete(CommonData.hostUri + 'auth/parkHouses/delete/' + parkHouse.id,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response => {
       this.commonService.isLoading = false;
       console.log(response);
       let index = this.parkHouses.indexOf(parkHouse);
@@ -67,7 +71,9 @@ export class ParkHouseService extends ErrorHandler {
 
   addNewParkHouse(newParkHouse: ParkHouse) {
     this.commonService.isLoading = true;
-    this.http.post<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/newPH', newParkHouse).subscribe(response => {
+    this.http.post<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/newPH', newParkHouse,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response => {
       this.commonService.isLoading = false;
       this.parkHouses.push(response);
       this.addedParkHouse.next(true);
@@ -85,6 +91,8 @@ export class ParkHouseService extends ErrorHandler {
       name: parkHouse.name,
       address: parkHouse.address,
       numberOfFloors: parkHouse.numberOfFloors
+    },{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response => {
       this.commonService.isLoading = false;
       this.parkHouses[index].name = response.name;
@@ -103,7 +111,9 @@ export class ParkHouseService extends ErrorHandler {
 
     let index = this.parkHouses.findIndex(ph => ph.id === parkHouse.id);
     this.commonService.isLoading = true;
-    this.http.put<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/addSectors/' + parkHouse.id, [newSector]).subscribe(response => {
+    this.http.put<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/addSectors/' + parkHouse.id, [newSector],{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response => {
       this.commonService.isLoading = false;
       this.parkHouses[index] = response;
       this.addedSectorToParkHouse.next(response);

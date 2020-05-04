@@ -18,14 +18,14 @@ public class Car {
 	
 	@Id
 	@NotBlank
-	String plateNumber;
+	private String plateNumber;
 	
 	
 	@ManyToOne(cascade = CascadeType.DETACH)
-	User owner;
+	private User owner;
 	
 	@OneToOne(cascade = CascadeType.PERSIST)
-	ParkingLot occupiedParkingLot;
+	private ParkingLot occupiedParkingLot;
 
 	public ParkingLot getOccupiedParkingLot() {
 		return occupiedParkingLot;
