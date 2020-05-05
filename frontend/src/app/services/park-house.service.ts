@@ -106,7 +106,6 @@ export class ParkHouseService extends ErrorHandler {
     return this.parkHouses.find(ph => ph.id === id);
   }
 
-  //TODO LISTA!!
   addSectors(parkHouse: ParkHouse, newSector: Sector): void {
 
     let index = this.parkHouses.findIndex(ph => ph.id === parkHouse.id);
@@ -117,8 +116,6 @@ export class ParkHouseService extends ErrorHandler {
       this.commonService.isLoading = false;
       this.parkHouses[index] = response;
       this.addedSectorToParkHouse.next(response);
-      //newSector.parkHouse = parkHouse;
-      //parkHouse.sectors.push(newSector);
     }, error => this.handleError(error));
 
   }

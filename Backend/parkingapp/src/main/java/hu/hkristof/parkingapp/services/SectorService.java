@@ -27,17 +27,6 @@ public class SectorService {
 	public List<Sector> getAll(){
 		return sectorRepository.findAll();
 	}
-	
-	public Sector createSector(Sector sector) {
-		Sector newSector = sectorRepository.save(sector);
-		for(ParkingLot pl : sector.getParkingLots()) {
-			pl.setSector(sector);
-		}
-		parkingLotRepository.saveAll(sector.getParkingLots());
-		System.out.println(sector.getName()+" nevű szekció létrehozva!");
-	    return newSector ;
-	}
-	
 	public Sector addParkingLot(Long id, List<ParkingLot> newParkingLots) {
 		Sector sector = sectorRepository.findById(id).orElseThrow(()->new SectorNotFoundException(id));
 		for(ParkingLot parkingLot : newParkingLots) {

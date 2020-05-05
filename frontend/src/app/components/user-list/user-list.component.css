@@ -48,22 +48,18 @@
   width: 100%;
 }
 
-.user-icon{
-  width: 10%;
-  padding: 5px;
-  margin-left: 5px;
+.data-button{
+  border-radius: 5px;
 }
-.user-name{
-  width: 20%;
-}
-.user-email{
-  width: 40%;
+.data-button:hover{
+  background-color: var(--primary);
+  color: var(--light);
 }
 
-.user-cars-numb{
-  width: 30%;
+.data-row{
+  border-bottom: 1px solid var(--dark);
 }
 
-.user-list-item span{
-  display: inline-block;
+.data-row span{
+  display: block;
 }

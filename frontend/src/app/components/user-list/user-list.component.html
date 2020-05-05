@@ -13,28 +13,16 @@
   <div class="data-display">
 
     <ul class="user-list">
-      <li class="user-list-item">
-        <div >
-          <div class="user-info" >
-            <span class="user-icon"></span>
-            <span class="user-name"><strong>Név</strong></span>
-            <span class="user-email"><strong>Email</strong></span>
-            <span class="user-cars-numb"><strong>Autók</strong></span>
+      <li *ngFor="let user of filteredUserList(); let i = index" class="data-row">
+        <div class="row justify-content-md-between">
+          <div class=" col-md-10 row justify-content-md-start align-items-center data-button" (click)="navigateToUserDetail(user.id)">
+            <span class="col-md-1 ml-1"><fa-icon [icon] = "getUserIcon(user)"></fa-icon></span>
+            <span class="col-md-3">{{user.firstName}} {{user.lastName}}</span>
+            <span class="col-md-5">{{user.email}}</span>
+            <span class="col-md-2">Autók száma: {{user.ownedCars.length}}</span>
           </div>
-          <div class="admin-button">
-          </div>
-        </div>
-      </li>
-      <li *ngFor="let user of filteredUserList(); let i = index" class="user-list-item">
-        <div >
-          <div class="user-info" (click)="navigateToUserDetail(user.id)">
-            <span class="user-icon"><fa-icon [icon] = "getUserIcon(user)"></fa-icon></span>
-            <span class="user-name">{{user.firstName}} {{user.lastName}}</span>
-            <span class="user-email">{{user.email}}</span>
-            <span class="user-cars-numb">{{user.ownedCars.length}}</span>
-          </div>
-          <div class="admin-button">
-            <button class="btn btn-primary "(click)="openPopUpCustom(user)" *ngIf="!(user.role==FIRST_USER_ROLE)">
+          <div class="admin-button col-md-1 mx-3" >
+            <button class="btn btn-primary"(click)="openPopUpCustom(user)" *ngIf="!(user.role==FIRST_USER_ROLE)">
               Jogosultság vátoztatása
             </button>
           </div>
