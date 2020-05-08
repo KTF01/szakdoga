@@ -7,6 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PopUpContainer } from '../pop-up/PopUpContainer';
 import { NgForm, NgModel } from '@angular/forms';
 import { ParkingLotService } from '../../services/parking-lot.service';
+import { ParkingLotStatus } from '../../models/ParkingLotStatus';
 
 @Component({
   selector: 'app-parking-lot-list',
@@ -32,7 +33,7 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
   }
 
   addParkingLot() {
-    this.sectorService.addParkingLotToSector(this.sector, { id: 3, name: 'PTeszt', occupiingCar: null, sector: null });
+    this.sectorService.addParkingLotToSector(this.sector, { id: 3, name: 'PTeszt', occupiingCar: null, sector: null, status: ParkingLotStatus.EMPTY });
   }
 
   novigateToParkingLotDetail(parkingLot: ParkingLot) {
@@ -54,7 +55,8 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
         newParkingLots.push({
           name: this.form.value[inputName],
           occupiingCar: null,
-          sector: null
+          sector: null,
+          status: ParkingLotStatus.EMPTY
         });
       }
 

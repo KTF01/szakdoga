@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,8 +46,13 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 	
+	@NotNull
+	@OneToMany(mappedBy = "user")
+	private List<Reservation> reservations;
+	
 	@NotBlank
 	@Email
+	@Column(unique = true)
 	private String email;
 
 	@JsonIdentityReference(alwaysAsId = true)
@@ -54,6 +61,7 @@ public class User {
 	
 	public User(){
 		this.ownedCars = new ArrayList<>();
+		this.reservations = new ArrayList<>();
 	}
 	
 	public void addCar(Car car) {
@@ -64,6 +72,16 @@ public class User {
 	public void removeCar(Car car) {
 		car.setOwner(null);
 		this.ownedCars.remove(car);
+	}
+	
+	public void addReservation(Reservation reservation) {
+		this.reservations.add(reservation);
+		reservation.setUser(this);
+	}
+	
+	public void removeReservation(Reservation reservation) {
+		reservation.setUser(null);
+		this.reservations.remove(reservation);
 	}
 	
 	public Long getId() {

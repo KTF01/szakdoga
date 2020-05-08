@@ -24,7 +24,7 @@ public class Car {
 	@ManyToOne(cascade = CascadeType.DETACH)
 	private User owner;
 	
-	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "occupiingCar")
+	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "occupyingCar")
 	private ParkingLot occupiedParkingLot;
 
 	public ParkingLot getOccupiedParkingLot() {

@@ -11,6 +11,7 @@ import hu.hkristof.parkingapp.exceptions.ParkHouseNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.models.ParkingLot;
+import hu.hkristof.parkingapp.models.Reservation;
 import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.repositoris.ParkHouseRepository;
 import hu.hkristof.parkingapp.responsetypes.AllParkHousesResponse;
@@ -33,6 +34,7 @@ public class ParkHouseService {
 		AllParkHousesResponse response =  new AllParkHousesResponse();
 		List<ParkHouse> parkHouses =  parkHouseRepository.findAllByOrderByNameAsc();
 		List<Car> cars =  new ArrayList<>();
+		List<Reservation> reservations = new ArrayList<>();
 		
 		for(ParkHouse ph : parkHouses) {
 			for(Sector sector : ph.getSectors()) {
@@ -43,8 +45,11 @@ public class ParkHouseService {
 				    }
 				});
 				for(ParkingLot pl : sector.getParkingLots()) {
-					if(pl.getOccupiingCar()!=null) {
-						cars.add(pl.getOccupiingCar());
+					if(pl.getOccupyingCar()!=null) {
+						cars.add(pl.getOccupyingCar());
+					}
+					if(pl.getReservation()!=null) {
+						reservations.add(pl.getReservation());
 					}
 				}
 			}
@@ -65,6 +70,7 @@ public class ParkHouseService {
 		System.out.println("Parkolóházak lekérdezve!");
 		response.setParkHouses(parkHouses);
 		response.setCars(cars);
+		response.setReservations(reservations);
 		return response;
 	}
 	

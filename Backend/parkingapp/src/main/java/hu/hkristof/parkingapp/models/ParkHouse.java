@@ -14,6 +14,7 @@ import javax.persistence.PostLoad;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -37,6 +38,7 @@ public class ParkHouse {
 	private int firstFloor;
 	
 	@NotNull
+	@PositiveOrZero
 	private int numberOfFloors;
 	
 	@NotNull
@@ -44,6 +46,12 @@ public class ParkHouse {
 	private List<Sector> sectors;
 	
 	private int freePlCount;
+	
+	@NotNull
+	private double longitude;
+	
+	@NotNull
+	private double latitude;
 	
 	@PostLoad
 	public void countFreePls() {
@@ -122,6 +130,22 @@ public class ParkHouse {
 
 	public void setFirstFloor(int firstFloor) {
 		this.firstFloor = firstFloor;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
 	}
 	
 }

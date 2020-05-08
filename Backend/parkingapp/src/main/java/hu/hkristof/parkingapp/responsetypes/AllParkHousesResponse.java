@@ -4,12 +4,15 @@ import java.util.List;
 
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkHouse;
+import hu.hkristof.parkingapp.models.Reservation;
 
 public class AllParkHousesResponse {
 	
 	List<ParkHouse> parkHouses;
 	
 	List<Car> cars;
+	
+	List<Reservation> reservations;
 
 	public List<ParkHouse> getParkHouses() {
 		return parkHouses;
@@ -26,6 +29,12 @@ public class AllParkHousesResponse {
 	public void setCars(List<Car> cars) {
 		this.cars = cars;
 	}
-	
-	
+
+	public List<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
+	}
 }
