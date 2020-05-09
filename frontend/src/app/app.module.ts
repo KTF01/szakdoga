@@ -1,7 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
+import { HttpClientModule } from '@angular/common/http'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import { AgmCoreModule } from '@agm/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -51,7 +52,9 @@ import { FrameComponent } from './components/common/frame/frame.component';
     FormsModule,
     FontAwesomeModule,
     HttpClientModule,
-
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyC5Ps-M1wtosWKu1A_GsR1uOWUdQn3p5sI'
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

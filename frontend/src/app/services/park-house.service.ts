@@ -16,8 +16,8 @@ import { Car } from '../models/Car';
 export class ParkHouseService extends ErrorHandler {
 
   loadedParkHouses: Subject<boolean> = new Subject<boolean>();
-  deletedParkHouse: Subject<boolean> = new Subject<boolean>();
-  addedParkHouse: Subject<boolean> = new Subject<boolean>();
+  deletedParkHouse: Subject<number> = new Subject<number>();
+  addedParkHouse: Subject<ParkHouse> = new Subject<ParkHouse>();
   updatedParkHouse: Subject<ParkHouse> = new Subject<ParkHouse>();
   addedSectorToParkHouse: Subject<ParkHouse> = new Subject<ParkHouse>();
   removedSectorToParkHouse: Subject<boolean> = new Subject<boolean>();
@@ -57,14 +57,14 @@ export class ParkHouseService extends ErrorHandler {
 
   removeParkHouse(parkHouse: ParkHouse) {
     this.commonService.isLoading = true;
-    this.http.delete(CommonData.hostUri + 'auth/parkHouses/delete/' + parkHouse.id,{
+    this.http.delete<number>(CommonData.hostUri + 'auth/parkHouses/delete/' + parkHouse.id,{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response => {
       this.commonService.isLoading = false;
       console.log(response);
       let index = this.parkHouses.indexOf(parkHouse);
       this.parkHouses.splice(index, 1);
-      this.deletedParkHouse.next(true);
+      this.deletedParkHouse.next(response);
     }, error => this.handleError(error));
 
   }
@@ -76,7 +76,7 @@ export class ParkHouseService extends ErrorHandler {
     }).subscribe(response => {
       this.commonService.isLoading = false;
       this.parkHouses.push(response);
-      this.addedParkHouse.next(true);
+      this.addedParkHouse.next(response);
     }, error => this.handleError(error));
 
   }

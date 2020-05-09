@@ -98,7 +98,9 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
       address: this.editForm.value.parkHouseAddressInput,
       firstFloor: this.editForm.value.numFirstFloorInput,
       numberOfFloors: this.editForm.value.numFloorInput,
-      sectors: this.parkHouse.sectors
+      sectors: this.parkHouse.sectors,
+      longitude: 0,
+      latitude : 0
     };
     this.parkHouseService.updateParkHouse(updatedParkHouse);
     this.parkHouseService.updatedParkHouse.subscribe(response => {

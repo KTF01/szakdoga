@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.models.User;
@@ -86,4 +87,11 @@ public class UserController {
 		}
 		
 	}
+	
+	@GetMapping("auth/getClosestPh")
+	public Long getCloesetParkHouse(@RequestParam("userLong") double userLong, @RequestParam("userLat") double userLat) {
+		System.out.println("Legközelebbi parkolóház lekérdezve!");
+		return userService.getClosestParkHouse(userLong, userLat).getId();
+	}
+	
 }

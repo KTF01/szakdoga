@@ -8,4 +8,6 @@ export class ParkHouse{
   numberOfFloors: number;
   freePlCount?: number;
   sectors: Sector[];
+  longitude:number;
+  latitude: number;
 }

@@ -18,5 +18,4 @@ public class AuthenticatedUser {
 		this.user = user;
 	}
     
-    
 }

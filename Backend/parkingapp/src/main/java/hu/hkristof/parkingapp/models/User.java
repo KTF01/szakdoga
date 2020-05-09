@@ -8,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -58,6 +57,10 @@ public class User {
 	@JsonIdentityReference(alwaysAsId = true)
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	private List<Car> ownedCars;
+	
+	private double longitude;
+	
+	private double latitude;
 	
 	public User(){
 		this.ownedCars = new ArrayList<>();
@@ -138,6 +141,29 @@ public class User {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	
+
+	public List<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
 
 }

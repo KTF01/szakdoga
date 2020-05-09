@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { CommonData } from '../common-data';
 import { User } from '../models/User';
 import { Subject } from 'rxjs';
@@ -23,83 +23,119 @@ export class AuthService {
 
   loggedInUser: User = null;
 
-  isLogedIn:boolean=false;
+  isLogedIn: boolean = false;
 
-  constructor(private http:HttpClient, private commonService:CommonService, private router: Router, private userService:UserServiceService) { }
+  constructor(private http: HttpClient, private commonService: CommonService, private router: Router, private userService: UserServiceService) { }
 
-  login(email:string, password:string){
-    const token:string = btoa(`${email}:${password}`);
-
-    this.http.post<{user:User, userCars:Car[]}>(CommonData.hostUri+'auth/users/login', email,{
-      headers: new HttpHeaders({'Authorization': `Basic ${token}`})
-    }).subscribe(response=>{
+  login(email: string, password: string) {
+    this.commonService.isLoading = true;
+    const token: string = btoa(`${email}:${password}`);
+    this.http.post<{ user: User, userCars: Car[] }>(CommonData.hostUri + 'auth/users/login', email, {
+      headers: new HttpHeaders({ 'Authorization': `Basic ${token}` })
+    }).subscribe(response => {
       response.user = this.userService.setUpUserCars(response);
-      response.user.role= (<any>Role)[response.user.role];
-      this.loggedInUser=response.user;
-      this.commonService.authToken=token;
+      response.user.role = (<any>Role)[response.user.role];
+      this.loggedInUser = response.user;
+      this.commonService.authToken = token;
       this.commonService.loggedInId = response.user.id;
-      this.isLogedIn=true;
-      this.loggedIn.next(response.user);
-    }, error=>this.handleError(error));
+      this.isLogedIn = true;
+
+      navigator.geolocation.getCurrentPosition(pos => {
+        CommonData.authLongitude = pos.coords.longitude;
+        CommonData.authLatitude = pos.coords.latitude;
+        this.loggedIn.next(response.user);
+        this.commonService.isLoading = false;
+        this.loggedIn.next(response.user);
+        this.commonService.isLoading = false;
+      }, (error) =>{
+        console.log(error);
+        this.loggedIn.next(response.user);
+        this.commonService.isLoading = false;
+      });
+
+
+
+
+
+    }, error => this.handleError(error));
+
+
   }
 
-  logout(){
-    this.loggedInUser=null;
-    this.commonService.authToken=null;
-    this.isLogedIn=false;
+  logout() {
+    this.loggedInUser = null;
+    this.commonService.authToken = null;
+    this.isLogedIn = false;
     this.router.navigate(['login']);
   }
 
-  signup(newUser:User){
-    this.commonService.isLoading=true;
-    this.http.post<User>(CommonData.hostUri+'users/signUp',newUser).subscribe(response=>{
+  signup(newUser: User) {
+    this.commonService.isLoading = true;
+    this.http.post<User>(CommonData.hostUri + 'users/signUp', newUser).subscribe(response => {
       this.signUpSubject.next(response);
-      this.commonService.isLoading=false;
-    }, error=>this.handleError(error));
+      this.commonService.isLoading = false;
+    }, error => this.handleError(error));
   }
 
-  refreshLoggedInUserData(){
-    this.commonService.isLoading=true;
-    this.http.get<{user:User, userCars:Car[]}>(CommonData.hostUri+'auth/users/'+this.loggedInUser.id, {
-      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
-    }).subscribe(response=>{
+  refreshLoggedInUserData() {
+    this.commonService.isLoading = true;
+    this.http.get<{ user: User, userCars: Car[] }>(CommonData.hostUri + 'auth/users/' + this.loggedInUser.id, {
+      headers: new HttpHeaders({ 'Authorization': `Basic ${this.commonService.authToken}` })
+    }).subscribe(response => {
       response.user = this.userService.setUpUserCars(response);
-      response.user.role= (<any>Role)[response.user.role];
-      this.loggedInUser=response.user;
+      response.user.role = (<any>Role)[response.user.role];
+      this.loggedInUser = response.user;
       this.refreshedLoggedInUser.next(response.user);
-      this.commonService.isLoading=false;
-    }, error=>this.handleError(error));
+      this.commonService.isLoading = false;
+    }, error => this.handleError(error));
   }
 
-  changePassword(oldPassword:string, newPassword:string){
-    this.commonService.isLoading=true;
-    const token:string = btoa(`${this.loggedInUser.email}:${oldPassword}`);
-    const headers = new HttpHeaders({'Authorization': `Basic ${token}`, 'Content-Type': 'text/plain; charset=utf-8'});
-    this.http.put<any>(CommonData.hostUri+'auth/users/changePassword/'+this.loggedInUser.id, newPassword,{
+  changePassword(oldPassword: string, newPassword: string) {
+    this.commonService.isLoading = true;
+    const token: string = btoa(`${this.loggedInUser.email}:${oldPassword}`);
+    const headers = new HttpHeaders({ 'Authorization': `Basic ${token}`, 'Content-Type': 'text/plain; charset=utf-8' });
+    this.http.put<any>(CommonData.hostUri + 'auth/users/changePassword/' + this.loggedInUser.id, newPassword, {
       headers,
       responseType: 'text' as 'json'
-    }).subscribe(response=>{
+    }).subscribe(response => {
       console.log(response);
       this.changedPassword.next(true);
-      this.commonService.isLoading=false;
-    }, error=>{
-      this.commonService.isLoading=false;
+      this.commonService.isLoading = false;
+    }, error => {
+      this.commonService.isLoading = false;
       console.log(error);
-      if(error.status===401){
+      if (error.status === 401) {
         this.errorOccured.next('Helytelen a régi jelszó!');
-      }else{
-        this.errorOccured.next('Hiba történt! Státuszkód: '+error.status);
+      } else {
+        this.errorOccured.next('Hiba történt! Státuszkód: ' + error.status);
       }
     });
   }
 
-  handleError(error:HttpErrorResponse){
-    this.commonService.isLoading=false;
+  getClosestParkhouse() {
+    if(CommonData.authLatitude && CommonData.authLatitude){
+      let myParams: HttpParams = new HttpParams();
+      myParams = myParams.append("userLong", CommonData.authLongitude.toString());
+      myParams = myParams.append("userLat", CommonData.authLatitude.toString());
+      this.http.get<number>(CommonData.hostUri + 'auth/getClosestPh', {
+        headers: new HttpHeaders({ 'Authorization': `Basic ${this.commonService.authToken}` }),
+        params: myParams
+      }).subscribe(response => {//EMITÁLNI
+        console.log(response);
+      });
+    }else{
+      console.log("NEM JO");//EMITÁLNI
+    }
+
+  }
+
+  handleError(error: HttpErrorResponse) {
+    this.commonService.isLoading = false;
     console.log(error);
-    switch(error.status){
-      case 400: this.errorOccured.next(error.error.message);break;
-      case 401: this.errorOccured.next("Helytelen email vagy jelszó!");break;
-      case 500: this.errorOccured.next(error.error.error);break;
+    switch (error.status) {
+      case 400: this.errorOccured.next(error.error.message); break;
+      case 401: this.errorOccured.next("Helytelen email vagy jelszó!"); break;
+      case 500: this.errorOccured.next(error.error.error); break;
       default: this.errorOccured.next(error.message);
     }
   }

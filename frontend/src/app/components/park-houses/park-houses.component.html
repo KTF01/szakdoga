@@ -7,14 +7,27 @@
     <div>
       <h2>Parkolóházak</h2>
     </div>
+    <div class="map-container">
+      <agm-map (mapDblClick)="placeMarker($event)"
+      [disableDoubleClickZoom]="true"
+      [longitude]="19.075364"
+      [latitude]="47.491800"
+      [restriction]="mapRestriction">
+        <agm-marker *ngFor="let marker of phMarkers" (markerClick)="setSelectedParkHouse(marker.parkHouse.id)" (markerDblClick)="openParkHouseDetail(marker.parkHouse.id)"
+        [longitude]="marker.longitude" [latitude]="marker.latitude" [iconUrl]="marcerIcon">
+          <agm-info-window>{{marker.parkHouse.name}}</agm-info-window>
+        </agm-marker>
+        <agm-marker *ngIf="isAaddMarkerVisible" [longitude]="addMarkerLong" [latitude]="addMarkerLat">
+        </agm-marker>
+      </agm-map>
+    </div>
     <div>
-      <ul>
+      <ul *ngIf="!isAddview;else addPanel">
         <app-list-tile
           *ngFor="let parkHouse of parkHouses; let i = index"
           (elementDeleted)="deleteParkHouse(parkHouse, i)"
-          #listTile
-        >
-          <div class="row info-area" (click)="openParkHouseDetail(parkHouse)">
+          #listTile>
+          <div class="row info-area" (click)="openParkHouseDetail(parkHouse.id)">
             <div class="col-md-10">
               <h3 class="text-primary card-title">{{ parkHouse.name }}</h3>
               <span class="text-primary">{{ parkHouse.address }}</span>
@@ -23,73 +36,100 @@
           </div>
         </app-list-tile>
       </ul>
-      <app-add-button (addEvent)="openPopUp()"></app-add-button>
-
-      <app-pop-up
-        *ngIf="popupIsOpen"
-        [alertPopup]="false"
-        (okEvent)="submitForm()"
-        (closeEvent)="closePopup()"
-      >
+      <ng-template #addPanel>
+        <h3>Parkolóház hozzáadása</h3>
         <form (ngSubmit)="onSubmit()" #f="ngForm">
-          <h3>Parkolóház hozzáadása</h3>
-          <div>
-            <input class="form-control"
-              type="text"
-              placeholder="Név"
-              ngModel
-              name="parkHouseNameInput"
-              #phName="ngModel"
-              required
-            />
-            <span
-              class="form-text text-danger"
-              *ngIf="!phName.valid && (phName.touched || formChecked)"
-            >
-              A név nem lehet üres!
-            </span>
+          <div class="row justify-content-mg-around">
+            <div class="col-md-6">
+              <div>
+                <input class="form-control"
+                  type="text"
+                  placeholder="Név"
+                  ngModel
+                  name="parkHouseNameInput"
+                  #phName="ngModel"
+                  required/>
+                <span
+                  class="form-text text-danger"
+                  *ngIf="!phName.valid && (phName.touched || formChecked)">
+                  A név nem lehet üres!
+                </span>
+              </div>
+              <div>
+                <input class="form-control"
+                  type="number"
+                  name="firstFloorInput"
+                  id="firstFloor"
+                  ngModel
+                  required
+                  placeholder="Legalsó szint"
+                  #firstFloor="ngModel"/>
+                <span class="form-text text-danger" *ngIf="!firstFloor.valid && (firstFloor.touched || formChecked)">
+                  Ez a mező nem lehet üres.
+                </span>
+              </div>
+              <div>
+                <input class="form-control"
+                  type="number"
+                  name="numFloorInput"
+                  id="numberOfFloors"
+                  ngModel
+                  required
+                  placeholder="Szintek száma"
+                  #numFloor="ngModel"/>
+                <span class="form-text text-danger" *ngIf="!numFloor.valid && (numFloor.touched || formChecked)">
+                  Az emeletszám nem lehet üres!
+                </span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div>
+                <input class="form-control"
+                  type="text"
+                  placeholder="Cím"
+                  ngModel
+                  name="parkHouseAddressInput"/>
+              </div>
+              <div>
+                <input class="form-control"
+                  type="number"
+                  name="longitudeInput"
+                  id="longitude"
+                  [ngModel]="f.value.longitudeInput"
+                  required
+                  placeholder="Szélességi fok"
+                  #longitude="ngModel"/>
+                <span class="form-text text-danger" *ngIf="!longitude.valid && (longitude.touched || formChecked)">
+                  Ez a mező nem lehet üres.
+                </span>
+              </div>
+              <div>
+                <input class="form-control"
+                  type="number"
+                  name="latitudeInput"
+                  id="latitude"
+                  [ngModel]="f.value.latitudeInput"
+                  required
+                  placeholder="Hosszúsági fok"
+                  #latitude="ngModel"/>
+                <span class="form-text text-danger" *ngIf="!latitude.valid && (latitude.touched || formChecked)">
+                  Ez a mező nem lehet üres.
+                </span>
+              </div>
+
+            </div>
           </div>
-          <div>
-            <input class="form-control"
-              type="text"
-              placeholder="Cím"
-              ngModel
-              name="parkHouseAddressInput"
-            />
-          </div>
-          <div>
-            <input class="form-control"
-              type="number"
-              name="firstFloorInput"
-              id="firstFloor"
-              ngModel
-              required
-              placeholder="Legalsó szint"
-              #firstFloor="ngModel"/>
-            <span
-              class="form-text text-danger"
-              *ngIf="!firstFloor.valid && (firstFloor.touched || formChecked)">
-              Ez a mező nem lehet üres.
-            </span>
-          </div>
-          <div>
-            <input class="form-control"
-              type="number"
-              name="numFloorInput"
-              id="numberOfFloors"
-              ngModel
-              required
-              placeholder="Szintek száma"
-              #numFloor="ngModel"/>
-            <span
-              class="form-text text-danger"
-              *ngIf="!numFloor.valid && (numFloor.touched || formChecked)">
-              Az emeletszám nem lehet üres!
-            </span>
-          </div>
+
           <div class="text-danger">{{ errorText }}</div>
+          <button class="btn btn-primary" type="submit" [disabled]="!f.valid">OK</button>
+          <button class="btn btn-primary" (click)="changeToNormalView()">Mégse</button>
         </form>
-      </app-pop-up>
-    </div>
+
+      </ng-template>
+      <app-add-button (addEvent)="changeToAddView()" *ngIf="!isAddview"></app-add-button>
+
+      <button *ngIf="!isAddview" class="btn btn-primary" (click)="startGettinClosestParkHouse()">Legközelebbi parkolóház</button>
+
+          </div>
   </div>
 </main>

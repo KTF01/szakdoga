@@ -9,4 +9,6 @@ export class User{
   password?: string;
   ownedCars?: Car[];
   role?: Role;
+  longitude?: number;
+  latitude?:number;
 }

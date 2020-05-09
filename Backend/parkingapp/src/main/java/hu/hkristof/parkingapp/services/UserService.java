@@ -15,7 +15,9 @@ import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.UserAlreadyExistEception;
 import hu.hkristof.parkingapp.exceptions.UserNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
+import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.models.User;
+import hu.hkristof.parkingapp.repositoris.ParkHouseRepository;
 import hu.hkristof.parkingapp.repositoris.UserRepository;
 import hu.hkristof.parkingapp.responsetypes.UserDataResponse;
 import hu.hkristof.parkingapp.responsetypes.UsersDataResponse;
@@ -31,6 +33,9 @@ public class UserService {
 	
 	@Autowired
 	TimeLogService timeLogService;
+	
+	@Autowired
+	ParkHouseRepository parkHouseRepository;
 	
 	@Autowired
 	AuthenticatedUser authenticatedUser;
@@ -138,5 +143,25 @@ public class UserService {
 			return null;
 		}
 		
+	}
+	
+	public ParkHouse getClosestParkHouse(double userLong, double userLang) {
+		List<ParkHouse> parkHouses = parkHouseRepository.findAll();
+		ParkHouse closestPh = new ParkHouse();
+		double minDistance=-1;
+		for(ParkHouse ph : parkHouses) {
+			double currentDistance = distance(userLong, userLang, ph.getLongitude(), ph.getLatitude());
+			if(minDistance==-1 || currentDistance<minDistance) {
+				minDistance = currentDistance;
+				closestPh = ph;
+			}
+		}
+		System.out.println(minDistance);
+		
+		return closestPh;
+	}
+	
+	private double distance(double longitude1, double latitude1, double longitude2, double latitude2) {
+		return Math.hypot((longitude2-longitude1),(latitude2-latitude1));
 	}
 }
