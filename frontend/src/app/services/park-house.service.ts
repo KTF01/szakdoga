@@ -9,6 +9,7 @@ import { SectorService } from './sector.service';
 import { AuthService } from './auth.service';
 import { ParkingLot } from '../models/ParkingLot';
 import { Car } from '../models/Car';
+import { Reservation } from '../models/Reservation';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class ParkHouseService extends ErrorHandler {
 
   loadParkHouses(): void {
     this.commonService.isLoading = true;
-    this.http.get<{ parkHouses: ParkHouse[], cars: Car[] }>(CommonData.hostUri + 'auth/parkHouses/all', {
+    this.http.get<{ parkHouses: ParkHouse[], cars: Car[], reservations:Reservation[] }>(CommonData.hostUri + 'auth/parkHouses/all', {
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(
       response => {
@@ -40,7 +41,7 @@ export class ParkHouseService extends ErrorHandler {
         for (let ph of this.parkHouses) {
           this.adjustSectors(ph);
           for (let sector of ph.sectors) {
-            this.sectorService.adjustParkingLotsWithCars(sector, response.cars);
+            this.sectorService.adjustParkingLotsWithCarsAndReservations(sector, response.cars, response.reservations);
           }
         }
         this.commonService.isLoading = false;
@@ -90,7 +91,9 @@ export class ParkHouseService extends ErrorHandler {
     this.http.put<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/updatePH/' + parkHouse.id, {
       name: parkHouse.name,
       address: parkHouse.address,
-      numberOfFloors: parkHouse.numberOfFloors
+      numberOfFloors: parkHouse.numberOfFloors,
+      longitude: parkHouse.longitude,
+      latitude:parkHouse.latitude
     },{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response => {
@@ -98,6 +101,8 @@ export class ParkHouseService extends ErrorHandler {
       this.parkHouses[index].name = response.name;
       this.parkHouses[index].address = response.address;
       this.parkHouses[index].numberOfFloors = response.numberOfFloors;
+      this.parkHouses[index].longitude = response.longitude;
+      this.parkHouses[index].latitude = response.latitude;
       this.updatedParkHouse.next(response);
     }, error => this.handleError(error));
   }

@@ -1,11 +1,12 @@
 import { Car } from "./Car";
 import { Sector } from "./Sector";
-import { ParkingLotStatus } from "./ParkingLotStatus";
+import { Reservation } from "./Reservation";
 
 export class ParkingLot{
   id?: number;
   name: string;
   occupiingCar: Car;
   sector: Sector;
-  status: ParkingLotStatus;
+  isReserved: Boolean;
+  reservation?: Reservation;
 }

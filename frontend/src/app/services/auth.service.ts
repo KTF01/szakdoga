@@ -5,7 +5,6 @@ import { User } from '../models/User';
 import { Subject } from 'rxjs';
 import { CommonService } from './common.service';
 import { Router } from '@angular/router';
-import { ParkingLotService } from './parking-lot.service';
 import { Car } from '../models/Car';
 import { Role } from '../models/Role';
 import { UserServiceService } from './user-service.service';

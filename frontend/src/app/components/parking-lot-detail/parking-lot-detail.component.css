@@ -10,10 +10,11 @@
   overflow-y: auto;
 }
 
-.pl-car-container> .no-car{
+.pl-car-container> .no-car, .reserv-button{
   width: fit-content;
   margin: 0 auto;
   text-align: center;
+  margin-bottom: 5px;
 }
 
 .user-list-item, .car-list-item{

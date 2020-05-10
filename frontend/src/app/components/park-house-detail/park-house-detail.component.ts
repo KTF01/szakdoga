@@ -11,6 +11,8 @@ import { PopUpContainer } from '../pop-up/PopUpContainer';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Role } from '../../models/Role';
+import { CommonData } from '../../common-data';
+import { MapRestriction } from '@agm/core/services/google-maps-types';
 
 @Component({
   selector: 'app-park-house-detail',
@@ -32,6 +34,8 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
   deleteIcon = faTrash;
 
   isAdmin: boolean;
+
+  mapRestriction:MapRestriction = CommonData.maprRestriction;
 
   constructor(private location: Location, private route: ActivatedRoute, private parkHouseService: ParkHouseService,
     private authService: AuthService) { super(); }
@@ -80,7 +84,20 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
     });
 
   }
+  moveMarker(event) {
+      let lo: number = +event.coords.lng;
+      let la: number = +event.coords.lat;
+      this.parkHouse.longitude = lo;
+      this.parkHouse.latitude = la;
+      //this.phMarkers.push({ longitude: lo, latitude: la });
+  }
 
+  dragMarker(event){
+    let lo: number = +event.coords.lng;
+      let la: number = +event.coords.lat;
+      this.parkHouse.longitude = lo;
+      this.parkHouse.latitude = la;
+  }
   submitForm() {
     this.formChecked = true;
     if (this.editForm.valid) {
@@ -99,8 +116,8 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
       firstFloor: this.editForm.value.numFirstFloorInput,
       numberOfFloors: this.editForm.value.numFloorInput,
       sectors: this.parkHouse.sectors,
-      longitude: 0,
-      latitude : 0
+      longitude: this.editForm.value.longitudeInput,
+      latitude : this.editForm.value.latitudeInput
     };
     this.parkHouseService.updateParkHouse(updatedParkHouse);
     this.parkHouseService.updatedParkHouse.subscribe(response => {
@@ -137,6 +154,7 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
     }
     this.addNewSector(sector);
   }
+
 
   closePopUp() {
     this.popupIsOpen = false;

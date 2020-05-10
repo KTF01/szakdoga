@@ -80,6 +80,8 @@ public class ParkHouseService {
 		editPH.setAddress(modifiedParkHouse.getAddress());
 		editPH.setName(modifiedParkHouse.getName());
 		editPH.setNumberOfFloors(modifiedParkHouse.getNumberOfFloors());
+		editPH.setLongitude(modifiedParkHouse.getLongitude());
+		editPH.setLatitude(modifiedParkHouse.getLatitude());
 		System.out.println(oldName +" nevű parkolóház módosítva lett! Új név: "+ editPH.getName());
 		return parkHouseRepository.save(editPH);
 	}

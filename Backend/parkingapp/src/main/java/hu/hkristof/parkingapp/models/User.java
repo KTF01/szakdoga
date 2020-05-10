@@ -45,6 +45,7 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 	
+	@JsonIdentityReference(alwaysAsId = true)
 	@NotNull
 	@OneToMany(mappedBy = "user")
 	private List<Reservation> reservations;

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
-import hu.hkristof.parkingapp.ParkingLotStatus;
 import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.exceptions.ReservationNotFoundException;
@@ -41,13 +40,13 @@ public class ReservationService {
 		ParkingLot parkingLot = parkingLotRespository.findById(plId).orElseThrow(()->new ParkingLotNotFoundException(plId));
 		User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException(userId));
 		if((user.getRole().equals(Role.ROLE_USER) && authenticatedUser.getUser().getId()!=user.getId()) ||
-				!parkingLot.getStatus().equals(ParkingLotStatus.EMPTY)) {
+				parkingLot.getIsReserved()) {
 			return null;
 		}else{
 			Reservation reservation = new Reservation();
 			user.addReservation(reservation);
 			reservation.setParkingLot(parkingLot);
-			parkingLot.setStatus(ParkingLotStatus.RESERVED);
+			parkingLot.setIsReserved(true);
 			parkingLot.setReservation(reservation);
 			reservation.setStartTime(startTime);
 			Timestamp endTime = new Timestamp(startTime.getTime()+duration);
@@ -74,11 +73,7 @@ public class ReservationService {
 	public ParkingLot deleteReservation(Long resId) {
 		Reservation reservation = reservationRepository.findById(resId).orElseThrow(()->new ReservationNotFoundException(resId));
 		ParkingLot pl = reservation.getParkingLot();
-		if(pl.getOccupyingCar()!=null) {
-			pl.setStatus(ParkingLotStatus.OCCUPIED);
-		}else {
-			pl.setStatus(ParkingLotStatus.EMPTY);
-		}
+		pl.setIsReserved(false);
 		pl.setReservation(null);
 		reservation.getUser().removeReservation(reservation);
 		parkingLotRespository.save(pl);

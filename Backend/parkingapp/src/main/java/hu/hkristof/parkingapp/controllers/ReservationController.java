@@ -28,9 +28,9 @@ public class ReservationController {
 	@PostMapping("reserve")
 	public ResponseEntity<Reservation> makeReservation(@RequestParam("plId") Long plId,
 													@RequestParam("userId") Long userId,
-													@RequestParam("startTime") String startTime,
+													//@RequestParam("startTime") String startTime,
 													@RequestParam("duration") Long duration){
-		Timestamp startTimeTime = Timestamp.valueOf(startTime);
+		Timestamp startTimeTime = new Timestamp(System.currentTimeMillis());
 		System.out.println("Foglalás!");
 		Reservation response = reservationService.reserveParkingLot(plId, userId, startTimeTime, duration);
 		if(response == null) {

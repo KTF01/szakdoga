@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Sector } from '../models/Sector';
 import { ParkingLot } from '../models/ParkingLot';
 import { Car } from '../models/Car';
+import { Reservation } from '../models/Reservation';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +14,18 @@ export class SectorService{
   constructor() {
   }
 
-  adjustParkingLotsWithCars(sector:Sector, cars:Car[]){
+  adjustParkingLotsWithCarsAndReservations(sector:Sector, cars:Car[], reservations:Reservation[]){
     for(let pl of sector.parkingLots){
       pl.sector=sector;
       if(pl.occupiingCar){
         let chosenCar:Car = cars.find(car=>car.occupiedParkingLot.id==pl.id);
         pl.occupiingCar=chosenCar;
         chosenCar.occupiedParkingLot=pl;
+      }
+      if(pl.reservation){
+        let chosenReservation:Reservation = reservations.find(res=>res.parkingLot.id==pl.id);
+        pl.reservation=chosenReservation;
+        chosenReservation.parkingLot=pl;
       }
     }
   }

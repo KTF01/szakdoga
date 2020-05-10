@@ -1,8 +1,6 @@
 package hu.hkristof.parkingapp.models;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,7 +13,6 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
-import hu.hkristof.parkingapp.ParkingLotStatus;
 @Entity
 @Table(name = "parkingLots")
 public class ParkingLot {
@@ -28,8 +25,7 @@ public class ParkingLot {
 	private String name;
 	
 	@NotNull
-	@Enumerated(EnumType.STRING)
-	private ParkingLotStatus status;
+	private Boolean isReserved;
 	
 	@JsonIdentityReference(alwaysAsId = true)
 	@OneToOne
@@ -45,7 +41,7 @@ public class ParkingLot {
 	private Sector sector;
 
 	public ParkingLot() {
-		status = ParkingLotStatus.EMPTY;
+		isReserved = false;
 	}
 	
 	public Long getId() {
@@ -79,13 +75,13 @@ public class ParkingLot {
 	public void setSector(Sector sector) {
 		this.sector = sector;
 	}
-
-	public ParkingLotStatus getStatus() {
-		return status;
+	
+	public Boolean getIsReserved() {
+		return isReserved;
 	}
 
-	public void setStatus(ParkingLotStatus status) {
-		this.status = status;
+	public void setIsReserved(Boolean isReserved) {
+		this.isReserved = isReserved;
 	}
 
 	public Reservation getReservation() {

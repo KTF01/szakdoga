@@ -17,7 +17,7 @@
         [longitude]="marker.longitude" [latitude]="marker.latitude" [iconUrl]="marcerIcon">
           <agm-info-window>{{marker.parkHouse.name}}</agm-info-window>
         </agm-marker>
-        <agm-marker *ngIf="isAaddMarkerVisible" [longitude]="addMarkerLong" [latitude]="addMarkerLat">
+        <agm-marker *ngIf="isAaddMarkerVisible" [(longitude)]="form.value.longitudeInput" [(latitude)]="form.value.latitudeInput">
         </agm-marker>
       </agm-map>
     </div>
@@ -82,7 +82,7 @@
                 </span>
               </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 test-div2">
               <div>
                 <input class="form-control"
                   type="text"
@@ -95,26 +95,26 @@
                   type="number"
                   name="longitudeInput"
                   id="longitude"
-                  [ngModel]="f.value.longitudeInput"
+                  [(ngModel)]="f.value.longitudeInput"
                   required
                   placeholder="Szélességi fok"
                   #longitude="ngModel"/>
                 <span class="form-text text-danger" *ngIf="!longitude.valid && (longitude.touched || formChecked)">
-                  Ez a mező nem lehet üres.
+                  A térképre duplán kattintva megadhat pontos helyet.
                 </span>
               </div>
               <div>
-                <input class="form-control"
-                  type="number"
-                  name="latitudeInput"
-                  id="latitude"
-                  [ngModel]="f.value.latitudeInput"
-                  required
-                  placeholder="Hosszúsági fok"
-                  #latitude="ngModel"/>
-                <span class="form-text text-danger" *ngIf="!latitude.valid && (latitude.touched || formChecked)">
-                  Ez a mező nem lehet üres.
-                </span>
+                  <input class="form-control"
+                    type="number"
+                    name="latitudeInput"
+                    id="latitude"
+                    [(ngModel)]="f.value.latitudeInput"
+                    requireds
+                    placeholder="Hosszúsági fok"
+                    #latitude="ngModel"/>
+                  <span class="form-text text-danger" *ngIf="!latitude.valid && (latitude.touched || formChecked)">
+                    A térképre duplán kattintva megadhat pontos helyet.
+                  </span>
               </div>
 
             </div>

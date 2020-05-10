@@ -9,6 +9,7 @@ import { ListTileComponent } from '../list-tile/list-tile.component';
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 import { MapRestriction } from '@agm/core/services/google-maps-types';
+import { CommonData } from '../../common-data';
 
 @Component({
   selector: 'app-park-houses',
@@ -27,7 +28,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
 
   errorSub: Subscription = new Subscription();
 
-  mapRestriction: MapRestriction = { latLngBounds: { north: 47.7, south: 47.2, west: 18.7, east: 19.5 }, strictBounds: true };
+  mapRestriction: MapRestriction = CommonData.maprRestriction;
 
   isAddview:boolean = false;
   isAaddMarkerVisible:boolean = false;
@@ -72,6 +73,10 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   }
   changeToNormalView(){
     this.isAddview =false;
+    this.isAaddMarkerVisible=false;
+    this.form.reset();
+    this.formChecked=false;
+    this.errorText=null;
   }
 
   addParkHouse(parkHouse: ParkHouse): void {
@@ -112,22 +117,35 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   onSubmit() {
     this.formChecked = true;
     if (this.form.valid) {
-      let newParkhouse: ParkHouse = {
-        name: this.form.value.parkHouseNameInput,
-        address: this.form.value.parkHouseAddressInput,
-        firstFloor: this.form.value.firstFloorInput,
-        numberOfFloors: this.form.value.numFloorInput,
-        sectors: [],
-        longitude: this.form.value.longitudeInput,
-        latitude: this.form.value.latitudeInput,
+      if(this.formExtraValidate()){
+        let newParkhouse: ParkHouse = {
+          name: this.form.value.parkHouseNameInput,
+          address: this.form.value.parkHouseAddressInput,
+          firstFloor: this.form.value.firstFloorInput,
+          numberOfFloors: this.form.value.numFloorInput,
+          sectors: [],
+          longitude: this.form.value.longitudeInput,
+          latitude: this.form.value.latitudeInput,
+        }
+        this.addParkHouse(newParkhouse);
+        this.formChecked = false;
+      }else{
+        this.errorText="A koordinátáknak budapesten belül kell lennie! A térképre duplán kattintva kijelölhet pontos helyet.";
       }
-      this.addParkHouse(newParkhouse);
-      this.formChecked = false;
+
     } else {
       this.errorText = "Érvenytelen mezők szerepelnek az űrlapban."
     }
+  }
+  formExtraValidate():boolean{
+    let lo:number=this.form.value.longitudeInput;
+    let la:number=this.form.value.latitudeInput;
 
-
+    if(lo<this.mapRestriction.latLngBounds['west']||lo>this.mapRestriction.latLngBounds['east']||
+    la<this.mapRestriction.latLngBounds['south']||la>this.mapRestriction.latLngBounds['north']){
+      return false;
+    }
+    return true;
   }
 
   startGettinClosestParkHouse() {

@@ -49,3 +49,21 @@ form>button{
   margin-right: 10px;
   margin-bottom: 10px;
 }
+
+.form-control{
+  width: 16em;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.test-div{
+  background-color: red;
+}

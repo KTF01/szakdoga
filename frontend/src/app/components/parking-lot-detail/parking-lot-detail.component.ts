@@ -12,6 +12,7 @@ import { Car } from '../../models/Car';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { Role } from '../../models/Role';
+import { ReservationServiceService } from '../../services/reservation-service.service';
 
 @Component({
   selector: 'app-parking-lot-detail',
@@ -26,8 +27,8 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
   carIcon = faCar;
 
   parkInSub: Subscription;
-
   usersSub: Subscription;
+  reservSub:Subscription;
 
   isUsersView:boolean=true;
   selectedUser:User=null;
@@ -37,20 +38,17 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
   @ViewChild('form') editForm: NgForm;
 
   constructor(private parkingLotService: ParkingLotService, private route:ActivatedRoute,
-    private router: Router, public userService:UserServiceService, private authService:AuthService) { super();}
+    private router: Router, public userService:UserServiceService, private authService:AuthService,
+    private reservationService:ReservationServiceService) { super();}
 
   ngOnInit(): void {
     let id = +this.route.snapshot.params['id'];
     this.parkingLot=this.parkingLotService.getParkingLot(id);
-
     if(this.authService.loggedInUser){
       this.isAdmin = !(this.authService.loggedInUser.role==Role.ROLE_USER);
       this.isUsersView = this.isAdmin;
       if(this.isAdmin){
         this.userService.loadUsers();
-        // this.usersSub = this.userService.usersLoaded.subscribe(_=>{
-
-        // });
       }else{
         this.selectedUser=this.authService.loggedInUser;
       }
@@ -112,7 +110,21 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
     })
   }
 
+  sendReservation(form:NgForm){
+    let duration:number = form.value.durationSelectInput *3600000;
+    this.reservationService.makeResevation(this.parkingLot, this.authService.loggedInUser.id, duration);
+    this.reservSub = this.reservationService.makeReservSub.subscribe(newReservation=>{
+      this.parkingLot.reservation=newReservation;
+      this.parkingLot.isReserved=  newReservation.parkingLot.isReserved;
+      this.closePopUp4();
+    });
+  }
+
+  startReservationDelete(){
+    console.log("deleteReservation");
+  }
   ngOnDestroy(){
     if(this.parkInSub) this.parkInSub.unsubscribe();
+    if(this.reservSub) this.reservSub.unsubscribe();
   }
 }
