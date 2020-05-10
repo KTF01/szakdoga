@@ -13,6 +13,7 @@ import { ParkingLot } from '../models/ParkingLot';
 export class ReservationServiceService {
 
   makeReservSub:Subject<Reservation> = new Subject<Reservation>();
+  deleteReservSub:Subject<ParkingLot> = new Subject<ParkingLot>();
 
   constructor(private http:HttpClient, private commonService:CommonService) { }
 
@@ -28,6 +29,18 @@ export class ReservationServiceService {
     }).subscribe(response=>{
       console.log(response);
       this.makeReservSub.next(response);
+      this.commonService.isLoading=false;
+    },error=>{console.log(error);
+      this.commonService.isLoading=false;});
+  }
+
+  deleteReservation(reservationId:number){
+    this.commonService.isLoading=true;
+    this.http.delete<ParkingLot>(CommonData.hostUri+'auth/reservations/delete/'+reservationId,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`}),
+    }).subscribe(response=>{
+      console.log(response);
+      this.deleteReservSub.next(response);
       this.commonService.isLoading=false;
     },error=>{console.log(error);
       this.commonService.isLoading=false;});

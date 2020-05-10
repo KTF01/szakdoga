@@ -29,6 +29,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
   parkInSub: Subscription;
   usersSub: Subscription;
   reservSub:Subscription;
+  delReservSub:Subscription;
 
   isUsersView:boolean=true;
   selectedUser:User=null;
@@ -36,6 +37,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
 
   isParkActionShown:boolean;
   @ViewChild('form') editForm: NgForm;
+  @ViewChild('reservForm') resForm: NgForm;
 
   constructor(private parkingLotService: ParkingLotService, private route:ActivatedRoute,
     private router: Router, public userService:UserServiceService, private authService:AuthService,
@@ -110,8 +112,8 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
     })
   }
 
-  sendReservation(form:NgForm){
-    let duration:number = form.value.durationSelectInput *3600000;
+  sendReservation(){
+    let duration:number = this.resForm.value.durationSelectInput *3600000;
     this.reservationService.makeResevation(this.parkingLot, this.authService.loggedInUser.id, duration);
     this.reservSub = this.reservationService.makeReservSub.subscribe(newReservation=>{
       this.parkingLot.reservation=newReservation;
@@ -121,10 +123,16 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
   }
 
   startReservationDelete(){
-    console.log("deleteReservation");
+    this.reservationService.deleteReservation(this.parkingLot.reservation.id);
+    this.delReservSub = this.reservationService.deleteReservSub.subscribe(pl=>{
+      this.parkingLot.isReserved=pl.isReserved;
+      this.parkingLot.reservation=pl.reservation;
+      this.closePopUp4();
+    });
   }
   ngOnDestroy(){
     if(this.parkInSub) this.parkInSub.unsubscribe();
     if(this.reservSub) this.reservSub.unsubscribe();
+    if(this.delReservSub) this.delReservSub.unsubscribe();
   }
 }
