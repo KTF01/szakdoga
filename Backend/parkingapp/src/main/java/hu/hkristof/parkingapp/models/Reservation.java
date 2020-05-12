@@ -26,7 +26,7 @@ public class Reservation {
 	@ManyToOne
 	private User user;
 	
-	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "reservation")
+	@OneToOne(mappedBy = "reservation")
 	private ParkingLot parkingLot;
 	
 	private Timestamp startTime;

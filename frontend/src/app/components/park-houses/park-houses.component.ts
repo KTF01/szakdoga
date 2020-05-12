@@ -8,7 +8,7 @@ import { CommonService } from '../../services/common.service';
 import { ListTileComponent } from '../list-tile/list-tile.component';
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
-import { MapRestriction } from '@agm/core/services/google-maps-types';
+import { MapRestriction, InfoWindow } from '@agm/core/services/google-maps-types';
 import { CommonData } from '../../common-data';
 
 @Component({
@@ -25,8 +25,10 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
 
   @ViewChild('f') form: NgForm;
   @ViewChildren('listTile') tile: QueryList<ListTileComponent>;
+  @ViewChildren('phMarkerInfo') windows: QueryList<InfoWindow>;
 
   errorSub: Subscription = new Subscription();
+  closestSub: Subscription = new Subscription();
 
   mapRestriction: MapRestriction = CommonData.maprRestriction;
 
@@ -34,10 +36,11 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   isAaddMarkerVisible:boolean = false;
   addMarkerLong: number = 0;
   addMarkerLat:number = 0;
+  isGetClosestLoading:boolean=false;
 
   selectedparkHouse: ParkHouse;
 
-  phMarkers: {parkHouse:ParkHouse, longitude: number, latitude: number }[]=[];
+  phMarkers: {markerId:number,parkHouse:ParkHouse, longitude: number, latitude: number}[]=[];
   marcerIcon= {
     url: './assets/home-solid.svg',
     scaledSize:{
@@ -54,7 +57,8 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
     this.parkHouseService.loadedParkHouses.subscribe(_ => {
       this.parkHouses = this.parkHouseService.parkHouses;
       for( let ph of this.parkHouses){
-        this.phMarkers.push({parkHouse:ph,longitude:ph.longitude,latitude: ph.latitude});
+        let id = this.phMarkers.length;
+        this.phMarkers.push({markerId:id, parkHouse:ph,longitude:ph.longitude,latitude: ph.latitude});
       }
     });
     this.errorSub = this.parkHouseService.errorOccured.subscribe(errorMessage => {
@@ -86,7 +90,8 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
       this.commonService.isLoading = false;
       this.isAddview=false;
       this.isAaddMarkerVisible=false;
-      this.phMarkers.push({parkHouse: newPh,longitude:newPh.longitude, latitude:newPh.latitude});
+      let id = this.phMarkers.length;
+      this.phMarkers.push({markerId:id,parkHouse: newPh,longitude:newPh.longitude, latitude:newPh.latitude});
     })
     this.parkHouseService.errorOccured.subscribe(error => {
       console.log(error);
@@ -149,7 +154,17 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   }
 
   startGettinClosestParkHouse() {
+    this.isGetClosestLoading=true;
     this.authService.getClosestParkhouse();
+
+    this.closestSub = this.authService.closestParkHouse.subscribe(id=>{
+      this.setSelectedParkHouse(id);
+      let marker = this.phMarkers.find(m=>m.parkHouse.id==id);
+      this.windows.toArray()[marker.markerId].open();
+      this.closestSub.unsubscribe();
+      this.isGetClosestLoading=false;
+    });
+
   }
 
   placeMarker(event) {
@@ -163,7 +178,6 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
       this.isAaddMarkerVisible=true;
       //this.phMarkers.push({ longitude: lo, latitude: la });
     }
-
   }
 
   closePopup(): void {

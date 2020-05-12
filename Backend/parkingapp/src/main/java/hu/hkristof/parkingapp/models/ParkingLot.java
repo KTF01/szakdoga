@@ -1,5 +1,6 @@
 package hu.hkristof.parkingapp.models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,7 +29,7 @@ public class ParkingLot {
 	private Boolean isReserved;
 	
 	@JsonIdentityReference(alwaysAsId = true)
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Reservation reservation;
 	
 	@JsonIdentityReference(alwaysAsId = true)

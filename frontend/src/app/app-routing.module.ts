@@ -14,6 +14,7 @@ import { UserListComponent } from './components/user-list/user-list.component';
 import { CarListComponent } from './components/car-list/car-list.component';
 import { HeaderNavComponent } from './components/common/header-nav/header-nav.component';
 import { FrameComponent } from './components/common/frame/frame.component';
+import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
 
 
 const routes: Routes = [
@@ -28,7 +29,8 @@ const routes: Routes = [
     {path: 'diary', component: TimeLogComponent,canActivate:[AuthGuard],  data:{permissions:[Role.ROLE_ADMIN, Role.ROLE_FIRST_USER]}},
     {path: 'dataList', component: HeaderNavComponent ,canActivate:[AuthGuard],  data:{permissions:[Role.ROLE_ADMIN, Role.ROLE_FIRST_USER]}, children:[
       {path:'userList', component: UserListComponent},
-      {path:'carList', component: CarListComponent}
+      {path:'carList', component: CarListComponent},
+      {path:'reservationList', component: ReservationListComponent}
     ]},
   ]},
   {path: 'notFound', component: NotFoundComponent},

@@ -10,4 +10,5 @@ export class ParkHouse{
   sectors: Sector[];
   longitude:number;
   latitude: number;
+  occupiedPlCount?:number;
 }

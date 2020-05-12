@@ -1,12 +1,11 @@
-import { Injectable, OnInit, ErrorHandler } from '@angular/core';
+import { Injectable, ErrorHandler } from '@angular/core';
 import { ParkHouse } from '../models/ParkHouse';
 import { Sector } from '../models/Sector';
-import { HttpClient, HttpResponse, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { CommonData } from '../common-data';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { CommonService } from './common.service';
 import { SectorService } from './sector.service';
-import { AuthService } from './auth.service';
 import { ParkingLot } from '../models/ParkingLot';
 import { Car } from '../models/Car';
 import { Reservation } from '../models/Reservation';
@@ -46,6 +45,7 @@ export class ParkHouseService extends ErrorHandler {
         }
         this.commonService.isLoading = false;
         this.loadedParkHouses.next(true);
+        console.log(this.parkHouses);
       }, error => this.handleError(error)
     );
   }

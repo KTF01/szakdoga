@@ -17,9 +17,9 @@ export class SectorService{
   adjustParkingLotsWithCarsAndReservations(sector:Sector, cars:Car[], reservations:Reservation[]){
     for(let pl of sector.parkingLots){
       pl.sector=sector;
-      if(pl.occupiingCar){
+      if(pl.occupyingCar){
         let chosenCar:Car = cars.find(car=>car.occupiedParkingLot.id==pl.id);
-        pl.occupiingCar=chosenCar;
+        pl.occupyingCar=chosenCar;
         chosenCar.occupiedParkingLot=pl;
       }
       if(pl.reservation){

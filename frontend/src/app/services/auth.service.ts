@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { Car } from '../models/Car';
 import { Role } from '../models/Role';
 import { UserServiceService } from './user-service.service';
+import { Reservation } from '../models/Reservation';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class AuthService {
   loggedIn: Subject<User> = new Subject<User>();
   refreshedLoggedInUser: Subject<User> = new Subject<User>();
   changedPassword: Subject<boolean> = new Subject<boolean>();
+  closestParkHouse: Subject<number> = new Subject<number>();
 
   loggedInUser: User = null;
 
@@ -29,10 +31,11 @@ export class AuthService {
   login(email: string, password: string) {
     this.commonService.isLoading = true;
     const token: string = btoa(`${email}:${password}`);
-    this.http.post<{ user: User, userCars: Car[] }>(CommonData.hostUri + 'auth/users/login', email, {
+    this.http.post<{ user: User, userCars: Car[], userReservations:Reservation[] }>(CommonData.hostUri + 'auth/users/login', email, {
       headers: new HttpHeaders({ 'Authorization': `Basic ${token}` })
     }).subscribe(response => {
-      response.user = this.userService.setUpUserCars(response);
+      console.log(response);
+      response.user = this.userService.setUpUserCarsAndRes(response);
       response.user.role = (<any>Role)[response.user.role];
       this.loggedInUser = response.user;
       this.commonService.authToken = token;
@@ -78,10 +81,10 @@ export class AuthService {
 
   refreshLoggedInUserData() {
     this.commonService.isLoading = true;
-    this.http.get<{ user: User, userCars: Car[] }>(CommonData.hostUri + 'auth/users/' + this.loggedInUser.id, {
+    this.http.get<{ user: User, userCars: Car[], userReservations:Reservation[] }>(CommonData.hostUri + 'auth/users/' + this.loggedInUser.id, {
       headers: new HttpHeaders({ 'Authorization': `Basic ${this.commonService.authToken}` })
     }).subscribe(response => {
-      response.user = this.userService.setUpUserCars(response);
+      response.user = this.userService.setUpUserCarsAndRes(response);
       response.user.role = (<any>Role)[response.user.role];
       this.loggedInUser = response.user;
       this.refreshedLoggedInUser.next(response.user);
@@ -112,6 +115,7 @@ export class AuthService {
   }
 
   getClosestParkhouse() {
+    this.commonService.isLoading=true;
     if(CommonData.authLatitude && CommonData.authLatitude){
       let myParams: HttpParams = new HttpParams();
       myParams = myParams.append("userLong", CommonData.authLongitude.toString());
@@ -121,9 +125,12 @@ export class AuthService {
         params: myParams
       }).subscribe(response => {//EMITÁLNI
         console.log(response);
+        this.closestParkHouse.next(response);
+        this.commonService.isLoading=false;
       });
     }else{
       console.log("NEM JO");//EMITÁLNI
+      this.commonService.isLoading=false;
     }
 
   }

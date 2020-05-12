@@ -9,13 +9,14 @@ import { Subject } from 'rxjs';
 import { SectorService } from './sector.service';
 import { Car } from '../models/Car';
 import { AuthService } from './auth.service';
+import { Reservation } from '../models/Reservation';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ParkingLotService {
 
-  parkingLotsAdded: Subject<boolean> = new Subject<boolean>();
+  parkingLotsAdded: Subject<Sector> = new Subject<Sector>();
   parkingLotsDeleted: Subject<boolean> = new Subject<boolean>();
   parkingLotUpdated: Subject<string> = new Subject<string>();
   parkedOut: Subject<ParkingLot> = new Subject<ParkingLot>();
@@ -35,8 +36,9 @@ export class ParkingLotService {
       this.commonService.isLoading = false;
       this.sectorService.adjustParkingLots(response);
       sector.parkingLots = response.parkingLots;
-      sector.freePlCount=response.freePlCount
-      this.parkingLotsAdded.next(true);
+      sector.freePlCount=response.freePlCount;
+      sector.parkHouse.freePlCount=response.parkHouse.freePlCount;
+      this.parkingLotsAdded.next(sector);
     }, error => this.handleError(error));
   }
 
@@ -60,7 +62,12 @@ export class ParkingLotService {
       this.commonService.isLoading = false;
       let index = parkinglot.sector.parkingLots.findIndex(elem => elem.id == response);
       parkinglot.sector.parkingLots.splice(index, 1);
-      parkinglot.sector.freePlCount--;
+      if(parkinglot.occupyingCar==null){
+        parkinglot.sector.freePlCount--;
+        parkinglot.sector.parkHouse.freePlCount--;
+      }else{
+        parkinglot.sector.parkHouse.occupiedPlCount--;
+      }
       this.parkingLotsDeleted.next(true);
       console.log(response);
     }, error => this.handleError(error));
@@ -81,13 +88,20 @@ export class ParkingLotService {
   }
 
   parkOut(parkingLot: ParkingLot) {
-    if (parkingLot.occupiingCar) {
+    if (parkingLot.occupyingCar) {
       this.commonService.isLoading = true;
-      this.http.put<{parkingLot:ParkingLot, freePlCount:number}>(CommonData.hostUri + 'auth/parkingLots/parkOut/' + parkingLot.id, null,{
+      this.http.put<{
+        parkingLot:ParkingLot,
+        freePlCount:number,
+        parkHouseFreePlCount:number,
+        parkHouseOccupiedPlCount:number
+      }>(CommonData.hostUri + 'auth/parkingLots/parkOut/' + parkingLot.id, null,{
         headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
       }).subscribe(response => {
         let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.parkingLot.id);
         parkingLot.sector.freePlCount = response.freePlCount;
+        parkingLot.sector.parkHouse.freePlCount=response.parkHouseFreePlCount;
+        parkingLot.sector.parkHouse.occupiedPlCount=response.parkHouseOccupiedPlCount;
         response.parkingLot.sector = parkingLot.sector;
         parkingLot.sector.parkingLots[index] = response.parkingLot;
         this.commonService.isLoading = false;
@@ -98,18 +112,24 @@ export class ParkingLotService {
 
   parkIn(parkingLot:ParkingLot, car:Car){
     this.commonService.isLoading=true;
-    this.http.put<{parkingLot:ParkingLot, car:Car, sectorPlCount:number}>(CommonData.hostUri+'auth/parkingLots/parkIn/'+parkingLot.id+'/'+car.plateNumber, null,{
+    this.http.put<{parkingLot:ParkingLot, reservation:Reservation, car:Car, sectorPlCount:number,
+      parkHouseFreePlCount:number,
+      parkHouseOccupiedPlCount:number}>(CommonData.hostUri+'auth/parkingLots/parkIn/'+parkingLot.id+'/'+car.plateNumber, null,{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
-      response.parkingLot.occupiingCar=response.car;
+      console.log(response);
+      response.parkingLot.occupyingCar=response.car;
       response.car.occupiedParkingLot=response.parkingLot;
       let index = parkingLot.sector.parkingLots.findIndex(elem => elem.id == response.parkingLot.id);
       response.parkingLot.sector = parkingLot.sector;
       response.parkingLot.sector.freePlCount=response.sectorPlCount;
+      parkingLot.sector.parkHouse.freePlCount=response.parkHouseFreePlCount;
+        parkingLot.sector.parkHouse.occupiedPlCount=response.parkHouseOccupiedPlCount;
+      response.parkingLot.reservation=response.reservation;
       parkingLot.sector.parkingLots[index] = response.parkingLot;
 
       if(car.occupiedParkingLot!=null){
-        car.occupiedParkingLot.occupiingCar=null;
+        car.occupiedParkingLot.occupyingCar=null;
       }
 
       this.commonService.isLoading=false;

@@ -7,6 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PopUpContainer } from '../pop-up/PopUpContainer';
 import { NgForm, NgModel } from '@angular/forms';
 import { ParkingLotService } from '../../services/parking-lot.service';
+import { PieChartComponent } from '../common/pie-chart/pie-chart.component';
 
 @Component({
   selector: 'app-parking-lot-list',
@@ -17,6 +18,8 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
 
   @Input() parkigLots: ParkingLot[];
   @Input() sector: Sector;
+  @Input() chart:PieChartComponent;
+
   faCar = faCar;
 
   @Output() parkingLotsVisible: boolean = false;
@@ -26,9 +29,11 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
 
   inputCount: number[] = [0];
 
-  constructor(private parkingLotService:ParkingLotService, private sectorService: SectorService, private router: Router, private route: ActivatedRoute) { super(); }
+  constructor(private parkingLotService:ParkingLotService, private router: Router, private route: ActivatedRoute) { super(); }
 
   ngOnInit(): void {
+    console.log("init");
+    this.chart.updateChart(this.sector.parkHouse.freePlCount, this.sector.parkHouse.occupiedPlCount);
   }
   novigateToParkingLotDetail(parkingLot: ParkingLot) {
     this.router.navigate(['parkingLot', parkingLot.id], { relativeTo: this.route });
@@ -48,7 +53,7 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
       if(this.form.value[inputName]!==""){
         newParkingLots.push({
           name: this.form.value[inputName],
-          occupiingCar: null,
+          occupyingCar: null,
           sector: null,
           isReserved:false,
         });
@@ -57,8 +62,9 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
     }
 
     this.parkingLotService.addParkingLots(this.sector, newParkingLots);
-    this.parkingLotService.parkingLotsAdded.subscribe(_=>{
+    this.parkingLotService.parkingLotsAdded.subscribe(sector=>{
       this.closePopUp();
+      this.chart.updateChart(sector.parkHouse.freePlCount, sector.parkHouse.occupiedPlCount);
     });
 
   }

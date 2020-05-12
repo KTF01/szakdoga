@@ -7,4 +7,10 @@ export class CommonData{
   static authLongitude:number;
   static authLatitude:number;
   static maprRestriction:MapRestriction = { latLngBounds: { north: 47.7, south: 47.2, west: 18.7, east: 19.5 }, strictBounds: true };
+  static convertTimeString(origTime:string):string{
+    let time:Date= new Date(origTime);
+      time = new Date(time.setTime(time.getTime()-time.getSeconds()*1000));
+      let result:string = time.toLocaleString();
+    return result;
+  }
 }

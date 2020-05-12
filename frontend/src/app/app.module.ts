@@ -24,6 +24,9 @@ import { UserListComponent } from './components/user-list/user-list.component';
 import { CarListComponent } from './components/car-list/car-list.component';
 import { HeaderNavComponent } from './components/common/header-nav/header-nav.component';
 import { FrameComponent } from './components/common/frame/frame.component';
+import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
+import { ChartsModule } from 'ng2-charts';
+import { PieChartComponent } from './components/common/pie-chart/pie-chart.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +47,9 @@ import { FrameComponent } from './components/common/frame/frame.component';
     UserListComponent,
     CarListComponent,
     HeaderNavComponent,
-    FrameComponent
+    FrameComponent,
+    ReservationListComponent,
+    PieChartComponent
   ],
   imports: [
     BrowserModule,
@@ -54,7 +59,8 @@ import { FrameComponent } from './components/common/frame/frame.component';
     HttpClientModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyC5Ps-M1wtosWKu1A_GsR1uOWUdQn3p5sI'
-    })
+    }),
+    ChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

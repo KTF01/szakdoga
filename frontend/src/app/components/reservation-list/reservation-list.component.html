@@ -1,0 +1,42 @@
+<div class="container-fluid">
+  <div class="head-components">
+    <h1>Aktív foglalások</h1>
+    <div class="search-components">
+      <div class="form-group">
+        <label for="nameFilterText" >Szűrés:</label>
+        <input type="text" id="nameFilterText" [(ngModel)]="filter" placeholder="Név vagy parkoló">
+      </div>
+    </div>
+  </div>
+
+  <div class="data-display">
+    <ul *ngIf="userService.reservations.length>0" class="data-list">
+      <li class="data-row" *ngFor="let reservation of filteredReservationList(); let i = index" >
+        <div class="row justify-content-md-between">
+          <div class=" col-md-9 row justify-content-md-start align-items-center data-button" (click)="navigateToParkinglotDetail(reservation.parkingLot.id,reservation.parkingLot.sector.parkHouse.id)">
+            <span class="col-md-4"><strong>Lejárat:</strong> {{printTime(reservation)}}</span>
+            <span class="col-md-4">{{reservation.user.firstName}} {{reservation.user.lastName}}</span>
+            <span class="col-md-4">
+              <strong>Parkoló:</strong> {{reservation.parkingLot.sector.parkHouse.name}}/{{reservation.parkingLot.sector.name}}/
+              {{reservation.parkingLot.name}}
+            </span>
+          </div>
+          <div class="admin-button col-md-2 mx-3">
+            <button class="btn btn-primary" (click)="openPopupSelected(reservation)">
+              Lemondás
+            </button>
+          </div>
+
+        </div>
+      </li>
+    </ul>
+    <div *ngIf="userService.reservations.length<=0">
+      Nincsenek jelenleg foglalások.
+    </div>
+  </div>
+
+</div>
+
+<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="deleteReservation()">
+  <h3>Biztos lemondja a foglalást?</h3>
+</app-pop-up>

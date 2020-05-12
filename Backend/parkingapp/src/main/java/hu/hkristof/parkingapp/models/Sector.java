@@ -38,7 +38,7 @@ public class Sector {
 	@OneToMany(mappedBy = "sector", cascade = CascadeType.ALL)
 	private List<ParkingLot> parkingLots;
 	
-	@ManyToOne()
+	@ManyToOne
 	private ParkHouse parkHouse;
 	
 	@Formula("(select count(p.id) from parking_lots p where p.plate_number is null and p.sector_id=id)")
@@ -52,6 +52,11 @@ public class Sector {
 		parkingLots.add(parkingLot);
 		parkingLot.setSector(this);
     }
+	
+	public void removeParkingLot(ParkingLot parkingLot) {
+		parkingLot.setSector(null);
+		parkingLots.remove(parkingLot);
+	}
 	
 	public ParkHouse getParkHouse() {
 		return parkHouse;

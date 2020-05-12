@@ -20,7 +20,7 @@
 }
 
 
-.user-list-item> div{
+.data-list-item> div{
   display: flex;
   border-bottom: 1px solid black;
   align-items: center;

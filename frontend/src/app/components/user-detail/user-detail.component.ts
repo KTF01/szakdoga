@@ -11,6 +11,9 @@ import { User } from '../../models/User';
 import { ActivatedRoute } from '@angular/router';
 import { Role } from '../../models/Role';
 import { NgForm } from '@angular/forms';
+import { CommonData } from '../../common-data';
+import { Reservation } from '../../models/Reservation';
+import { ReservationServiceService } from '../../services/reservation-service.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -23,6 +26,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
   deleteIson = faTrash;
 
   selectedCar:Car = null;
+  selectedReservation:Reservation = null;
 
   parkOutSub:Subscription = null;
   carAddSub:Subscription=null;
@@ -30,6 +34,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
   passwordChangeSub:Subscription=null;
   userRefreshedSub:Subscription=null;
   errorSub:Subscription = null;
+  deleteResSub:Subscription = null;
 
   displayedUser: User;
   loggedInUserFirstUser:boolean = false;
@@ -37,8 +42,11 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
   sameuser:boolean;
   error:string = "";
 
+  isCarView:boolean =true;
+
+
   constructor(public authService:AuthService, public commonService:CommonService, private parkingLotService:ParkingLotService,
-    public userService:UserServiceService, private route:ActivatedRoute) {super(); }
+    public userService:UserServiceService, private route:ActivatedRoute, private reservationService:ReservationServiceService) {super(); }
 
   ngOnInit(): void {
     let userId:number = +this.route.snapshot.params['id'];
@@ -53,12 +61,25 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
         this.displayedUser=this.authService.loggedInUser;
         this.userRefreshedSub = this.authService.refreshedLoggedInUser.subscribe(_=>{
           this.displayedUser=_;
+          this.userRefreshedSub.unsubscribe();
         });
 
     }
     this.isLoggedInUser = this.authService.loggedInUser.id== this.displayedUser.id;
     this.loggedInUserFirstUser = this.authService.loggedInUser.role==Role.ROLE_FIRST_USER
 
+  }
+
+  setViewReservs(){
+    this.isCarView=false;
+  }
+
+  printTime(res:Reservation):string{
+    return CommonData.convertTimeString(res.endTime.toString());
+  }
+
+  setViewCars(){
+    this.isCarView=true;
   }
 
   parkOut(){
@@ -128,6 +149,20 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
     });
   }
 
+  selectReservationOpenPopup(res:Reservation){
+    this.selectedReservation = res;
+    this.openPopUp();
+  }
+
+  deleteReservation(){
+    this.reservationService.deleteReservation(this.selectedReservation.id);
+    this.deleteResSub = this.reservationService.deleteReservSub.subscribe(pl=>{
+      let index:number = this.displayedUser.reservations.findIndex(res=>res.id==this.selectedReservation.id);
+      this.displayedUser.reservations.splice(index,1);
+      this.closePopUp();
+    });
+  }
+
   ngOnDestroy(){
     if(this.parkOutSub) this.parkOutSub.unsubscribe();
     if(this.errorSub) this.errorSub.unsubscribe();
@@ -135,6 +170,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
     if(this.carRemoveSub) this.carRemoveSub.unsubscribe();
     if(this.errorSub) this.errorSub.unsubscribe();
     if(this.passwordChangeSub) this.passwordChangeSub.unsubscribe();
+    if(this.deleteResSub) this.deleteResSub.unsubscribe();
   }
 
   openPopUp2(){

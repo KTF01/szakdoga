@@ -4,7 +4,6 @@ import { CommonData } from '../common-data';
 import { CommonService } from './common.service';
 import { Subject } from 'rxjs';
 import { Reservation } from '../models/Reservation';
-import { ParkHouseService } from './park-house.service';
 import { ParkingLot } from '../models/ParkingLot';
 
 @Injectable({

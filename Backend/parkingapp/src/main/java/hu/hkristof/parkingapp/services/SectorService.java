@@ -33,6 +33,7 @@ public class SectorService {
 			sector.addParkingLot(parkingLot);
 			sector.increasePlCount();
 		}
+		sector.getParkHouse().countPls();
 		System.out.println(sector.getName()+" szekcióhoz parkolóhelyek lettek hozzáadva!");
 		return sectorRepository.save(sector);
 	}

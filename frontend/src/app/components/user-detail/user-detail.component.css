@@ -29,10 +29,8 @@
   color: var(--light);
 }
 
-.container{
-  display: flex;
-}
 .my-container{
+  display: flex;
   height: 70vh;
 }
 .car-container, .pl-container{

@@ -1,4 +1,3 @@
-<!-- <main *ngIf="authService.isLogedIn"> -->
 <main class="">
   <div class="user-info container">
     <div class="user-data">
@@ -20,7 +19,19 @@
     </div>
   </div>
 
-  <div class="container my-container">
+  <div class="container">
+    <nav class="navbar navbar-expand-sm navbar-light bg-white justify-content-around">
+
+      <div class="navbar-nav">
+          <a class="nav-item nav-link" [ngClass]="{active: isCarView}" (click)="setViewCars()">Autók</a>
+      </div>
+      <div class="navbar-nav">
+          <a class="nav-item nav-link" [ngClass]="{active: !isCarView}" (click)="setViewReservs()">Foglalások</a>
+        </div>
+    </nav>
+  </div>
+
+  <div *ngIf="isCarView" class="container my-container">
     <div class="car-container">
       <ul class="car-list">
         <app-list-tile
@@ -69,10 +80,34 @@
       </div>
     </div>
   </div>
+
+  <div *ngIf="!isCarView" class="container reservation-list">
+    <app-list-tile [isDeletable]="false" *ngFor="let reservation of displayedUser.reservations">
+      <div class="col-md-12">
+        <div class="row align-items-center">
+          <div class="col-md-4 ">
+            <strong>Parkoló:</strong>
+            {{reservation.parkingLot.sector.parkHouse.name}}/
+            {{reservation.parkingLot.sector.name}}/
+            {{reservation.parkingLot.name}}
+          </div>
+          <div class="col-md-6"> <strong>Foglalás vége:</strong> {{printTime(reservation)}}</div>
+          <div class="col-md-2">
+            <button class="btn btn-primary" (click)="selectReservationOpenPopup(reservation)">Lemondás</button>
+          </div>
+        </div>
+      </div>
+    </app-list-tile>
+    <div *ngIf="displayedUser.reservations.length==0">
+      <span>Nincsenek jeleneg foglalások</span>
+    </div>
+  </div>
+
 </main>
 
-<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="parkOut()">
-  <h3>Kiáll a parkolóbol?</h3>
+<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="isCarView?parkOut():deleteReservation()">
+  <h3 *ngIf="isCarView">Kiáll a parkolóbol?</h3>
+  <h3 *ngIf="!isCarView">Biztos lemondja a foglalását?</h3>
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp2IsOpen" (closeEvent)="closePopUp2()" (okEvent)="addNewCar(plateNumb)">

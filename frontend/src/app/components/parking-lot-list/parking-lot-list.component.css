@@ -23,10 +23,6 @@
   margin:auto 0;
 }
 
-.pl-title{
-
-}
-
 form div{
   width: fit-content;
   margin-bottom: 10px;
@@ -50,4 +46,9 @@ form div{
   flex-direction: row;
   justify-content: space-evenly;
   margin-bottom: 10px;
+}
+
+.reserved{
+  background-color: var(--dark);
+  color: var(--light);
 }

@@ -66,6 +66,7 @@ public class UserService {
 		System.out.println(user.getFirstName()+" adatai lekérdezve!");
 		response.setUser(user);
 		response.setUserCars(user.getOwnedCars());
+		response.setUserReservations(user.getReservations());
 	    return response;
 	}
 	
@@ -97,6 +98,7 @@ public class UserService {
 				.orElseThrow(()->new UsernameNotFoundException(email+" emaillel nincs felhasználó regisztrálva."));
 		response.setUser(loggedInUser);
 		response.setUserCars(loggedInUser.getOwnedCars());
+		response.setUserReservations(loggedInUser.getReservations());
 		System.out.println(loggedInUser.getFirstName()+" "+loggedInUser.getLastName()+ " bejelentkezett!");
 	    return response;
 	}

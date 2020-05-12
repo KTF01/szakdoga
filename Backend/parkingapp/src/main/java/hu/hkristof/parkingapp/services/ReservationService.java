@@ -39,10 +39,13 @@ public class ReservationService {
 	public Reservation reserveParkingLot(Long plId, Long userId,Timestamp startTime, Long duration ) {
 		ParkingLot parkingLot = parkingLotRespository.findById(plId).orElseThrow(()->new ParkingLotNotFoundException(plId));
 		User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException(userId));
-		if((user.getRole().equals(Role.ROLE_USER) && authenticatedUser.getUser().getId()!=user.getId()) ||
+		if((authenticatedUser.getUser().getRole().equals(Role.ROLE_USER) && authenticatedUser.getUser().getId()!=user.getId()) ||
 				parkingLot.getIsReserved()) {
 			return null;
+		}else if(parkingLot.getOccupyingCar()!=null && parkingLot.getOccupyingCar().getOwner().getId()!=authenticatedUser.getUser().getId()) {
+			return null;
 		}else{
+			System.out.println("Foglalás!");
 			Reservation reservation = new Reservation();
 			user.addReservation(reservation);
 			reservation.setParkingLot(parkingLot);
@@ -65,13 +68,12 @@ public class ReservationService {
 		List<Reservation> reservations = reservationRepository.findAllExpired(nowTime.toString());
 		for(Reservation reservation : reservations) {
 			System.out.println(nowTime.toString()+": "+reservation.getId()+" számú foglalás törölve");
-			deleteReservation(reservation.getId());
+			deleteReservation(reservation);
 		}
 	}
 	
 	@Transactional
-	public ParkingLot deleteReservation(Long resId) {
-		Reservation reservation = reservationRepository.findById(resId).orElseThrow(()->new ReservationNotFoundException(resId));
+	public ParkingLot deleteReservation(Reservation reservation) {
 		ParkingLot pl = reservation.getParkingLot();
 		pl.setIsReserved(false);
 		pl.setReservation(null);
@@ -80,5 +82,16 @@ public class ReservationService {
 		reservationRepository.delete(reservation);
 		System.out.println(pl.getName()+" nevű parkolóhelyről eltávolításra került a foglalás. Foglalás ID: "+reservation.getId());
 		return pl;
+	}
+	
+	public ParkingLot processDeleteReservation(Long resId) {
+		Reservation reservation = reservationRepository.findById(resId).orElseThrow(()->new ReservationNotFoundException(resId));
+		if(authenticatedUser.getUser().getRole().equals(Role.ROLE_USER)&&
+				reservation.getUser().getId()!=authenticatedUser.getUser().getId()) {
+			return null;
+		}else {
+			return deleteReservation(reservation);
+		}
+		
 	}
 }

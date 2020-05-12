@@ -31,7 +31,6 @@ public class ReservationController {
 													//@RequestParam("startTime") String startTime,
 													@RequestParam("duration") Long duration){
 		Timestamp startTimeTime = new Timestamp(System.currentTimeMillis());
-		System.out.println("Foglalás!");
 		Reservation response = reservationService.reserveParkingLot(plId, userId, startTimeTime, duration);
 		if(response == null) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -41,8 +40,14 @@ public class ReservationController {
 	
 	@DeleteMapping("delete/{id}")
 	public ResponseEntity<ParkingLot> deleteReservation(@PathVariable Long id){
-		System.out.println("Rendelés törölve!");
-		return new ResponseEntity<ParkingLot>(reservationService.deleteReservation(id), HttpStatus.OK);
+		ParkingLot pl = reservationService.processDeleteReservation(id);
+		if(pl==null) {
+			return new ResponseEntity<ParkingLot>(HttpStatus.FORBIDDEN);
+		}else {
+			System.out.println("Rendelés törölve!");
+			return new ResponseEntity<ParkingLot>(pl, HttpStatus.OK);
+		}
+		
 	}
 	
 }

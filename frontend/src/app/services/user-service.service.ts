@@ -3,12 +3,12 @@ import { User } from '../models/User';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { CommonService } from './common.service';
 import { CommonData } from '../common-data';
-import { AuthService } from './auth.service';
 import { Car } from '../models/Car';
 import { Subject } from 'rxjs';
 import { Role } from '../models/Role';
 import { faUser, faUserEdit, faUserCog } from '@fortawesome/free-solid-svg-icons';
 import { ParkingLotService } from './parking-lot.service';
+import { Reservation } from '../models/Reservation';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,7 @@ export class UserServiceService {
 
   users:User[];
   cars:Car[]=[];
+  reservations:Reservation[];
 
   usersLoaded: Subject<boolean> = new Subject<boolean>();
   carAdded: Subject<Car> = new Subject<Car>();
@@ -33,16 +34,21 @@ export class UserServiceService {
 
 
   loadUsers(){
-    this.http.get<{usersData:{user:User, userCars:Car[]}[]}>(CommonData.hostUri+'auth/users/all',{
+    this.http.get<{usersData:{user:User, userCars:Car[], userReservations:Reservation[]}[]}>(CommonData.hostUri+'auth/users/all',{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
+      console.log(response);
       this.users=[];
       this.cars=[];
+      this.reservations=[];
       for(let userData of response.usersData){
         userData.user.role= (<any>Role)[userData.user.role];
-        let user:User = this.setUpUserCars(userData);
+        let user:User = this.setUpUserCarsAndRes(userData);
         for(let car of user.ownedCars){
           this.cars.push(car);
+        }
+        for(let res of user.reservations){
+          this.reservations.push(res);
         }
           this.users.push(user);
 
@@ -105,13 +111,18 @@ export class UserServiceService {
       return userIcon;
   }
 
-  setUpUserCars(userData:{user:User, userCars:Car[]}){
+  setUpUserCarsAndRes(userData:{user:User, userCars:Car[], userReservations:Reservation[]}){
+    userData.user.ownedCars=userData.userCars;
     for(let car of userData.userCars){
       car.owner=userData.user;
-      userData.user.ownedCars=userData.userCars;
       if(car.occupiedParkingLot){
         car.occupiedParkingLot=this.parkingLotService.getParkingLot(car.occupiedParkingLot.id);
       }
+    }
+    userData.user.reservations=userData.userReservations;
+    for(let res of userData.userReservations){
+      res.user=userData.user;
+      res.parkingLot=this.parkingLotService.getParkingLot(res.parkingLot.id);
     }
     return userData.user;
   }

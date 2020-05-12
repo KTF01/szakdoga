@@ -1,4 +1,4 @@
-<app-pop-up *ngIf="commonService.isLoading" [actionButtons]="false" [nobackGround]="true">
+<app-pop-up *ngIf="commonService.isLoading&&!isGetClosestLoading" [actionButtons]="false" [nobackGround]="true">
   <app-loading-spinner></app-loading-spinner>
 </app-pop-up>
 
@@ -14,8 +14,13 @@
       [latitude]="47.491800"
       [restriction]="mapRestriction">
         <agm-marker *ngFor="let marker of phMarkers" (markerClick)="setSelectedParkHouse(marker.parkHouse.id)" (markerDblClick)="openParkHouseDetail(marker.parkHouse.id)"
-        [longitude]="marker.longitude" [latitude]="marker.latitude" [iconUrl]="marcerIcon">
-          <agm-info-window>{{marker.parkHouse.name}}</agm-info-window>
+        [longitude]="marker.longitude" [latitude]="marker.latitude" [iconUrl]="marcerIcon" >
+          <agm-info-window #phMarkerInfo>
+            <h4>
+            {{marker.parkHouse.name}}
+            </h4>
+            <h5>{{marker.parkHouse.address}}</h5>
+          </agm-info-window>
         </agm-marker>
         <agm-marker *ngIf="isAaddMarkerVisible" [(longitude)]="form.value.longitudeInput" [(latitude)]="form.value.latitudeInput">
         </agm-marker>
@@ -128,8 +133,13 @@
       </ng-template>
       <app-add-button (addEvent)="changeToAddView()" *ngIf="!isAddview"></app-add-button>
 
-      <button *ngIf="!isAddview" class="btn btn-primary" (click)="startGettinClosestParkHouse()">Legközelebbi parkolóház</button>
 
-          </div>
+      <div *ngIf="!isGetClosestLoading">
+        <button *ngIf="!isAddview" class="btn btn-primary" (click)="startGettinClosestParkHouse()">Legközelebbi parkolóház</button>
+      </div>
+      <app-loading-spinner *ngIf="isGetClosestLoading"></app-loading-spinner>
+
+
+    </div>
   </div>
 </main>

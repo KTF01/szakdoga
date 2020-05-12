@@ -47,6 +47,8 @@ public class ParkHouse {
 	
 	private int freePlCount;
 	
+	private int occupiedPlCount;
+	
 	@NotNull
 	private double longitude;
 	
@@ -54,11 +56,14 @@ public class ParkHouse {
 	private double latitude;
 	
 	@PostLoad
-	public void countFreePls() {
+	public void countPls() {
 		freePlCount = 0;
+		int allPlCount=0;
 		for (Sector sector : sectors) {
 			freePlCount+=sector.getFreePlCount();
+			allPlCount+=sector.getParkingLots().size();
 		}
+		occupiedPlCount = allPlCount-freePlCount;
 	}
 	
 	public ParkHouse(){
@@ -122,6 +127,14 @@ public class ParkHouse {
 
 	public void setFreePlCount(int freePlCount) {
 		this.freePlCount = freePlCount;
+	}
+	
+	public int getOccupiedPlCount() {
+		return occupiedPlCount;
+	}
+
+	public void setOccupiedPlCount(int occupiedPlCount) {
+		this.occupiedPlCount = occupiedPlCount;
 	}
 
 	public int getFirstFloor() {

@@ -1,5 +1,6 @@
 import { Car } from "./Car";
 import { Role } from "./Role";
+import { Reservation } from "./Reservation";
 
 export class User{
   id?:number;
@@ -11,4 +12,5 @@ export class User{
   role?: Role;
   longitude?: number;
   latitude?:number;
+  reservations?:Reservation[];
 }

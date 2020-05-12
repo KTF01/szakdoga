@@ -5,8 +5,8 @@ import { Reservation } from "./Reservation";
 export class ParkingLot{
   id?: number;
   name: string;
-  occupiingCar: Car;
+  occupyingCar: Car;
   sector: Sector;
-  isReserved: Boolean;
+  isReserved: boolean;
   reservation?: Reservation;
 }

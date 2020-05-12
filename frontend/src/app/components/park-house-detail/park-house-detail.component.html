@@ -120,11 +120,12 @@
                 <ng-template #upArrow><fa-icon  [icon]="faCaretUpIcon"></fa-icon></ng-template>
               </span>
             </div>
-            <app-parking-lot-list #plList [sector] = "sector" [parkigLots]="sector.parkingLots" ></app-parking-lot-list>
+            <app-parking-lot-list #plList [chart]="chart" [sector] = "sector" [parkigLots]="sector.parkingLots" ></app-parking-lot-list>
           </div>
            </app-list-tile>
       </ul>
       <app-add-button (addEvent)="openPopUp3()"></app-add-button>
     </div>
+    <app-pie-chart #chart [freePls]="parkHouse.freePlCount" [occuPiedPls]="parkHouse.occupiedPlCount"></app-pie-chart>
   </div>
 </main>

@@ -56,6 +56,9 @@ public class ParkingLotService {
 		}
 		response.setParkingLot(pl);
 		response.setFreePlCount(pl.getSector().getFreePlCount());
+		pl.getSector().getParkHouse().countPls();
+		response.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
+		response.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
 		return response;
 	}
 	
@@ -102,21 +105,28 @@ public class ParkingLotService {
 	public ParkInResponse parkIn(Long plId, String carPlate) {
 		ParkInResponse response = new ParkInResponse();
 		
+		Long authID = authenticateduser.getUser().getId();
+		
 		ParkingLot pl = plRepository.findById(plId).orElseThrow(()->new ParkingLotNotFoundException(plId));
 		Car car = carRepository.findById(carPlate).orElseThrow(()->new CarNotFoundException(carPlate));
-		if(authenticateduser.getUser().getRole().equals(Role.ROLE_USER)) {
-			if(car.getOwner().getId()==authenticateduser.getUser().getId()) {
-				parkInProcess(pl, car);
-			}else {
-				return null;
-			}
-		}else {
-			parkInProcess(pl, car);
+		
+		if(pl.getIsReserved()&&(pl.getReservation().getUser().getId()!=authID || car.getOwner().getId()!=authID)) {
+			return null;
+		}
+		if(authenticateduser.getUser().getRole().equals(Role.ROLE_USER)&&car.getOwner().getId()!=authID) {
+			return null;
+		}
+		parkInProcess(pl, car);
+		if(pl.getIsReserved()) {
+			response.setReservation(pl.getReservation());
 		}
 		
 		response.setCar(car);
 		response.setParkingLot(pl);
 		response.setSectorPlCount(pl.getSector().getFreePlCount());
+		pl.getSector().getParkHouse().countPls();
+		response.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
+		response.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
 		return response;
 	}
 
@@ -125,9 +135,13 @@ public class ParkingLotService {
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
 		if(pl.getOccupyingCar()!=null) {
 			parkOut(pl.getId());
+		}else {
+			pl.getSector().decraseCount();
+			pl.getSector().getParkHouse().countPls();
 		}
+		pl.getSector().removeParkingLot(pl);
 		System.out.println(id + " számú parkolóhely törölve!");
-		plRepository.deleteById(id);
+		plRepository.delete(pl);
 		return id;
 	}
 }

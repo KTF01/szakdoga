@@ -51,8 +51,6 @@
       <h1>{{parkingLot.name}}</h1>
       <h2>Parkolóház: {{parkingLot.sector.parkHouse.name}}</h2>
       <h2>Szektor: {{parkingLot.sector.name}}</h2>
-      <h2>{{parkingLot.isReserved? 'Le van foglalva': 'Nem foglalja senki'}}</h2>
-      <h2 *ngIf="parkingLot.isReserved">res: {{parkingLot.reservation.user.firstName}}</h2>
     </div>
 
     <div *ngIf="isAdmin" class="buttons">
@@ -65,26 +63,34 @@
     </div>
   </div>
   <div class="pl-car-container">
-    <div *ngIf="parkingLot.occupiingCar;else emptyPl">
+    <div *ngIf="parkingLot.occupyingCar;else emptyPl">
       <div class="car-detail-container row">
         <div class="car-details-icon col-md-4">
           <fa-icon [icon]="carIcon"></fa-icon>
         </div>
         <div class="car-text-details col-md-8">
-          <p>Autó: {{parkingLot.occupiingCar.plateNumber}}</p>
-          <p>Tulaj: {{parkingLot.occupiingCar.owner.firstName}} {{parkingLot.occupiingCar.owner.lastName}}</p>
+          <p>Autó: {{parkingLot.occupyingCar.plateNumber}}</p>
+          <p>Tulaj: {{parkingLot.occupyingCar.owner.firstName}} {{parkingLot.occupyingCar.owner.lastName}}</p>
         </div>
       </div>
     </div>
     <ng-template #emptyPl>
       <div class="no-car"><h1>Üres</h1></div>
     </ng-template>
-    <div class="no-car">
-      <button class="btn btn-primary" (click)="parkingLot.occupiingCar? parkOut() :openPopUp3()"
-      *ngIf="isParkActionShown">{{parkingLot.occupiingCar?'Kiállás':'Beállás'}}</button>
+    <div class="reserve-info" *ngIf="parkingLot.isReserved" style="text-align: center;">
+      <h4>{{parkingLot.reservation.user.firstName}} {{parkingLot.reservation.user.lastName}}
+        részére lefoglalva. Foglalás vége:
+      </h4>
+      <h4>{{reserveEndTimeString}}</h4>
     </div>
-    <div class="reserv-button">
-      <button class="btn btn-primary" (click)="openPopUp4()">{{parkingLot.isReserved? 'Foglalás törlése':'Fogaláls'}}</button>
+    <div class="no-car">
+      <button class="btn btn-primary" (click)="parkingLot.occupyingCar? parkOut() :openPopUp3()"
+      *ngIf="isParkActionShown">{{parkingLot.occupyingCar?'Kiállás':'Beállás'}}</button>
+    </div>
+    <div class="reserv-button" *ngIf="isReservable">
+      <button class="btn btn-primary" (click)="openPopUp4()">
+        {{parkingLot.isReserved? 'Foglalás törlése':'Fogaláls'}}
+      </button>
     </div>
   </div>
 

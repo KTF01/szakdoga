@@ -13,6 +13,8 @@ import { AuthService } from '../../services/auth.service';
 import { Role } from '../../models/Role';
 import { CommonData } from '../../common-data';
 import { MapRestriction } from '@agm/core/services/google-maps-types';
+import { PieChartComponent } from '../common/pie-chart/pie-chart.component';
+
 
 @Component({
   selector: 'app-park-house-detail',
@@ -25,6 +27,7 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
   formChecked: boolean = false;
   @ViewChild('ef') editForm: NgForm;
   @ViewChild('af') addForm: NgForm;
+  @ViewChild('chart') chart: PieChartComponent;
 
   error: string = null;
 
@@ -53,6 +56,7 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
     this.parkHouseService.addedSectorToParkHouse.subscribe(_ => {
       this.parkHouse = this.parkHouseService.getParkHouse(this.parkHouse.id);
       this.closePopUp3();
+      this.chart.updateChart(this.parkHouse.freePlCount, this.parkHouse.occupiedPlCount);
     });
     this.parkHouseService.errorOccured.subscribe(errorText => {
       this.error = errorText;
@@ -64,6 +68,7 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
     this.closePopUp4();
     this.parkHouseService.removedSectorToParkHouse.subscribe(_ => {
       this.closePopUp4();
+      this.chart.updateChart(this.parkHouse.freePlCount, this.parkHouse.occupiedPlCount);
     });
     this.parkHouseService.errorOccured.subscribe(errorText => {
       this.error = errorText;

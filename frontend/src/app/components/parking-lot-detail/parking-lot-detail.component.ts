@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { Role } from '../../models/Role';
 import { ReservationServiceService } from '../../services/reservation-service.service';
+import { CommonData } from '../../common-data';
 
 @Component({
   selector: 'app-parking-lot-detail',
@@ -34,13 +35,15 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
   isUsersView:boolean=true;
   selectedUser:User=null;
   isAdmin:boolean;
+  reserveEndTimeString: string = "";
+  isReservable:boolean;
 
   isParkActionShown:boolean;
   @ViewChild('form') editForm: NgForm;
   @ViewChild('reservForm') resForm: NgForm;
 
   constructor(private parkingLotService: ParkingLotService, private route:ActivatedRoute,
-    private router: Router, public userService:UserServiceService, private authService:AuthService,
+    private router: Router, public userService:UserServiceService, public authService:AuthService,
     private reservationService:ReservationServiceService) { super();}
 
   ngOnInit(): void {
@@ -48,19 +51,28 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
     this.parkingLot=this.parkingLotService.getParkingLot(id);
     if(this.authService.loggedInUser){
       this.isAdmin = !(this.authService.loggedInUser.role==Role.ROLE_USER);
-      this.isUsersView = this.isAdmin;
-      if(this.isAdmin){
+      this.isUsersView = this.isAdmin&&!this.parkingLot.isReserved;
+      if(this.isAdmin&&!this.parkingLot.isReserved){
         this.userService.loadUsers();
       }else{
         this.selectedUser=this.authService.loggedInUser;
       }
-      if(this.parkingLot.occupiingCar){
-        this.isParkActionShown = this.isAdmin || (!this.isAdmin&&this.parkingLot.occupiingCar.owner.id===this.authService.loggedInUser.id)
-      }else{
-        this.isParkActionShown=true;
-      }
-
+      this.setReservationDisplay();
     }
+
+  }
+
+  setReservationDisplay():void{
+    this.isParkActionShown = !this.parkingLot.isReserved||(this.parkingLot.isReserved&&this.parkingLot.reservation.user.id==this.authService.loggedInUser.id);
+    if(this.parkingLot.occupyingCar){
+      this.isParkActionShown = this.isParkActionShown && (this.isAdmin||this.parkingLot.occupyingCar.owner.id==this.authService.loggedInUser.id);
+    }
+    if(this.parkingLot.isReserved){
+      this.reserveEndTimeString = CommonData.convertTimeString(this.parkingLot.reservation.endTime.toString());
+    }
+    this.isReservable=!this.parkingLot.occupyingCar||
+    (this.parkingLot.occupyingCar && (this.parkingLot.occupyingCar.owner.id==this.authService.loggedInUser.id||
+      this.isAdmin&&this.parkingLot.isReserved));
   }
 
   changeView(user:User){
@@ -91,7 +103,8 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
   parkOut(){
     this.parkingLotService.parkOut(this.parkingLot);
     this.parkingLotService.parkedOut.subscribe(_=>{
-      this.parkingLot.occupiingCar=null;
+      this.parkingLot.occupyingCar=null;
+      this.setReservationDisplay();
     });
   }
 
@@ -100,6 +113,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
     this.parkInSub = this.parkingLotService.parkedIn.subscribe(responsePl=>{
       this.parkingLot=responsePl;
       this.closePopUp3();
+      this.setReservationDisplay();
     });
 
   }
@@ -119,6 +133,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
       this.parkingLot.reservation=newReservation;
       this.parkingLot.isReserved=  newReservation.parkingLot.isReserved;
       this.closePopUp4();
+      this.setReservationDisplay();
     });
   }
 
@@ -128,6 +143,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
       this.parkingLot.isReserved=pl.isReserved;
       this.parkingLot.reservation=pl.reservation;
       this.closePopUp4();
+      this.setReservationDisplay();
     });
   }
   ngOnDestroy(){
