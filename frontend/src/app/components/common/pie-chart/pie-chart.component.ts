@@ -15,7 +15,8 @@ export class PieChartComponent implements OnInit {
   public pieChartOptions: ChartOptions = {
     responsive: true,
     legend: {
-      display: false,
+      display: true,
+      position:"bottom"
     },
     plugins: {
       datalabels: {
@@ -26,7 +27,7 @@ export class PieChartComponent implements OnInit {
       },
     }
   };
-  public pieChartLabels: Label[] = ['Parkolt', 'Szabad'];
+  public pieChartLabels: Label[] = ['Foglalt', 'Szabad'];
   public pieChartData: number[] = [];
   public pieChartType: ChartType = 'pie';
   public pieChartLegend = true;

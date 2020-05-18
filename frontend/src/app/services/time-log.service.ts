@@ -54,6 +54,7 @@ export class TimeLogService {
     }).subscribe(response=>{
       this.commonService.isLoading=false;
       this.timeLogs=response;
+      this.logsLoaded.next(true);
     }, error=>{
       this.commonService.isLoading=false;
       console.log(error);

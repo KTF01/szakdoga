@@ -37,6 +37,8 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   addMarkerLong: number = 0;
   addMarkerLat:number = 0;
   isGetClosestLoading:boolean=false;
+  deviceLongitude:number = CommonData.authLongitude;
+  deviceLatitude:number = CommonData.authLatitude;
 
   selectedparkHouse: ParkHouse;
 
@@ -48,6 +50,13 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
       height: 20
     }
   };
+  userMarkerIcon = {
+    url:'./assets/male-solid.svg',
+    scaledSize:{
+      width: 15,
+      height: 15
+    }
+  }
 
   constructor(private parkHouseService: ParkHouseService, private route: ActivatedRoute, private router: Router,
     public commonService: CommonService, private authService: AuthService) { super(); }
@@ -160,7 +169,14 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
     this.closestSub = this.authService.closestParkHouse.subscribe(id=>{
       this.setSelectedParkHouse(id);
       let marker = this.phMarkers.find(m=>m.parkHouse.id==id);
-      this.windows.toArray()[marker.markerId].open();
+      for(let i = 0; i< this.windows.toArray().length; i++){
+        if(i===marker.markerId){
+          this.windows.toArray()[i].open();
+        }else {
+          this.windows.toArray()[i].close();
+        }
+      }
+
       this.closestSub.unsubscribe();
       this.isGetClosestLoading=false;
     });

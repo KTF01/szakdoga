@@ -124,7 +124,7 @@ export class ParkingLotService {
       response.parkingLot.sector = parkingLot.sector;
       response.parkingLot.sector.freePlCount=response.sectorPlCount;
       parkingLot.sector.parkHouse.freePlCount=response.parkHouseFreePlCount;
-        parkingLot.sector.parkHouse.occupiedPlCount=response.parkHouseOccupiedPlCount;
+      parkingLot.sector.parkHouse.occupiedPlCount=response.parkHouseOccupiedPlCount;
       response.parkingLot.reservation=response.reservation;
       parkingLot.sector.parkingLots[index] = response.parkingLot;
 

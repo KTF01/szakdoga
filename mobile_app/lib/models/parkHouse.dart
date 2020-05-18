@@ -7,8 +7,10 @@ class ParkHouse{
   String address;
   int parkingLotCount;
   List<Sector> sectors;
+  double latitude;
+  double longitude;
 
-  ParkHouse({this.id, @required this.name, this.address, this.parkingLotCount=0, this.sectors}){
+  ParkHouse({this.id, @required this.name, this.address, this.parkingLotCount=0, this.sectors, this.latitude, this.longitude}){
     if(sectors!=null){
       for(Sector sec in this.sectors){
         sec.parkHouse=this;

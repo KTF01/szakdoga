@@ -34,15 +34,13 @@ public class TimeLog {
 	@NotBlank
 	private String message;
 	
-	private String plateNumber;
-	
-	private String carOwnerName;
-	
-	private String parkingLotName;
-	
-	private String sectorName;
+	private Long parkHouseId;
 	
 	private String parkHouseName;
+	
+	private int parkHouseFreePlCount;
+	
+	private int parkHouseOccupiedPlCount;
 
 	public Long getId() {
 		return id;
@@ -76,30 +74,6 @@ public class TimeLog {
 		this.userName = userName;
 	}
 
-	public String getCarOwnerName() {
-		return carOwnerName;
-	}
-
-	public void setCarOwnerName(String carOwnerName) {
-		this.carOwnerName = carOwnerName;
-	}
-
-	public String getPlateNumber() {
-		return plateNumber;
-	}
-
-	public void setPlateNumber(String plateNumber) {
-		this.plateNumber = plateNumber;
-	}
-
-	public String getParkingLotName() {
-		return parkingLotName;
-	}
-
-	public void setParkingLotName(String parkingLotName) {
-		this.parkingLotName = parkingLotName;
-	}
-
 	public String getMessage() {
 		return message;
 	}
@@ -108,12 +82,12 @@ public class TimeLog {
 		this.message = message;
 	}
 
-	public String getSectorName() {
-		return sectorName;
+	public Long getParkHouseId() {
+		return parkHouseId;
 	}
 
-	public void setSectorName(String sectorName) {
-		this.sectorName = sectorName;
+	public void setParkHouseId(Long parkHouseId) {
+		this.parkHouseId = parkHouseId;
 	}
 
 	public String getParkHouseName() {
@@ -122,6 +96,22 @@ public class TimeLog {
 
 	public void setParkHouseName(String parkHouseName) {
 		this.parkHouseName = parkHouseName;
+	}
+
+	public int getParkHouseFreePlCount() {
+		return parkHouseFreePlCount;
+	}
+
+	public void setParkHouseFreePlCount(int parkHouseFreePlCount) {
+		this.parkHouseFreePlCount = parkHouseFreePlCount;
+	}
+
+	public int getParkHouseOccupiedPlCount() {
+		return parkHouseOccupiedPlCount;
+	}
+
+	public void setParkHouseOccupiedPlCount(int parkHouseOccupiedPlCount) {
+		this.parkHouseOccupiedPlCount = parkHouseOccupiedPlCount;
 	}
 	
 }

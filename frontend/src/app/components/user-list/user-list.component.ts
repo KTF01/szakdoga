@@ -59,7 +59,6 @@ export class UserListComponent extends PopUpContainer implements OnInit {
         return text.toLocaleLowerCase().includes(this.nameFilter.toLowerCase()) ;
       });
     }
-
   }
 
   returnList(){

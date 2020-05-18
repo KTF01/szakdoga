@@ -18,6 +18,7 @@ class ParkingLotTile extends StatelessWidget {
         },
         highlightColor: Theme.of(context).primaryColor,
         child: Container(
+          color: parkingLot.isReserved? Colors.black54 : Colors.white,
           width: 60,
           height: 70,
           child: Padding(
@@ -26,7 +27,7 @@ class ParkingLotTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(parkingLot.name),
-                if(parkingLot.occupiingCar!=null) FaIcon(FontAwesomeIcons.car)
+                if(parkingLot.occupyingCar!=null) FaIcon(FontAwesomeIcons.car)
               ],
             ),
           ),

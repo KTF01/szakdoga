@@ -118,6 +118,7 @@ export class ParkHouseService extends ErrorHandler {
     this.http.put<ParkHouse>(CommonData.hostUri + 'auth/parkHouses/addSectors/' + parkHouse.id, [newSector],{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response => {
+      this.adjustSectors(response);
       this.commonService.isLoading = false;
       this.parkHouses[index] = response;
       this.addedSectorToParkHouse.next(response);
@@ -127,12 +128,18 @@ export class ParkHouseService extends ErrorHandler {
 
   removeSector(parkHouse: ParkHouse, sector: Sector) {
     this.commonService.isLoading = true;
-    this.http.delete<number>(CommonData.hostUri + 'auth/sectors/delete/' + sector.id,{
+    this.http.delete<{
+      deletedId:number,
+      parkHouseFreeplCount:number,
+      parkHouseOccupiedPlCount:number
+    }>(CommonData.hostUri + 'auth/sectors/delete/' + sector.id,{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response => {
       this.commonService.isLoading = false;
-      let index = parkHouse.sectors.findIndex(elem => elem.id == response);
+      let index = parkHouse.sectors.findIndex(elem => elem.id == response.deletedId);
       parkHouse.sectors.splice(index, 1);
+      parkHouse.freePlCount = response.parkHouseFreeplCount;
+      parkHouse.occupiedPlCount = response.parkHouseOccupiedPlCount;
       this.removedSectorToParkHouse.next(true);
     }, error => this.handleError(error));
   }

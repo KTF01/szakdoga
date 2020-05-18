@@ -1,0 +1,7 @@
+.ph-tag{
+  margin: 5px;
+}
+.selected{
+  color: var(--dark);
+  background-color: var(--selected);
+}

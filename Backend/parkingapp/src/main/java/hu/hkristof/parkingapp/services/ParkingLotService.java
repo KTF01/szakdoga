@@ -67,9 +67,11 @@ public class ParkingLotService {
 		car.setOccupiedParkingLot(null);
 		carRepository.save(car);
 		pl.setOccupyingCar(null);
-		pl.getSector().increasePlCount();
+		if(!pl.getIsReserved()) {
+			pl.getSector().increasePlCount();
+		}
 		plRepository.save(pl);
-		timeLogService.saveLog(LogAction.PARK_OUT,car, pl);
+		timeLogService.saveParkLog(LogAction.PARK_OUT,car, pl);
 		System.out.println(pl.getName()+" parkolóból kiállt a "+ car.getPlateNumber()+" rendszámú autó!");
 	}
 	
@@ -78,12 +80,14 @@ public class ParkingLotService {
 			parkOut(car.getOccupiedParkingLot().getId());
 		}
 		pl.setOccupyingCar(car);
-		pl.getSector().decraseCount();
+		if(!pl.getIsReserved()) {
+			pl.getSector().decraseCount();
+		}
 		car.setOccupiedParkingLot(pl);
 		plRepository.save(pl);
 		carRepository.save(car);
 
-		timeLogService.saveLog(LogAction.PARK_IN, car, pl);
+		timeLogService.saveParkLog(LogAction.PARK_IN, car, pl);
 		System.out.println("A "+ car.getPlateNumber()+" rendszámú autó beparkolt a "+ pl.getName()+" nevű parkolóhelyre.");
 	}
 	

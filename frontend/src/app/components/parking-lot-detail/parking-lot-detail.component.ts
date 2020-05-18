@@ -37,6 +37,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
   isAdmin:boolean;
   reserveEndTimeString: string = "";
   isReservable:boolean;
+  isUsersCar:boolean;
 
   isParkActionShown:boolean;
   @ViewChild('form') editForm: NgForm;
@@ -58,6 +59,11 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
         this.selectedUser=this.authService.loggedInUser;
       }
       this.setReservationDisplay();
+    }
+    if(this.parkingLot.occupyingCar!=null){
+      this.isUsersCar = this.parkingLot.occupyingCar.owner.id==this.authService.loggedInUser.id;
+    }else{
+      this.isUsersCar = false;
     }
 
   }
@@ -132,6 +138,10 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
     this.reservSub = this.reservationService.makeReservSub.subscribe(newReservation=>{
       this.parkingLot.reservation=newReservation;
       this.parkingLot.isReserved=  newReservation.parkingLot.isReserved;
+      if(!this.parkingLot.occupyingCar){
+        this.parkingLot.sector.parkHouse.freePlCount--;
+        this.parkingLot.sector.parkHouse.occupiedPlCount++;
+      }
       this.closePopUp4();
       this.setReservationDisplay();
     });
@@ -142,6 +152,10 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
     this.delReservSub = this.reservationService.deleteReservSub.subscribe(pl=>{
       this.parkingLot.isReserved=pl.isReserved;
       this.parkingLot.reservation=pl.reservation;
+      if(!this.parkingLot.occupyingCar){
+        this.parkingLot.sector.parkHouse.freePlCount++;
+        this.parkingLot.sector.parkHouse.occupiedPlCount--;
+      }
       this.closePopUp4();
       this.setReservationDisplay();
     });

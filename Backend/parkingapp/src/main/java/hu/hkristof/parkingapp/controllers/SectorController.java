@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.Sector;
+import hu.hkristof.parkingapp.responsetypes.DeleteSectorResponse;
 import hu.hkristof.parkingapp.services.SectorService;
 
 @CrossOrigin
@@ -42,7 +43,7 @@ public class SectorController {
 	
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@DeleteMapping("delete/{id}")
-	public ResponseEntity<Long> deleteSector(@PathVariable Long id)
+	public ResponseEntity<DeleteSectorResponse> deleteSector(@PathVariable Long id)
 	{
 		return new ResponseEntity<>(sectorService.deleteSector(id), HttpStatus.OK);
 	}

@@ -120,7 +120,7 @@ public class TestParkHouseService {
 	
 	@Test
 	public void testDeleteSector() {
-		assertTrue(sectorService.deleteSector(1L)==1L);
+		assertTrue(sectorService.deleteSector(1L).getDeletedId()==1L);
 	}
 	
 	@Test(expected = SectorNotFoundException.class)

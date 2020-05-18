@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/models/common_data.dart';
+import 'package:mobile_app/models/reservation.dart';
 import 'package:mobile_app/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +19,7 @@ import 'parkHouses.dart';
 class AuthManager with ChangeNotifier {
   User _loggedInUser;
   ParkHouses _parkHousesProvider;
+  Position _devicePosition;
   AuthManager.withParkHouses(this._parkHousesProvider);
   AuthManager();
 
@@ -33,7 +36,12 @@ class AuthManager with ChangeNotifier {
     return _loggedInUser;
   }
 
+  Position get devicePosition {
+    return _devicePosition;
+  }
+
   Future<void> loggIn(String email, String password) async {
+    await getDeviceLocation();
     String token = 'Basic ' + base64Encode(utf8.encode('$email:$password'));
     try {
       const String url = "${Common.hostUri}auth/users/login";
@@ -57,8 +65,20 @@ class AuthManager with ChangeNotifier {
     }
   }
 
+  Future<bool> getDeviceLocation() async {
+    GeolocationStatus geolocationStatus =
+        await Geolocator().checkGeolocationPermissionStatus();
+    //if(geolocationStatus==GeolocationStatus.denied||geolocationStatus==GeolocationStatus.disabled){
+    //  return false;
+    // }else{
+    _devicePosition = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    return true;
+    // }
+  }
 
   Future<bool> autoLogin() async {
+    await getDeviceLocation();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey('token') && prefs.containsKey('loginResponse')) {
       final extractedResponse =
@@ -95,13 +115,28 @@ class AuthManager with ChangeNotifier {
         occupiedParkingLot = _parkHousesProvider
             .findParkingLotById(extractedParkingLot['id'] as int);
         if (occupiedParkingLot != null) {
-          occupiedParkingLot.occupiingCar = responseCar;
+          occupiedParkingLot.occupyingCar = responseCar;
           responseCar.occupiedParkingLot = occupiedParkingLot;
         }
       }
       userCars.add(responseCar);
     });
     logInUser.ownedCars = userCars;
+
+    List<Reservation> userReservations = [];
+    List<dynamic> extractedReservations =
+        extractedResponse['userReservations'] as List<dynamic>;
+    extractedReservations.forEach((res) {
+      Reservation reservationResponse = Reservation(
+        id: res['id'],
+        endTime: DateTime.parse(res['endTime']),
+        startTime: DateTime.parse(res['startTime']),
+        user: loggedInUser,
+        parkingLot: _parkHousesProvider.findParkingLotById(res['parkingLot']['id'] as int)
+      );
+      userReservations.add(reservationResponse);
+    });
+    logInUser.reservations = userReservations;
     return logInUser;
   }
 
@@ -208,7 +243,7 @@ class AuthManager with ChangeNotifier {
     await notificationsPlugin.cancel(id);
     await notificationsPlugin.showDailyAtTime(
         id,
-        'Kiparkolás ${parkingLot.occupiingCar.plareNumber}',
+        'Kiparkolás ${parkingLot.occupyingCar.plareNumber}',
         'Mindegy',
         dailyTime,
         notificationDetails);

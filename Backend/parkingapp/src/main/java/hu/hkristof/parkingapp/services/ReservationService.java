@@ -33,14 +33,18 @@ public class ReservationService {
 	UserRepository userRepository;
 	
 	@Autowired
+	TimeLogService timeLogService;
+	
+	@Autowired
 	AuthenticatedUser authenticatedUser;
 	
 	@Transactional
 	public Reservation reserveParkingLot(Long plId, Long userId,Timestamp startTime, Long duration ) {
 		ParkingLot parkingLot = parkingLotRespository.findById(plId).orElseThrow(()->new ParkingLotNotFoundException(plId));
 		User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException(userId));
+		int resCount = user.getReservations().size();
 		if((authenticatedUser.getUser().getRole().equals(Role.ROLE_USER) && authenticatedUser.getUser().getId()!=user.getId()) ||
-				parkingLot.getIsReserved()) {
+				parkingLot.getIsReserved() || resCount>2) {
 			return null;
 		}else if(parkingLot.getOccupyingCar()!=null && parkingLot.getOccupyingCar().getOwner().getId()!=authenticatedUser.getUser().getId()) {
 			return null;
@@ -54,9 +58,13 @@ public class ReservationService {
 			reservation.setStartTime(startTime);
 			Timestamp endTime = new Timestamp(startTime.getTime()+duration);
 			reservation.setEndTime(endTime);
+			if(parkingLot.getOccupyingCar()!=null) {
+				parkingLot.getSector().decraseCount();
+			}
 			reservationRepository.save(reservation);
 			parkingLotRespository.save(parkingLot);
 			userRepository.save(user);
+			timeLogService.saveReserveLog(parkingLot);
 			return reservation;
 		}
 	}
@@ -78,6 +86,9 @@ public class ReservationService {
 		pl.setIsReserved(false);
 		pl.setReservation(null);
 		reservation.getUser().removeReservation(reservation);
+		if(pl.getOccupyingCar()!=null) {
+			pl.getSector().increasePlCount();
+		}
 		parkingLotRespository.save(pl);
 		reservationRepository.delete(reservation);
 		System.out.println(pl.getName()+" nevű parkolóhelyről eltávolításra került a foglalás. Foglalás ID: "+reservation.getId());
@@ -90,6 +101,7 @@ public class ReservationService {
 				reservation.getUser().getId()!=authenticatedUser.getUser().getId()) {
 			return null;
 		}else {
+			timeLogService.saveReserveDeleteLog(reservation.getParkingLot());
 			return deleteReservation(reservation);
 		}
 		

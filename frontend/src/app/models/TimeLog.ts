@@ -6,9 +6,8 @@ export class TimeLog{
 	action: LogAction;
   userName:string;
   message:string;
-	plateNumber?:string;
-	carOwnerName?:string;
-	parkingLotName?:string;
-	sectorName?:string;
-	parkHouseName?:string;
+  parkHouseId:number;
+	parkHouseName:string;
+  parkHouseFreePlCount:number;
+	parkHouseOccupiedPlCount:number;
 }

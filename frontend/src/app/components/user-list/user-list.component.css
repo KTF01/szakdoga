@@ -52,7 +52,7 @@
   border-radius: 5px;
 }
 .data-button:hover{
-  background-color: var(--primary);
+  background-color: lightblue;
   color: var(--light);
 }
 

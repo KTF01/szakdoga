@@ -1,6 +1,8 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/add_car_popup_content.dart';
+import 'package:mobile_app/common/sure_dialog.dart';
 import 'package:mobile_app/models/providers/auth.dart';
 import 'package:mobile_app/models/user.dart';
 import 'package:mobile_app/screens/CarData.dart';
@@ -88,7 +90,7 @@ class _UserDataState extends State<UserData> {
                       child: InkWell(
                         onTap: () {
                           setState(() {
-                             selectedIndex = index;
+                            selectedIndex = index;
                           });
                         },
                         highlightColor: Theme.of(context).primaryColor,
@@ -111,7 +113,44 @@ class _UserDataState extends State<UserData> {
           );
         }),
         if (selectedIndex >= 0 && selectedIndex < loggedInUser.ownedCars.length)
-          CarData(loggedInUser.ownedCars[selectedIndex])
+          CarData(loggedInUser.ownedCars[selectedIndex]),
+        loggedInUser.reservations.length > 0?
+          Container(
+            height: 220,
+            child: ListView(
+              children: loggedInUser.reservations.map((res) {
+                return ListTile(
+                  title: Text(
+                      '${res.parkingLot.sector.parkHouse.name}/${res.parkingLot.sector.name}/${res.parkingLot.name}'),
+                  subtitle: Text(
+                    'Foglalás vége: ' +
+                        formatDate(res.endTime.toLocal(),
+                            [yyyy, "-", mm, "-", dd, " ", HH, ":", nn]),
+                  ),
+                  trailing: RaisedButton(
+                    child: Text("Lemondás"),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return SureDialog(
+                              text: "Biztos lemondja a foglalását?",
+                              okText: "Igen",
+                              noText: "Nem",
+                              okAction: () async{
+                                await res.parkingLot.deleteReservation();
+                                setState(() {
+                                  loggedInUser.reservations.remove(res);
+                                });
+                              },
+                            );
+                          });
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ):Text("Nincsenek foglalásai!")
       ],
     );
   }

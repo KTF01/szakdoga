@@ -13,8 +13,8 @@ public interface TimeLogRepository extends JpaRepository<TimeLog, Long>{
 	List<TimeLog> findAllByOrderByTimeDescIdDesc();
 	
 	@Query(value = "SELECT * FROM parking_database.time_logs where"
-					+" user_name like %:userName% and action like %:action% "
-					+ "and time between :startTime and :endTime ORDER BY time,id DESC",nativeQuery = true)
-	List<TimeLog> findByFilter(@Param("userName") String userName, @Param("action") String action,
+					+" message like %:text% and action like %:action% "
+					+ "and time between :startTime and :endTime ORDER BY time DESC,id DESC",nativeQuery = true)
+	List<TimeLog> findByFilter(@Param("text") String text, @Param("action") String action,
 			@Param("startTime") String startTime, @Param("endTime") String endTime);
 }

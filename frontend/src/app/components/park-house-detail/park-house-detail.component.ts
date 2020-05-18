@@ -14,6 +14,7 @@ import { Role } from '../../models/Role';
 import { CommonData } from '../../common-data';
 import { MapRestriction } from '@agm/core/services/google-maps-types';
 import { PieChartComponent } from '../common/pie-chart/pie-chart.component';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -40,6 +41,8 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
 
   mapRestriction:MapRestriction = CommonData.maprRestriction;
 
+  removeSectorSub:Subscription = new Subscription();
+
   constructor(private location: Location, private route: ActivatedRoute, private parkHouseService: ParkHouseService,
     private authService: AuthService) { super(); }
 
@@ -53,10 +56,9 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
 
   addNewSector(sector: Sector) {
     this.parkHouseService.addSectors(this.parkHouse, sector);
-    this.parkHouseService.addedSectorToParkHouse.subscribe(_ => {
+    this.parkHouseService.addedSectorToParkHouse.subscribe(newSector => {
       this.parkHouse = this.parkHouseService.getParkHouse(this.parkHouse.id);
       this.closePopUp3();
-      this.chart.updateChart(this.parkHouse.freePlCount, this.parkHouse.occupiedPlCount);
     });
     this.parkHouseService.errorOccured.subscribe(errorText => {
       this.error = errorText;
@@ -66,9 +68,10 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
   removeSector(sector: Sector) {
     this.parkHouseService.removeSector(this.parkHouse, sector);
     this.closePopUp4();
-    this.parkHouseService.removedSectorToParkHouse.subscribe(_ => {
+    this.removeSectorSub= this.parkHouseService.removedSectorToParkHouse.subscribe(_ => {
       this.closePopUp4();
       this.chart.updateChart(this.parkHouse.freePlCount, this.parkHouse.occupiedPlCount);
+      this.removeSectorSub.unsubscribe();
     });
     this.parkHouseService.errorOccured.subscribe(errorText => {
       this.error = errorText;
@@ -126,7 +129,6 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
     };
     this.parkHouseService.updateParkHouse(updatedParkHouse);
     this.parkHouseService.updatedParkHouse.subscribe(response => {
-      this.parkHouse = response;//A backendtől visszajött módosított parkolóház!
       this.closePopUp2();
     });
     this.parkHouseService.errorOccured.subscribe(errorText => {

@@ -7,6 +7,10 @@
     <div>
       <h2>Parkolóházak</h2>
     </div>
+    <div style="margin: 5px auto; width: fit-content;">
+      <button *ngIf="!isAddview" class="btn btn-primary" (click)="startGettinClosestParkHouse()">Legközelebbi parkolóház</button>
+    </div>
+    <!-- <app-loading-spinner *ngIf="isGetClosestLoading"></app-loading-spinner> -->
     <div class="map-container">
       <agm-map (mapDblClick)="placeMarker($event)"
       [disableDoubleClickZoom]="true"
@@ -23,6 +27,11 @@
           </agm-info-window>
         </agm-marker>
         <agm-marker *ngIf="isAaddMarkerVisible" [(longitude)]="form.value.longitudeInput" [(latitude)]="form.value.latitudeInput">
+        </agm-marker>
+        <agm-marker [longitude]="deviceLongitude" [latitude]="deviceLatitude" [iconUrl]="userMarkerIcon">
+          <agm-info-window>
+            <h4>Ön itt tartózkodik.</h4>
+          </agm-info-window>
         </agm-marker>
       </agm-map>
     </div>
@@ -132,12 +141,6 @@
 
       </ng-template>
       <app-add-button (addEvent)="changeToAddView()" *ngIf="!isAddview"></app-add-button>
-
-
-      <div *ngIf="!isGetClosestLoading">
-        <button *ngIf="!isAddview" class="btn btn-primary" (click)="startGettinClosestParkHouse()">Legközelebbi parkolóház</button>
-      </div>
-      <app-loading-spinner *ngIf="isGetClosestLoading"></app-loading-spinner>
 
 
     </div>

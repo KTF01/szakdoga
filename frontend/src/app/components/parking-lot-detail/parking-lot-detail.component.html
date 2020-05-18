@@ -45,6 +45,10 @@
   </div>
 </app-pop-up>
 
+<app-pop-up *ngIf="popUp5IsOpen" (closeEvent)="closePopUp5()" (okEvent)="closePopUp5()">
+  <p>Egyszerre maximum három parkolóhelyet lehet foglalni. Őn már három parkolóhelyet foglal.</p>
+</app-pop-up>
+
 <div class="container">
   <div class="row justify-content-sm-between">
     <div>
@@ -87,9 +91,12 @@
       <button class="btn btn-primary" (click)="parkingLot.occupyingCar? parkOut() :openPopUp3()"
       *ngIf="isParkActionShown">{{parkingLot.occupyingCar?'Kiállás':'Beállás'}}</button>
     </div>
-    <div class="reserv-button" *ngIf="isReservable">
-      <button class="btn btn-primary" (click)="openPopUp4()">
-        {{parkingLot.isReserved? 'Foglalás törlése':'Fogaláls'}}
+    <div class="reserv-button">
+      <button *ngIf="!parkingLot.isReserved &&isReservable" class="btn btn-primary" (click)="authService.loggedInUser.reservations.length<3 ? openPopUp4():openPopUp5()">
+        Foglalás
+      </button>
+      <button *ngIf="parkingLot.isReserved &&(isAdmin||isUsersCar)" class="btn btn-primary" (click)="authService.loggedInUser.reservations.length<3 ? openPopUp4():openPopUp5()">
+        Foglalás törlése
       </button>
     </div>
   </div>

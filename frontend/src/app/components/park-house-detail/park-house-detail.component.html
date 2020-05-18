@@ -106,6 +106,7 @@
         </button>
       </div>
     </div>
+    <app-pie-chart #chart [freePls]="parkHouse.freePlCount" [occuPiedPls]="parkHouse.occupiedPlCount"></app-pie-chart>
     <div>
       <h2>Szektorok:</h2>
       <ul>
@@ -126,6 +127,5 @@
       </ul>
       <app-add-button (addEvent)="openPopUp3()"></app-add-button>
     </div>
-    <app-pie-chart #chart [freePls]="parkHouse.freePlCount" [occuPiedPls]="parkHouse.occupiedPlCount"></app-pie-chart>
   </div>
 </main>

@@ -1,0 +1,18 @@
+
+ <div class="row justify-content-center">
+    <div *ngFor="let parkHouse of parkHouseService.parkHouses" [ngClass]="{selected: selectedParkHouse.id==parkHouse.id}"
+    class="btn btn-secondary ph-tag" (click)="setSelectedParkHouse(parkHouse)">
+      {{parkHouse.name}}
+    </div>
+ </div>
+<div style="display: block; width: 50%; margin: 0 auto;" >
+  <canvas baseChart width="200" height="100"
+              [datasets]="lineChartData"
+              [labels]="lineChartLabels"
+              [options]="lineChartOptions"
+              [colors]="lineChartColors"
+              [legend]="lineChartLegend"
+              [chartType]="chartType"
+              >
+  </canvas>
+  </div>

@@ -1,43 +1,83 @@
 <h1>Napló</h1>
 <div class="container-fluid">
   <div class="filters">
-    <form class="felx-form" #filterForm="ngForm" (ngSubmit)="submitFilterForm(filterForm)">
-      <div>
-        <label for="sartTime">Mettől</label>
-        <input type="datetime-local" name="statTimeInput" id="sartTime" class="form-control" ngModel>
+    <form #fform="ngForm" (ngSubmit)="submitFilterForm(fform)">
+      <div class="row justify-content-around">
+        <div class="col-md-3 row align-items-center">
+          <div class="time-control col-md-7">
+            <div *ngIf="!isDetailedSearch">
+              <label for="basicTimeInput"></label>
+              <select class="form-control" name="basicTimeInput" id="basic-time" [ngModel]="'0'">
+                <option value="0">Elmúlt 1 óra</option>
+                <option value="1">Elmúlt nap</option>
+                <option value="2">Elmúlt hét</option>
+                <option value="3">Elmúlt négy hét</option>
+                <option value="4">Elmúlt év</option>
+                <option value="5">Mind</option>
+              </select>
+            </div>
+            <div *ngIf="isDetailedSearch">
+              <div>
+                <label for="sartTime">Mettől</label>
+                <input type="datetime-local" name="statTimeInput" id="sartTime" class="form-control" ngModel>
+              </div>
+              <div>
+                <label for="endTime">Meddig</label>
+                <input type="datetime-local" name="endTimeInput" id="endTime" class="form-control" ngModel>
+              </div>
+            </div>
+          </div>
+            <div class="col-md-5 align-self-start">
+              <label for="cb-detail" style="margin: 0 auto; display: block; text-align: center;">Egyéni idő</label>
+              <input id="cb-detail" class="form-control" type="checkbox" #timecheckbox name="cb" [(ngModel)]="isDetailedSearch">
+            </div>
+        </div>
+        <div class="col-md-3">
+          <label for="textSearch">Szűrés a bejegyzés szövegére</label>
+          <input type="text" name="textSearchInput" id="textSearch" class="form-control" ngModel>
+        </div>
+        <div class="col-md-4">
+          <label for="actionSelect">Tevékenység</label>
+          <select name="actionSelectInput" id="actionSelect" class="form-control" [ngModel]="'ALL'">
+            <option value="PARK_IN">Beparkolás</option>
+            <option value="PARK_OUT">Kiparkolás</option>
+            <option value="RESERVE_MAKE">Foglalás</option>
+            <option value="RESERVE_DELETE">Foglalás lemondása</option>
+            <option value="USER_SIGN_UP">Regisztráció</option>
+            <option value="ALL">Mind</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label for="endTime">Meddig</label>
-        <input type="datetime-local" name="endTimeInput" id="endTime" class="form-control" ngModel>
+      <div class="submit-btn">
+        <button type="submit" class="btn btn-primary ">
+          <fa-icon [icon]="searchIcon"></fa-icon>
+        </button>
       </div>
-      <div>
-        <label for="userName">Végrehajtó</label>
-        <input type="text" name="userNameInput" id="userName" class="form-control" ngModel>
-      </div>
-      <div>
-        <label for="actionSelect">Tevékenység</label>
-        <select name="actionSelectInput" id="actionSelect" class="form-control" [ngModel]="'ALL'">
-          <option value="PARK_IN">Beparkolás</option>
-          <option value="PARK_OUT">Kiállás</option>
-          <option value="USER_SIGN_UP">Regisztráció</option>
-          <option value="ALL">Mind</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary submit-btn">
-        <fa-icon [icon]="searchIcon"></fa-icon>
-      </button>
     </form>
   </div>
   <div class="log-display">
+    <div class="head-info">
+      <div class="time-head" (click)="changeOrder()">
+        <span>Idő <fa-icon [icon]="downIcon"></fa-icon> </span>
+      </div>
+      <div class="text-head">
+        <span>Szöveg</span>
+      </div>
+    </div>
     <ul class="time-log-list">
       <li *ngFor="let timeLog of timeLogService.timeLogs" class="log-list-item">
         <div>
-          <span class="log-time">{{convertDate(timeLog.time)}}</span>
-          <span class="log-message">{{timeLog.message}}</span>
+          <div class="log-time">
+            <span >{{convertDate(timeLog.time)}}</span>
+          </div>
+          <div class="log-message">
+            <span>{{timeLog.message}}</span>
+          </div>
         </div>
       </li>
     </ul>
   </div>
+  <app-line-chart #lineChart *ngIf="timeLogService.timeLogs.length>0" [timeLogs] = "timeLogService.timeLogs" ></app-line-chart>
 </div>
 
 

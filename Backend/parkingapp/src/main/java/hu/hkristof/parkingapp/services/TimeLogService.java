@@ -27,32 +27,40 @@ public class TimeLogService {
 		return timeLogRepository.findAllByOrderByTimeDescIdDesc();
 	}
 	
-	public void saveLog(LogAction logAction, Car car,ParkingLot pl) {
+	private final String PARK_IN_SELF_TEXT = "%s beparkolt a %s rendszámú autójával a(z) %s parkolóhelyre.";
+	private final String PARK_IN_OTHER_TEXT = "%s beparkolt a %s nevében %s rendszámú autóval a(z) %s parkolóhelyre.";
+	private final String PARK_OUT_SELF_TEXT = "%s kiparkolt a %s rendszámú autójával a(z) %s parkolóhelyről.";
+	private final String PARK_OUT_OTHER_TEXT = "%s kiparkolt a %s nevében %s rendszámú autóval a(z) %s parkolóhelyről.";
+	
+	public void saveParkLog(LogAction logAction, Car car,ParkingLot pl) {
 		TimeLog timeLog = new TimeLog();
 		timeLog.setAction(logAction);
 		timeLog.setUserName(authenticatedUser.getUser().getFirstName()+" "+ authenticatedUser.getUser().getLastName());
-		timeLog.setCarOwnerName(car.getOwner().getFirstName()+' '+ car.getOwner().getLastName());
 		timeLog.setTime(new Timestamp(System.currentTimeMillis()));
-		timeLog.setPlateNumber(car.getPlateNumber());
-		timeLog.setParkingLotName(pl.getName());
-		timeLog.setSectorName(pl.getSector().getName());
+		pl.getSector().getParkHouse().countPls();
+		timeLog.setParkHouseId(pl.getSector().getParkHouse().getId());
 		timeLog.setParkHouseName(pl.getSector().getParkHouse().getName());
+		timeLog.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
+		timeLog.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
+		String parkingLotPath = pl.getSector().getParkHouse().getName()+'/'+pl.getSector().getName()+'/'+pl.getName();
 		if(logAction.equals(LogAction.PARK_IN)) {
 			if(authenticatedUser.getUser().getId()==car.getOwner().getId()) {
-				timeLog.setMessage(String.format("%s beparkolt a %s rendszámú autójával a(z) %s parkolóhelyre.", 
-						timeLog.getUserName(), timeLog.getPlateNumber(), timeLog.getParkingLotName()));
+				timeLog.setMessage(String.format(PARK_IN_SELF_TEXT, 
+						timeLog.getUserName(), car.getPlateNumber(), parkingLotPath));
 			}else {
-				timeLog.setMessage(String.format("%s beparkolt a %s nevében %s rendszámú autóval a(z) %s parkolóhelyre.", 
-						timeLog.getUserName(), timeLog.getCarOwnerName(),timeLog.getPlateNumber(), timeLog.getParkingLotName()));
+				timeLog.setMessage(String.format(PARK_IN_OTHER_TEXT, 
+						timeLog.getUserName(), car.getOwner().getFirstName()+' '+car.getOwner().getLastName(),
+						car.getPlateNumber(), parkingLotPath));
 			}
 			
 		}else if(logAction.equals(LogAction.PARK_OUT)) {
 			if(authenticatedUser.getUser().getId()==car.getOwner().getId()) {
-				timeLog.setMessage(String.format("%s kiparkolt a %s rendszámú autójával a(z) %s parkolóhelyről.", 
-						timeLog.getUserName(), timeLog.getPlateNumber(), timeLog.getParkingLotName()));
+				timeLog.setMessage(String.format(PARK_OUT_SELF_TEXT, 
+						timeLog.getUserName(), car.getPlateNumber(), parkingLotPath));
 			}else {
-				timeLog.setMessage(String.format("%s kiparkolt a %s nevében %s rendszámú autóval a(z) %s parkolóhelyről.", 
-						timeLog.getUserName(), timeLog.getCarOwnerName(),timeLog.getPlateNumber(), timeLog.getParkingLotName()));
+				timeLog.setMessage(String.format(PARK_OUT_OTHER_TEXT, 
+						timeLog.getUserName(), car.getOwner().getFirstName()+' '+car.getOwner().getLastName(),
+						car.getPlateNumber(), parkingLotPath));
 			}
 		}
 		timeLogRepository.save(timeLog);
@@ -67,11 +75,46 @@ public class TimeLogService {
 		timeLogRepository.save(timeLog);
 	}
 	
-	public List<TimeLog> filterLogs(String userName, LogAction action, String startTime, String endTime) {
+	public void saveReserveLog(ParkingLot pl) {
+		TimeLog timeLog = new TimeLog();
+		timeLog.setAction(LogAction.RESERVE_MAKE);
+		timeLog.setUserName(authenticatedUser.getUser().getFirstName()+" "+ authenticatedUser.getUser().getLastName());
+		pl.getSector().getParkHouse().countPls();
+		timeLog.setParkHouseId(pl.getSector().getParkHouse().getId());
+		timeLog.setParkHouseName(pl.getSector().getParkHouse().getName());
+		timeLog.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
+		timeLog.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
+		timeLog.setMessage(String.format("%s lefoglalta a %s parkolóház %s szektorában a %s parkolóhelyet",
+				timeLog.getUserName(),
+				pl.getSector().getParkHouse().getName(),
+				pl.getSector().getName(),
+				pl.getName()));
+		timeLog.setTime(new Timestamp(System.currentTimeMillis()));
+		timeLogRepository.save(timeLog);
+	}
+	
+	public void saveReserveDeleteLog(ParkingLot pl) {
+		TimeLog timeLog = new TimeLog();
+		timeLog.setAction(LogAction.RESERVE_DELETE);
+		timeLog.setUserName(authenticatedUser.getUser().getFirstName()+" "+ authenticatedUser.getUser().getLastName());
+		pl.getSector().getParkHouse().countPls();
+		timeLog.setParkHouseId(pl.getSector().getParkHouse().getId());
+		timeLog.setParkHouseName(pl.getSector().getParkHouse().getName());
+		timeLog.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
+		timeLog.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
+		timeLog.setMessage(String.format("%s törölte a %s parkolóhelyre vonatkozó foglalását.",
+				timeLog.getUserName(),
+				pl.getSector().getParkHouse().getName(),
+				pl.getSector().getName(),
+				pl.getName()));
+		timeLog.setTime(new Timestamp(System.currentTimeMillis()));
+		timeLogRepository.save(timeLog);
+	}
+	
+	public List<TimeLog> filterLogs(String text, LogAction action, String startTime, String endTime) {
 		String actionString = action.equals(LogAction.ALL)?"": action.toString();
-		System.out.println("EZEZEZE: "+actionString);
-		System.out.println("Filteres lekérdezés ||| "+userName+" | "+action+" | "+startTime+" | "+endTime);
-		return timeLogRepository.findByFilter(userName, actionString, startTime, endTime);
+		System.out.println("Logok szűrése ||| "+text+" | "+action+" | "+startTime+" | "+endTime);
+		return timeLogRepository.findByFilter(text, actionString, startTime, endTime);
 	}
 	
 	

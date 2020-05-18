@@ -5,17 +5,16 @@ import java.sql.Timestamp;
 import hu.hkristof.parkingapp.LogAction;
 
 public class LogFilter {
-	private String userName;
+	private String text;
 	private LogAction action;
 	private Timestamp startTime;
 	private Timestamp endTime;
 	
-	
-	public String getUserName() {
-		return userName;
+	public String getText() {
+		return text;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setText(String text) {
+		this.text = text;
 	}
 	public Timestamp getStartTime() {
 		return startTime;

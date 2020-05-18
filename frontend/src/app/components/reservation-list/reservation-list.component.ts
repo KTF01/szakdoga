@@ -29,7 +29,7 @@ export class ReservationListComponent extends PopUpContainer implements OnInit, 
       return this.userService.reservations;
     }else{
       return this.userService.reservations.filter(elem=>{
-        let text = elem.user.firstName+elem.user.lastName+elem.parkingLot.name;
+        let text = elem.user.firstName+elem.user.lastName+elem.parkingLot.sector.parkHouse.name+elem.parkingLot.sector.name+elem.parkingLot.name;
         return text.toLocaleLowerCase().includes(this.filter.toLowerCase()) ;
       });
     }

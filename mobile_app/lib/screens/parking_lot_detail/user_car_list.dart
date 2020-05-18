@@ -20,13 +20,13 @@ class _UserCarListState extends State<UserCarList> {
       _isLoading = true;
     });
 
-    try{
+    try {
       await widget.parkingLot.parkIn(car);
       auth.setupNotification(car.occupiedParkingLot.id, car.occupiedParkingLot);
-    }catch (error){
+    } catch (error) {
       print(error);
     }
-    
+
     Navigator.pop(context);
   }
 
@@ -34,35 +34,35 @@ class _UserCarListState extends State<UserCarList> {
   Widget build(BuildContext context) {
     AuthManager auth = Provider.of<AuthManager>(context);
     List<Car> cars = auth.loggedInUser.ownedCars;
-    return Column(
-      children: <Widget>[
-        Container(
-          height: MediaQuery.of(context).size.height * 0.5,
-          child: _isLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: Theme.of(context).primaryColor,
-                  ),
-                )
-              : ListView(
-                  children: cars.map((Car car) {
-                    return Card(
-                      child: InkWell(
-                          onTap: () {
-                            _startParkIn(auth, car);
-                          },
-                          highlightColor: Theme.of(context).primaryColor,
-                          child: ListTile(
-                              leading: Icon(Icons.directions_car),
-                              title: Text(
-                                car.plareNumber,
-                                style: TextStyle(fontSize: 30),
-                              ))),
-                    );
-                  }).toList(),
-                ),
-        ),
-      ],
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.5,
+      child: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            )
+          : ListView(
+              children: cars.map(
+                (Car car) {
+                  return Card(
+                    child: InkWell(
+                      onTap: () {
+                        _startParkIn(auth, car);
+                      },
+                      highlightColor: Theme.of(context).primaryColor,
+                      child: ListTile(
+                        leading: Icon(Icons.directions_car),
+                        title: Text(
+                          car.plareNumber,
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ).toList(),
+            ),
     );
   }
 }

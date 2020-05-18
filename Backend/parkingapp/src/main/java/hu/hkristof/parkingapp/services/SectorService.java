@@ -11,6 +11,7 @@ import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.repositoris.SectorRepository;
+import hu.hkristof.parkingapp.responsetypes.DeleteSectorResponse;
 
 @Service
 public class SectorService {
@@ -38,14 +39,18 @@ public class SectorService {
 		return sectorRepository.save(sector);
 	}
 	
-	public Long deleteSector(Long id)
+	public DeleteSectorResponse deleteSector(Long id)
 	{
+		DeleteSectorResponse response = new DeleteSectorResponse();
 		Sector sector = sectorRepository.findById(id).orElseThrow(()->new SectorNotFoundException(id));
 		parkingLotService.massParkOut(sector.getParkingLots());
 		ParkHouse ph = sector.getParkHouse();
 		ph.removeSector(sector);
 		sectorRepository.delete(sector);
 		System.out.println(ph.getName()+ " parkolóház "+ sector.getName()+" nevű szektora eltávolításra került.");
-		return id;
+		response.setDeletedId(id);
+		response.setParkHouseFreeplCount(ph.getFreePlCount());
+		response.setParkHouseOccupiedPlCount(ph.getOccupiedPlCount());
+		return response;
 	}
 }

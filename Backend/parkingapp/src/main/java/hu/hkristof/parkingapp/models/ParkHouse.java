@@ -78,6 +78,7 @@ public class ParkHouse {
     public void removeSector(Sector sector) {
         sector.setParkHouse(null);
         this.sectors.remove(sector);
+        this.countPls();
     }
 	
 	

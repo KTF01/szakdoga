@@ -32,11 +32,11 @@ public class TimeLogController {
 	
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@GetMapping("/filter")
-	public ResponseEntity<List<TimeLog>> getFiltered(@RequestParam("userName") String userName, 
+	public ResponseEntity<List<TimeLog>> getFiltered(@RequestParam("userName") String text, 
 													@RequestParam("action") LogAction action,
 													@RequestParam("startTime") String startTime,
 													@RequestParam("endTime") String endTime){
-		List<TimeLog> tls = timeLogService.filterLogs(userName, action, startTime, endTime);
+		List<TimeLog> tls = timeLogService.filterLogs(text, action, startTime, endTime);
 		System.out.println(tls);
 		return new ResponseEntity<>(tls,  HttpStatus.OK);
 	}
