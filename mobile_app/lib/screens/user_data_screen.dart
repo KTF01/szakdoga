@@ -20,7 +20,9 @@ class _UserDataState extends State<UserData> {
   void didChangeDependencies() {
     if (_isInit) {
       Provider.of<AuthManager>(context).fetchLoggedInUserData().then((_) {
-        setState(() {});
+        setState(() {
+          _isLoading=false;
+        });
       });
     }
     _isInit = false;
@@ -35,7 +37,7 @@ class _UserDataState extends State<UserData> {
     showDialog(context: context, child: AddCarPopup(authManager));
   }
 
-  bool _isLoading = false;
+  bool _isLoading = true;
   int selectedIndex = -1;
 
   @override
@@ -43,38 +45,38 @@ class _UserDataState extends State<UserData> {
     AuthManager authManager = Provider.of<AuthManager>(context);
     User loggedInUser = authManager.loggedInUser;
 
-    return Column(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(bottom: 10),
-          child: Center(
-              child: Column(
+    return _isLoading
+        ? Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+          )
+        : Column(
             children: <Widget>[
-              Text(
-                loggedInUser.firstName + ' ' + loggedInUser.lastName,
-                style: TextStyle(fontSize: 40),
+              Container(
+                margin: EdgeInsets.only(bottom: 10),
+                child: Center(
+                    child: Column(
+                  children: <Widget>[
+                    Text(
+                      loggedInUser.firstName + ' ' + loggedInUser.lastName,
+                      style: TextStyle(fontSize: 40),
+                    ),
+                    Text(loggedInUser.email),
+                  ],
+                )),
               ),
-              Text(loggedInUser.email),
-            ],
-          )),
-        ),
-        LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-          return Container(
-            height: 100,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: loggedInUser.ownedCars.length + 1,
-                itemBuilder: (BuildContext ctx, int index) {
-                  if (index >= loggedInUser.ownedCars.length) {
-                    if (loggedInUser.ownedCars.length < 5)
-                      return _isLoading
-                          ? Center(
-                              child: CircularProgressIndicator(
-                                backgroundColor: Theme.of(context).primaryColor,
-                              ),
-                            )
-                          : Container(
+              LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                return Container(
+                  height: 100,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: loggedInUser.ownedCars.length + 1,
+                      itemBuilder: (BuildContext ctx, int index) {
+                        if (index >= loggedInUser.ownedCars.length) {
+                          if (loggedInUser.ownedCars.length < 5)
+                            return Container(
                               width: constraints.maxWidth * 0.2,
                               child: FittedBox(
                                 child: RaisedButton(
@@ -85,73 +87,87 @@ class _UserDataState extends State<UserData> {
                                 ),
                               ),
                             );
-                  } else
-                    return Card(
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = index;
-                          });
-                        },
-                        highlightColor: Theme.of(context).primaryColor,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Text(
-                                loggedInUser.ownedCars[index].plareNumber,
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              FaIcon(FontAwesomeIcons.car)
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                }),
-          );
-        }),
-        if (selectedIndex >= 0 && selectedIndex < loggedInUser.ownedCars.length)
-          CarData(loggedInUser.ownedCars[selectedIndex]),
-        loggedInUser.reservations.length > 0?
-          Container(
-            height: 220,
-            child: ListView(
-              children: loggedInUser.reservations.map((res) {
-                return ListTile(
-                  title: Text(
-                      '${res.parkingLot.sector.parkHouse.name}/${res.parkingLot.sector.name}/${res.parkingLot.name}'),
-                  subtitle: Text(
-                    'Foglalás vége: ' +
-                        formatDate(res.endTime.toLocal(),
-                            [yyyy, "-", mm, "-", dd, " ", HH, ":", nn]),
-                  ),
-                  trailing: RaisedButton(
-                    child: Text("Lemondás"),
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SureDialog(
-                              text: "Biztos lemondja a foglalását?",
-                              okText: "Igen",
-                              noText: "Nem",
-                              okAction: () async{
-                                await res.parkingLot.deleteReservation();
+                        } else
+                          return Card(
+                            child: InkWell(
+                              onTap: () {
                                 setState(() {
-                                  loggedInUser.reservations.remove(res);
+                                  selectedIndex = index;
                                 });
                               },
-                            );
-                          });
-                    },
-                  ),
+                              highlightColor: Theme.of(context).primaryColor,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      loggedInUser.ownedCars[index].plareNumber,
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    FaIcon(FontAwesomeIcons.car)
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                      }),
                 );
-              }).toList(),
-            ),
-          ):Text("Nincsenek foglalásai!")
-      ],
-    );
+              }),
+              if (selectedIndex >= 0 &&
+                  selectedIndex < loggedInUser.ownedCars.length)
+                CarData(loggedInUser.ownedCars[selectedIndex]),
+                  loggedInUser.reservations.length > 0
+                  ? Container(
+                      height: 220,
+                      child: ListView(
+                        children: loggedInUser.reservations.map((res) {
+                          return ListTile(
+                            title: Text(
+                                '${res.parkingLot.sector.parkHouse.name}/${res.parkingLot.sector.name}/${res.parkingLot.name}'),
+                            subtitle: Text(
+                              'Foglalás vége: ' +
+                                  formatDate(res.endTime.toLocal(), [
+                                    yyyy,
+                                    "-",
+                                    mm,
+                                    "-",
+                                    dd,
+                                    " ",
+                                    HH,
+                                    ":",
+                                    nn
+                                  ]),
+                            ),
+                            trailing: RaisedButton(
+                              child: Text("Lemondás"),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return SureDialog(
+                                        text: "Biztos lemondja a foglalását?",
+                                        okText: "Igen",
+                                        noText: "Nem",
+                                        okAction: () async {
+                                          await res.parkingLot
+                                              .deleteReservation();
+                                          setState(() {
+                                            loggedInUser.reservations
+                                                .remove(res);
+                                          });
+                                        },
+                                      );
+                                    });
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    )
+                  : Text("Nincsenek foglalásai!")
+            ],
+          );
   }
 }

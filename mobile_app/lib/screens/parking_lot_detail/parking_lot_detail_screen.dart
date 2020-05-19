@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/common/loadable_button.dart';
 import 'package:mobile_app/models/parkingLot.dart';
 import 'package:mobile_app/models/providers/auth.dart';
+import 'package:mobile_app/models/providers/parkHouses.dart';
 import 'package:mobile_app/models/role.dart';
 import 'package:mobile_app/screens/parking_lot_detail/empty_view.dart';
 import 'package:mobile_app/screens/parking_lot_detail/make_reservation_panel.dart';
@@ -34,10 +35,8 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
     });
   }
 
-  void refresh(){
-    setState(() {
-      
-    });
+  void refresh() {
+    setState(() {});
   }
 
   @override
@@ -100,9 +99,9 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                         if (parkingLot.occupyingCar != null) {
                           return LoadableButton(
                             text: "Kiállás",
-                            pressFunction: () =>
-                                _parkOutStart(authManager, parkingLot),
-                            disabled: !isMyCar&&!isAdmin,
+                            pressFunction: () => _parkOutStart(
+                                authManager, parkingLot),
+                            disabled: !isMyCar && !isAdmin,
                           );
                         } else {
                           return RaisedButton(

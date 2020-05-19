@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -20,6 +21,7 @@ class AuthManager with ChangeNotifier {
   User _loggedInUser;
   ParkHouses _parkHousesProvider;
   Position _devicePosition;
+  bool locationDenied=false;
   AuthManager.withParkHouses(this._parkHousesProvider);
   AuthManager();
 
@@ -68,11 +70,13 @@ class AuthManager with ChangeNotifier {
   Future<bool> getDeviceLocation() async {
     GeolocationStatus geolocationStatus =
         await Geolocator().checkGeolocationPermissionStatus();
-    //if(geolocationStatus==GeolocationStatus.denied||geolocationStatus==GeolocationStatus.disabled){
-    //  return false;
-    // }else{
-    _devicePosition = await Geolocator()
+      try{
+      _devicePosition = await Geolocator()
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      }on PlatformException catch(error){
+        this.locationDenied = true;
+      }
+   
     return true;
     // }
   }
@@ -247,6 +251,14 @@ class AuthManager with ChangeNotifier {
         'Mindegy',
         dailyTime,
         notificationDetails);
+  }
+
+    Future<int> getClosestParkHouse()async{
+    http.Response response = await http.get(
+    '${Common.hostUri}auth/getClosestPh?userLong=${devicePosition.longitude}&userLat=${devicePosition.latitude}', 
+    headers: {'authorization': Common.authToken,});
+    print(response.body);
+    return  int.parse(response.body);
   }
 
   Future<void> cancelNotification(int id) async {

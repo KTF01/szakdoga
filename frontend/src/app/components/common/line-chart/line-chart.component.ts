@@ -23,10 +23,10 @@ export class LineChartComponent implements OnInit {
   public lineChartOptions: ChartOptions = {};
 
   public lineChartColors: Color[] = [
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
+    { // blue
+      backgroundColor: 'rgba(0,0,159,0.2)',
+      borderColor: 'rgba(0,0,255,1)',
+      pointBackgroundColor: 'rgba(0,0,177,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
@@ -52,18 +52,19 @@ export class LineChartComponent implements OnInit {
   }
 
   updateChart() {
-    let chartDatas: ChartDataSets[] = [{ data: [], label: "Szabad parkolók", cubicInterpolationMode:"monotone" },
-    { data: [], label: "Foglalt parkolók", cubicInterpolationMode:"monotone" }];
+    let chartDatas: ChartDataSets[] = [{ data: [], label: "Szabad parkolók",
+    cubicInterpolationMode:"monotone", lineTension:0, hidden: true },
+    { data: [], label: "Foglalt parkolók", cubicInterpolationMode:"monotone", lineTension:0 }];
     this.lineChartOptions = {
       responsive: true,
       scales: {
         xAxes: [{ id: 'x-axis-1', type: 'time',
         distribution: "linear",
         time: {
+          tooltipFormat: 'YYYY-MM-DD HH:mm',
           unit:"minute",
           displayFormats:{
             minute:'YYYY-MM-DD HH:mm'
-           // minute:'hh:mm'
           }
         },
         ticks: { maxTicksLimit: 4 } }],
@@ -85,8 +86,8 @@ export class LineChartComponent implements OnInit {
     let labels: Label[] = [];
     this.timeLogService.timeLogs.forEach((timeLog) => {
       if (timeLog.parkHouseId == this.selectedParkHouse.id) {
-        let chartPointFree: ChartPoint = { x: timeLog.time, y: timeLog.parkHouseFreePlCount };
-        let chartPointOccupied: ChartPoint = { x: timeLog.time, y: timeLog.parkHouseOccupiedPlCount };
+        let chartPointFree: ChartPoint = { x: timeLog.time.toLocaleString(), y: timeLog.parkHouseFreePlCount, };
+        let chartPointOccupied: ChartPoint = { x: timeLog.time.toLocaleString(), y: timeLog.parkHouseOccupiedPlCount };
         (chartDatas[0].data as ChartPoint[]).push(chartPointFree);
         (chartDatas[1].data as ChartPoint[]).push(chartPointOccupied);
       }

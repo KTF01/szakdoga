@@ -77,7 +77,7 @@
       </li>
     </ul>
   </div>
-  <app-line-chart #lineChart *ngIf="timeLogService.timeLogs.length>0" [timeLogs] = "timeLogService.timeLogs" ></app-line-chart>
+  <app-line-chart #lineChart *ngIf="isChartReady" [timeLogs] = "timeLogService.timeLogs" ></app-line-chart>
 </div>
 
 

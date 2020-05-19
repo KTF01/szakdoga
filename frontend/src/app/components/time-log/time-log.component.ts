@@ -20,6 +20,7 @@ export class TimeLogComponent implements OnInit {
   logsLoaded: Subscription = new Subscription();
 
   isDetailedSearch: boolean = false;
+  isChartReady:boolean = false;
   constructor(public timeLogService: TimeLogService, public commonService: CommonService) { }
 
   ngOnInit(): void {
@@ -30,6 +31,9 @@ export class TimeLogComponent implements OnInit {
       "ALL" as any,
       startDateString,
       "");
+      this.logsLoaded=this.timeLogService.logsLoaded.subscribe((_)=>{
+        this.isChartReady=true;
+      });
   }
 
   convertDate(time: string) {
@@ -43,6 +47,10 @@ export class TimeLogComponent implements OnInit {
         form.value.actionSelectInput,
         form.value.statTimeInput,
         form.value.endTimeInput);
+        this.logsLoaded = this.timeLogService.logsLoaded.subscribe((_) => {
+          this.lineChart.updateChart();
+          this.logsLoaded.unsubscribe();
+        });
     } else {
       let startDateString: string = "";
       let tzoffset = (new Date()).getTimezoneOffset() * 60000;
@@ -66,7 +74,7 @@ export class TimeLogComponent implements OnInit {
         if(form.value.textSearchInput==""){
           this.timeLogService.loadAllTimeLog();
           this.logsLoaded = this.timeLogService.logsLoaded.subscribe((_) => {
-            this.lineChart.updateChart();
+            if(this.lineChart)this.lineChart.updateChart();
             this.logsLoaded.unsubscribe();
           });
           return;
@@ -78,7 +86,7 @@ export class TimeLogComponent implements OnInit {
         startDateString,
         "");
       this.logsLoaded = this.timeLogService.logsLoaded.subscribe((_) => {
-        this.lineChart.updateChart();
+        if(this.lineChart)this.lineChart.updateChart();
         this.logsLoaded.unsubscribe();
       });
     }
