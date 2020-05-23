@@ -23,11 +23,12 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
   AppBar myAppbar = AppBar();
   bool _isLoading = false;
 
-  void _parkOutStart(AuthManager authManager, ParkingLot parkingLot) {
+  void _parkOutStart(
+      AuthManager authManager, ParkingLot parkingLot) {
     setState(() {
       _isLoading = true;
     });
-    parkingLot.parkOut().then((_) {
+    authManager.parkOut(parkingLot).then((_) {
       authManager.cancelNotification(parkingLot.id);
       setState(() {
         _isLoading = false;
@@ -45,7 +46,7 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
         ModalRoute.of(context).settings.arguments as ParkingLot;
     AuthManager authManager = Provider.of<AuthManager>(context);
     bool hasCar = parkingLot.occupyingCar != null;
-    bool isMyCar = hasCar &&
+    bool isMyCar = hasCar&&
         (parkingLot.occupyingCar.owner.id == authManager.loggedInUser.id);
     bool isMyReservation = parkingLot.isReserved &&
         parkingLot.reservation.user.id == authManager.loggedInUser.id;
@@ -61,97 +62,90 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
               style: TextStyle(fontSize: 40),
             ),
           ),
-          ChangeNotifierProvider.value(
-            value: parkingLot,
-            child: Consumer<ParkingLot>(
-              builder: (BuildContext ctx, ParkingLot parkingLot, child) =>
-                  Column(
-                children: <Widget>[
-                  parkingLot.isReserved
-                      ? Container(
-                          child: Text(
-                          parkingLot.reservation.user.firstName +
-                              " " +
-                              parkingLot.reservation.user.lastName +
-                              " részére lefoglalt parkoló.\nFoglalás vége: " +
-                              formatDate(
-                                  parkingLot.reservation.endTime.toLocal(),
-                                  [yyyy, "-", mm, "-", dd, " ", HH, ":", nn]),
-                        ))
-                      : Container(
-                          height: 0,
-                        ),
-                  Container(
-                    height: (MediaQuery.of(context).size.height -
-                            myAppbar.preferredSize.height) *
-                        0.2,
-                    child: parkingLot.occupyingCar != null
-                        ? ParkedInParkingLotView(parkingLot)
-                        : EmptyParkingLotView(),
-                  ),
-                  LayoutBuilder(
-                    builder: (BuildContext ctx, BoxConstraints constraints) {
-                      if (_isLoading) {
-                        return CircularProgressIndicator(
-                          backgroundColor: Theme.of(context).primaryColor,
-                        );
-                      } else {
-                        if (parkingLot.occupyingCar != null) {
-                          return LoadableButton(
-                            text: "Kiállás",
-                            pressFunction: () => _parkOutStart(
-                                authManager, parkingLot),
-                            disabled: !isMyCar && !isAdmin,
-                          );
-                        } else {
-                          return RaisedButton(
-                            onPressed: parkingLot.isReserved && !isMyReservation
-                                ? null
-                                : () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        builder: (_) {
-                                          return UserCarList(parkingLot);
-                                        }).then((_) {
-                                      setState(() {});
-                                    });
-                                  },
-                            child: Text('Beállás'),
-                          );
-                        }
-                      }
-                    },
-                  ),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      if (parkingLot.isReserved) {
-                        return LoadableButton(
-                          text: "Foglalás törlése",
-                          disabled: reservDisabled && !isAdmin,
-                          pressFunction: parkingLot.deleteReservation,
-                        );
-                      } else {
-                        return RaisedButton(
-                          child: Text("Foglalás"),
-                          onPressed: reservDisabled && hasCar
-                              ? null
-                              : () {
-                                  showModalBottomSheet(
+          Column(
+            children: <Widget>[
+              parkingLot.isReserved
+                  ? Container(
+                      child: Text(
+                      parkingLot.reservation.user.firstName +
+                          " " +
+                          parkingLot.reservation.user.lastName +
+                          " részére lefoglalt parkoló.\nFoglalás vége: " +
+                          formatDate(parkingLot.reservation.endTime.toLocal(),
+                              [yyyy, "-", mm, "-", dd, " ", HH, ":", nn]),
+                    ))
+                  : Container(
+                      height: 0,
+                    ),
+              Container(
+                height: (MediaQuery.of(context).size.height -
+                        myAppbar.preferredSize.height) *
+                    0.2,
+                child: parkingLot.occupyingCar != null
+                    ? ParkedInParkingLotView(parkingLot)
+                    : EmptyParkingLotView(),
+              ),
+              LayoutBuilder(
+                builder: (BuildContext ctx, BoxConstraints constraints) {
+                  if (_isLoading) {
+                    return CircularProgressIndicator(
+                      backgroundColor: Theme.of(context).primaryColor,
+                    );
+                  } else {
+                    if (parkingLot.occupyingCar != null) {
+                      return LoadableButton(
+                        text: "Kiállás",
+                        pressFunction: () =>
+                            _parkOutStart(authManager, parkingLot),
+                        disabled: !isMyCar && !isAdmin,
+                      );
+                    } else {
+                      return RaisedButton(
+                        onPressed: parkingLot.isReserved && !isMyReservation
+                            ? null
+                            : () {
+                                showModalBottomSheet(
                                     context: context,
                                     builder: (_) {
-                                      return ReservationPanel(parkingLot);
-                                    },
-                                  ).then((value) {
-                                    print(parkingLot.reservation.id);
-                                  });
-                                },
-                        );
-                      }
-                    },
-                  )
-                ],
+                                      return UserCarList(parkingLot);
+                                    }).then((_) {
+                                  setState(() {});
+                                });
+                              },
+                        child: Text('Beállás'),
+                      );
+                    }
+                  }
+                },
               ),
-            ),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (parkingLot.isReserved) {
+                    return LoadableButton(
+                      text: "Foglalás törlése",
+                      disabled: reservDisabled && !isAdmin,
+                      pressFunction: (){authManager.deleteReservation(parkingLot);},
+                    );
+                  } else {
+                    return RaisedButton(
+                      child: Text("Foglalás"),
+                      onPressed: reservDisabled && hasCar
+                          ? null
+                          : () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (_) {
+                                  return ReservationPanel(parkingLot);
+                                },
+                              ).then((value) {
+                                print(parkingLot.reservation.id);
+                              });
+                            },
+                    );
+                  }
+                },
+              )
+            ],
           ),
         ],
       ),

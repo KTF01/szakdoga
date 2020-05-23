@@ -1,6 +1,6 @@
 import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { PopUpContainer } from '../pop-up/PopUpContainer';
+import { PopUpContainer } from '../common/pop-up/PopUpContainer';
 import { AuthService } from '../../services/auth.service';
 import { Role } from '../../models/Role';
 

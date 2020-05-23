@@ -7,7 +7,7 @@ import { Sector } from '../../models/Sector';
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 import { ParkingLotListComponent } from '../parking-lot-list/parking-lot-list.component';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { PopUpContainer } from '../pop-up/PopUpContainer';
+import { PopUpContainer } from '../common/pop-up/PopUpContainer';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Role } from '../../models/Role';

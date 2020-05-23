@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/models/car.dart';
+import 'package:mobile_app/models/parkHouse.dart';
 import 'package:mobile_app/models/parkingLot.dart';
 import 'package:mobile_app/models/providers/auth.dart';
+import 'package:mobile_app/models/providers/parkHouses.dart';
 import 'package:provider/provider.dart';
 
 class UserCarList extends StatefulWidget {
@@ -21,7 +23,7 @@ class _UserCarListState extends State<UserCarList> {
     });
 
     try {
-      await widget.parkingLot.parkIn(car);
+      await auth.parkIn(widget.parkingLot,car);
       auth.setupNotification(car.occupiedParkingLot.id, car.occupiedParkingLot);
     } catch (error) {
       print(error);

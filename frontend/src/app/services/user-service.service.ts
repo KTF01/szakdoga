@@ -34,10 +34,10 @@ export class UserServiceService {
 
 
   loadUsers(){
+    this.commonService.isLoading = true;
     this.http.get<{usersData:{user:User, userCars:Car[], userReservations:Reservation[]}[]}>(CommonData.hostUri+'auth/users/all',{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
-      console.log(response);
       this.users=[];
       this.cars=[];
       this.reservations=[];
@@ -50,11 +50,10 @@ export class UserServiceService {
         for(let res of user.reservations){
           this.reservations.push(res);
         }
-          this.users.push(user);
-
-
+        this.users.push(user);
         this.usersLoaded.next();
       }
+      this.commonService.isLoading=false;
     }, error=>this.handleError(error))
   }
 
@@ -79,7 +78,8 @@ export class UserServiceService {
       car.owner.ownedCars.splice(index, 1);
       this.commonService.isLoading=false;
       this.carRemoved.next(car.owner.ownedCars);
-    }, error=>this.handleError(error));
+    },
+    error=>this.handleError(error));
   }
 
   setRole(user:User, role:Role){
@@ -131,6 +131,7 @@ export class UserServiceService {
     this.commonService.isLoading=false;
     console.log(error);
     switch(error.status){
+      case 0: this.errorOccured.next(CommonData.unknownErrorText); break;
       case 400: this.errorOccured.next(error.error.message);break;
       case 401: this.errorOccured.next("HIBA: 401");break;
       case 500: this.errorOccured.next(error.error.error);break;

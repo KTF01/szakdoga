@@ -44,7 +44,7 @@ class _ReservationPanelState extends State<ReservationPanel> {
             ],
           ),
           LoadableButton(text: "Lefoglal", pressFunction: () async {
-            await widget.parkingLot.makeReservation(authManager.loggedInUser, dropDownValue);
+            await authManager.makeReservation(widget.parkingLot,authManager.loggedInUser, dropDownValue);
             Navigator.pop(context);
           })
         ],

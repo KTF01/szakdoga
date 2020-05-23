@@ -1,10 +1,9 @@
 import { Component, OnInit, Input, Output, ViewChild } from '@angular/core';
 import { ParkingLot } from '../../models/ParkingLot';
 import { faCar } from '@fortawesome/free-solid-svg-icons';
-import { SectorService } from '../../services/sector.service';
 import { Sector } from '../../models/Sector';
 import { Router, ActivatedRoute } from '@angular/router';
-import { PopUpContainer } from '../pop-up/PopUpContainer';
+import { PopUpContainer } from '../common/pop-up/PopUpContainer';
 import { NgForm, NgModel } from '@angular/forms';
 import { ParkingLotService } from '../../services/parking-lot.service';
 import { PieChartComponent } from '../common/pie-chart/pie-chart.component';

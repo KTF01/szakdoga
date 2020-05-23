@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UserServiceService } from '../../services/user-service.service';
 import { CommonService } from '../../services/common.service';
-import { faUser, faUserEdit, faUserCog } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { User } from '../../models/User';
 import { Role } from '../../models/Role';
 import { Router } from '@angular/router';
-import { PopUpContainer } from '../pop-up/PopUpContainer';
+import { PopUpContainer } from '../common/pop-up/PopUpContainer';
 
 @Component({
   selector: 'app-user-list',

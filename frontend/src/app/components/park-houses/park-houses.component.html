@@ -8,9 +8,11 @@
       <h2>Parkolóházak</h2>
     </div>
     <div style="margin: 5px auto; width: fit-content;">
-      <button *ngIf="!isAddview" class="btn btn-primary" (click)="startGettinClosestParkHouse()">Legközelebbi parkolóház</button>
+      <button *ngIf="!isAddview" class="btn btn-primary"
+      style="margin: 0 auto;" (click)="startGettinClosestParkHouse()"
+      [disabled]="!closestBtnAllowed">Legközelebbi parkolóház</button>
+      <div *ngIf="!closestBtnAllowed" style="text-align: center;">Helyadatok nem elérhetőek</div>
     </div>
-    <!-- <app-loading-spinner *ngIf="isGetClosestLoading"></app-loading-spinner> -->
     <div class="map-container">
       <agm-map (mapDblClick)="placeMarker($event)"
       [disableDoubleClickZoom]="true"

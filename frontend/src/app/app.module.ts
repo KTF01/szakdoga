@@ -15,7 +15,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { ParkingLotListComponent } from './components/parking-lot-list/parking-lot-list.component';
 import { AddButtonComponent } from './components/common/add-button/add-button.component';
 import { ParkingLotDetailComponent } from './components/parking-lot-detail/parking-lot-detail.component';
-import { PopUpComponent } from './components/pop-up/pop-up.component';
+import { PopUpComponent } from './components/common/pop-up/pop-up.component';
 import { LoadingSpinnerComponent } from './components/common/loading-spinner/loading-spinner.component';
 import { SideNavComponent } from './components/common/side-nav/side-nav.component';
 import { UserDetailComponent } from './components/user-detail/user-detail.component';

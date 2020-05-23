@@ -101,13 +101,7 @@ public class ParkingLotController {
 	public ResponseEntity<ParkOutResponse> parkOut(@PathVariable Long id) {
 		if(authenticatedUser.getUser().getRole().equals(Role.ROLE_USER)) {
 			ParkOutResponse response = parkingLotService.parkOutSelf(id);
-			if(response!=null) {
-				return new ResponseEntity<>(response, HttpStatus.OK);
-			}else {
-				System.out.println(authenticatedUser.getUser().getFirstName() + " egyszerű felhasználó, nem állhat ki más nevében!");
-				return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-			}
-			
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
 		return new ResponseEntity<>(parkingLotService.parkOut(id), HttpStatus.OK);
 	}

@@ -21,7 +21,7 @@ public class Car {
 	private String plateNumber;
 	
 	
-	@ManyToOne(cascade = CascadeType.DETACH)
+	@ManyToOne
 	private User owner;
 	
 	@OneToOne(cascade = CascadeType.PERSIST, mappedBy = "occupyingCar")

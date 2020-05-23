@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { CommonData } from '../common-data';
 import { CommonService } from './common.service';
 import { Subject } from 'rxjs';
@@ -13,6 +13,7 @@ export class ReservationServiceService {
 
   makeReservSub:Subject<Reservation> = new Subject<Reservation>();
   deleteReservSub:Subject<ParkingLot> = new Subject<ParkingLot>();
+  errorOccured: Subject<string> = new Subject<string>();
 
   constructor(private http:HttpClient, private commonService:CommonService) { }
 
@@ -31,7 +32,7 @@ export class ReservationServiceService {
       this.makeReservSub.next(response);
       this.commonService.isLoading=false;
     },error=>{console.log(error);
-      this.commonService.isLoading=false;});
+      this.handleError(error)});
   }
 
   deleteReservation(reservationId:number){
@@ -43,6 +44,17 @@ export class ReservationServiceService {
       this.deleteReservSub.next(response);
       this.commonService.isLoading=false;
     },error=>{console.log(error);
-      this.commonService.isLoading=false;});
+      this.handleError(error)});
+  }
+
+  handleError(error: HttpErrorResponse) {
+    this.commonService.isLoading = false;
+    console.log(error);
+    switch (error.status) {
+      case 0: this.errorOccured.next(CommonData.unknownErrorText); break;
+      case 400: this.errorOccured.next(error.error.error); break;
+      case 500: this.errorOccured.next(error.error.error); break;
+      default: this.errorOccured.next(error.message);
+    }
   }
 }

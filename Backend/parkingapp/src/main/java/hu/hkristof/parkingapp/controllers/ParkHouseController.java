@@ -40,7 +40,8 @@ public class ParkHouseController {
 	@CrossOrigin
 	@GetMapping("/all")
 	public ResponseEntity<AllParkHousesResponse> getAllParkHouses(){
-		return ResponseEntity.ok().header("content-type", "application/json; charset=utf-8").body(parkHouseService.getAllParkhouses());
+		return ResponseEntity.ok().header("content-type", "application/json; charset=utf-8")
+				.body(parkHouseService.getAllParkhouses());
 	}
 	
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})

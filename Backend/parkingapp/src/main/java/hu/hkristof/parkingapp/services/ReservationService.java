@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
 import hu.hkristof.parkingapp.Role;
+import hu.hkristof.parkingapp.exceptions.ForbiddenOperationException;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.exceptions.ReservationNotFoundException;
 import hu.hkristof.parkingapp.exceptions.UserNotFoundException;
@@ -44,10 +45,13 @@ public class ReservationService {
 		User user = userRepository.findById(userId).orElseThrow(()->new UserNotFoundException(userId));
 		int resCount = user.getReservations().size();
 		if((authenticatedUser.getUser().getRole().equals(Role.ROLE_USER) && authenticatedUser.getUser().getId()!=user.getId()) ||
-				parkingLot.getIsReserved() || resCount>2) {
-			return null;
-		}else if(parkingLot.getOccupyingCar()!=null && parkingLot.getOccupyingCar().getOwner().getId()!=authenticatedUser.getUser().getId()) {
-			return null;
+				parkingLot.getIsReserved()) {
+			throw new ForbiddenOperationException("RESERVATION_BLOCKED");
+		}else if(resCount>2) {
+			throw new ForbiddenOperationException("USER_HAS_THREE_RESERVATIONS");
+		}
+		else if(parkingLot.getOccupyingCar()!=null && parkingLot.getOccupyingCar().getOwner().getId()!=authenticatedUser.getUser().getId()) {
+			throw new ForbiddenOperationException("NOT_OWNED_CAR");
 		}else{
 			System.out.println("Foglalás!");
 			Reservation reservation = new Reservation();
@@ -99,7 +103,7 @@ public class ReservationService {
 		Reservation reservation = reservationRepository.findById(resId).orElseThrow(()->new ReservationNotFoundException(resId));
 		if(authenticatedUser.getUser().getRole().equals(Role.ROLE_USER)&&
 				reservation.getUser().getId()!=authenticatedUser.getUser().getId()) {
-			return null;
+			throw new ForbiddenOperationException("USER_NOT_ADMIN_NOT_OWNER_OF_RESERVATION");
 		}else {
 			timeLogService.saveReserveDeleteLog(reservation.getParkingLot());
 			return deleteReservation(reservation);

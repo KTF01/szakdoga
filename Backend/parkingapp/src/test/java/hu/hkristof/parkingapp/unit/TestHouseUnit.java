@@ -28,7 +28,7 @@ public class TestHouseUnit {
 	
 	@Test
 	public void testFreePlCount() {
-		parkHouse.countPls();
+		parkHouse.countParkingLots();
 		assertTrue(parkHouse.getFreePlCount()==5);
 	}
 	

@@ -3,7 +3,7 @@ import { AuthService } from '../../services/auth.service';
 import { faCar, faTrash,faUser, faUserEdit, faUserCog } from '@fortawesome/free-solid-svg-icons';
 import { Car } from '../../models/Car';
 import { CommonService } from '../../services/common.service';
-import { PopUpContainer } from '../pop-up/PopUpContainer';
+import { PopUpContainer } from '../common/pop-up/PopUpContainer';
 import { ParkingLotService } from '../../services/parking-lot.service';
 import { Subscription, from } from 'rxjs';
 import { UserServiceService } from '../../services/user-service.service';
@@ -89,7 +89,8 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
       this.closePopUp();
     });
     this.errorSub = this.parkingLotService.errorOccured.subscribe(error=>{
-      console.log(error)
+      this.error=error;
+      this.errorSub.unsubscribe();
     })
   }
 
@@ -103,6 +104,10 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
         //this.displayedUser.ownedCars.push(responseCar);
         this.closePopUp2();
       });
+      this.errorSub = this.userService.errorOccured.subscribe(error=>{
+        this.error=error;
+        this.errorSub.unsubscribe();
+      })
     }
   }
 
@@ -114,6 +119,10 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
       this.selectedCar=null;
       this.closePopUp3();
     });
+    this.errorSub = this.userService.errorOccured.subscribe(error=>{
+      this.error=error;
+      this.errorSub.unsubscribe();
+    })
   }
 
   passFirstUser(){
@@ -123,6 +132,10 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
       this.loggedInUserFirstUser = false;
       this.closePopUp4();
     });
+    this.errorSub = this.parkingLotService.errorOccured.subscribe(error=>{
+      this.error=error;
+      this.errorSub.unsubscribe();
+    })
   }
 
   newPasswordSubmit(form:NgForm){
@@ -146,6 +159,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
     });
     this.errorSub= this.authService.errorOccured.subscribe(errorMsg=>{
       this.error=errorMsg;
+      this.errorSub.unsubscribe();
     });
   }
 
@@ -161,14 +175,17 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
       this.displayedUser.reservations.splice(index,1);
       this.closePopUp();
     });
+    this.errorSub = this.reservationService.errorOccured.subscribe(error=>{
+      this.error=error;
+      this.errorSub.unsubscribe();
+    })
   }
 
   ngOnDestroy(){
     if(this.parkOutSub) this.parkOutSub.unsubscribe();
-    if(this.errorSub) this.errorSub.unsubscribe();
+    //if(this.errorSub) this.errorSub.unsubscribe();
     if(this.carAddSub) this.carAddSub.unsubscribe();
     if(this.carRemoveSub) this.carRemoveSub.unsubscribe();
-    if(this.errorSub) this.errorSub.unsubscribe();
     if(this.passwordChangeSub) this.passwordChangeSub.unsubscribe();
     if(this.deleteResSub) this.deleteResSub.unsubscribe();
   }
@@ -176,5 +193,18 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
   openPopUp2(){
     this.popUp2IsOpen=true;
     this.selectedCar=null;
+    this.error=null;
+  }
+  openPopUp3(){
+    this.popUp3IsOpen=true;
+    this.error=null;
+  }
+  openPopUp(){
+    this.popupIsOpen=true;
+    this.error=null;
+  }
+  openPopUp4(){
+    this.popUp4IsOpen =true;
+    this.error=null
   }
 }

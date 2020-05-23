@@ -17,8 +17,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import hu.hkristof.parkingapp.AuthenticatedUser;
 import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.CarNotFoundException;
+import hu.hkristof.parkingapp.exceptions.ForbiddenOperationException;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
+import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.models.User;
@@ -61,10 +63,16 @@ public class TestParkingLotService {
 		
 		ParkingLot p1 = new ParkingLot();
 		p1.setId(1L);
+		p1.setName("P1");
 		p1.setOccupyingCar(new Car());
 		p1.setSector(new Sector());
+		p1.getSector().setFreePlCount(0);
+		p1.getSector().setParkHouse(new ParkHouse());
 		ParkingLot p2 = new ParkingLot();
 		p2.setId(2L);
+		p2.setName("P2");
+		p2.setSector(new Sector());
+		p2.getSector().setParkHouse(new ParkHouse());
 		testParkingLots.add(p1); testParkingLots.add(p2);
 		
 		Car testCar1 = new Car(); testCar1.setPlateNumber("ABC-123"); testCar1.setOwner(testAuthUser);
@@ -129,10 +137,9 @@ public class TestParkingLotService {
 		parkingLotService.parkIn(1L, "ASD-123");
 	}
 	
-	@Test
+	@Test(expected = ForbiddenOperationException.class)
 	public void testParkInNotAdminNotSelfCar() {
-		ParkInResponse testResponse = parkingLotService.parkIn(1L, "ABC-124");
-		assertTrue(testResponse==null);
+		parkingLotService.parkIn(1L, "ABC-124");
 	}
 	
 	@Test

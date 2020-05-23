@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/add_car_popup_content.dart';
 import 'package:mobile_app/common/sure_dialog.dart';
 import 'package:mobile_app/models/providers/auth.dart';
+import 'package:mobile_app/models/providers/parkHouses.dart';
 import 'package:mobile_app/models/user.dart';
 import 'package:mobile_app/screens/CarData.dart';
 import 'package:provider/provider.dart';
@@ -151,8 +152,8 @@ class _UserDataState extends State<UserData> {
                                         okText: "Igen",
                                         noText: "Nem",
                                         okAction: () async {
-                                          await res.parkingLot
-                                              .deleteReservation();
+                                          await authManager
+                                              .deleteReservation(res.parkingLot);
                                           setState(() {
                                             loggedInUser.reservations
                                                 .remove(res);

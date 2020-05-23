@@ -56,7 +56,7 @@ public class ParkHouse {
 	private double latitude;
 	
 	@PostLoad
-	public void countPls() {
+	public void countParkingLots() {
 		freePlCount = 0;
 		int allPlCount=0;
 		for (Sector sector : sectors) {
@@ -78,7 +78,7 @@ public class ParkHouse {
     public void removeSector(Sector sector) {
         sector.setParkHouse(null);
         this.sectors.remove(sector);
-        this.countPls();
+        this.countParkingLots();
     }
 	
 	

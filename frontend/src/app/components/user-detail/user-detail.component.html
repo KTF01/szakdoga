@@ -108,6 +108,7 @@
 <app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="isCarView?parkOut():deleteReservation()">
   <h3 *ngIf="isCarView">Kiáll a parkolóbol?</h3>
   <h3 *ngIf="!isCarView">Biztos lemondja a foglalását?</h3>
+  <p class="text-danger">{{error}}</p>
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp2IsOpen" (closeEvent)="closePopUp2()" (okEvent)="addNewCar(plateNumb)">
@@ -117,16 +118,19 @@
     <input class="form-control" type="text" name="plateNumberInpur" id="plateNumber" ngModel required #plateNumb="ngModel">
     <span class="text-danger" *ngIf="!plateNumb.valid&&plateNumb.touched">Nem lehet üres</span>
   </div>
+  <p class="text-danger">{{error}}</p>
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" (okEvent)="removeCar(selectedCar)">
   <h2>Biztos törli az autót?</h2>
+  <p class="text-danger">{{error}}</p>
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp4IsOpen" (closeEvent)="closePopUp4()" (okEvent)="passFirstUser()">
   <h4>Biztos átadja {{displayedUser.firstName}} {{displayedUser.lastName}} részére a Fő Adminisztrátori jogot?
     Ezután ön már nem fog rendelkezni ezzel a jogosultsággal.
   </h4>
+  <p class="text-danger">{{error}}</p>
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp5IsOpen" (closeEvent)="closePopUp5()" (okEvent)="newPasswordSubmit(newPasswordForm)">
@@ -148,7 +152,6 @@
     </div>
     <span *ngIf="error!=''" class="text-danger">{{error}}</span>
   </form>
-
 </app-pop-up>
 
 

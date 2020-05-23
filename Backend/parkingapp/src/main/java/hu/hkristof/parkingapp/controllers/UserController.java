@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,6 +93,12 @@ public class UserController {
 	public Long getCloesetParkHouse(@RequestParam("userLong") double userLong, @RequestParam("userLat") double userLat) {
 		System.out.println("Legközelebbi parkolóház lekérdezve!");
 		return userService.getClosestParkHouse(userLong, userLat).getId();
+	}
+	
+	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
+	@DeleteMapping("auth/deleteUser/{id}")
+	public ResponseEntity<Long> deletUser(@PathVariable Long id){
+		return new ResponseEntity<>( userService.deleteUser(id), HttpStatus.OK);
 	}
 	
 }

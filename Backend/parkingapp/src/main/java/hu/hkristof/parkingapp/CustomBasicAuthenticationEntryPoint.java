@@ -14,7 +14,6 @@ public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
     public void commence(final HttpServletRequest request, 
             final HttpServletResponse response, 
             final AuthenticationException authException) throws IOException {
-        //Authentication failed, send error response.
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName() + "");
          

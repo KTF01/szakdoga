@@ -3,7 +3,7 @@ import { ParkHouse } from '../../models/ParkHouse';
 import { ParkHouseService } from '../../services/park-house.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
-import { PopUpContainer } from '../pop-up/PopUpContainer';
+import { PopUpContainer } from '../common/pop-up/PopUpContainer';
 import { CommonService } from '../../services/common.service';
 import { ListTileComponent } from '../list-tile/list-tile.component';
 import { AuthService } from '../../services/auth.service';
@@ -29,6 +29,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
 
   errorSub: Subscription = new Subscription();
   closestSub: Subscription = new Subscription();
+  closestBtnAllowed:boolean = this.commonService.isLocationAvailable;
 
   mapRestriction: MapRestriction = CommonData.maprRestriction;
 
@@ -37,8 +38,8 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   addMarkerLong: number = 0;
   addMarkerLat:number = 0;
   isGetClosestLoading:boolean=false;
-  deviceLongitude:number = CommonData.authLongitude;
-  deviceLatitude:number = CommonData.authLatitude;
+  deviceLongitude:number = this.commonService.authLongitude;
+  deviceLatitude:number = this.commonService.authLatitude;
 
   selectedparkHouse: ParkHouse;
 
@@ -83,13 +84,13 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
 
   changeToAddView(){
     this.isAddview =true;
+    this.errorText=null;
   }
   changeToNormalView(){
     this.isAddview =false;
     this.isAaddMarkerVisible=false;
     this.form.reset();
     this.formChecked=false;
-    this.errorText=null;
   }
 
   addParkHouse(parkHouse: ParkHouse): void {
@@ -165,7 +166,6 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   startGettinClosestParkHouse() {
     this.isGetClosestLoading=true;
     this.authService.getClosestParkhouse();
-
     this.closestSub = this.authService.closestParkHouse.subscribe(id=>{
       this.setSelectedParkHouse(id);
       let marker = this.phMarkers.find(m=>m.parkHouse.id==id);

@@ -10,6 +10,7 @@ import hu.hkristof.parkingapp.AuthenticatedUser;
 import hu.hkristof.parkingapp.LogAction;
 import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.CarNotFoundException;
+import hu.hkristof.parkingapp.exceptions.ForbiddenOperationException;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkingLot;
@@ -56,7 +57,7 @@ public class ParkingLotService {
 		}
 		response.setParkingLot(pl);
 		response.setFreePlCount(pl.getSector().getFreePlCount());
-		pl.getSector().getParkHouse().countPls();
+		pl.getSector().getParkHouse().countParkingLots();
 		response.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
 		response.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
 		return response;
@@ -98,7 +99,7 @@ public class ParkingLotService {
 			if(authenticateduser.getUser().getId()==pl.getOccupyingCar().getOwner().getId()) {
 				parkoutProcess(pl);
 			}else {
-				return null;
+				throw new ForbiddenOperationException("NOT_OWNED_CAR");
 			}
 		}
 		response.setParkingLot(pl);
@@ -106,6 +107,7 @@ public class ParkingLotService {
 		return response;
 	}
 	
+	//Beparkolást végrehajtó metódus. Csak akkor hajtja végre ha nem foglalt más által a parkoló, vagy a saját autóval próbálkokzik ha nem admin.
 	public ParkInResponse parkIn(Long plId, String carPlate) {
 		ParkInResponse response = new ParkInResponse();
 		
@@ -115,10 +117,10 @@ public class ParkingLotService {
 		Car car = carRepository.findById(carPlate).orElseThrow(()->new CarNotFoundException(carPlate));
 		
 		if(pl.getIsReserved()&&(pl.getReservation().getUser().getId()!=authID || car.getOwner().getId()!=authID)) {
-			return null;
+			throw new ForbiddenOperationException("RESERVATION_BLOCK");
 		}
 		if(authenticateduser.getUser().getRole().equals(Role.ROLE_USER)&&car.getOwner().getId()!=authID) {
-			return null;
+			throw new ForbiddenOperationException("NOT_OWNED_CAR");
 		}
 		parkInProcess(pl, car);
 		if(pl.getIsReserved()) {
@@ -128,7 +130,7 @@ public class ParkingLotService {
 		response.setCar(car);
 		response.setParkingLot(pl);
 		response.setSectorPlCount(pl.getSector().getFreePlCount());
-		pl.getSector().getParkHouse().countPls();
+		pl.getSector().getParkHouse().countParkingLots();
 		response.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
 		response.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
 		return response;
@@ -141,7 +143,7 @@ public class ParkingLotService {
 			parkOut(pl.getId());
 		}else {
 			pl.getSector().decraseCount();
-			pl.getSector().getParkHouse().countPls();
+			pl.getSector().getParkHouse().countParkingLots();
 		}
 		pl.getSector().removeParkingLot(pl);
 		System.out.println(id + " számú parkolóhely törölve!");

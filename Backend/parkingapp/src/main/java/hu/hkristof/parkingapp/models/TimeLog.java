@@ -36,8 +36,6 @@ public class TimeLog {
 	
 	private Long parkHouseId;
 	
-	private String parkHouseName;
-	
 	private int parkHouseFreePlCount;
 	
 	private int parkHouseOccupiedPlCount;
@@ -88,14 +86,6 @@ public class TimeLog {
 
 	public void setParkHouseId(Long parkHouseId) {
 		this.parkHouseId = parkHouseId;
-	}
-
-	public String getParkHouseName() {
-		return parkHouseName;
-	}
-
-	public void setParkHouseName(String parkHouseName) {
-		this.parkHouseName = parkHouseName;
 	}
 
 	public int getParkHouseFreePlCount() {

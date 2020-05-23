@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
               routes: {
                 ParkHouseDetail.routeName: (ctx) => ParkHouseDetail(),
                 ParkingLotDetailScreen.routeName: (ctx) =>
-                    ParkingLotDetailScreen(),
+                ParkingLotDetailScreen(),
                 TabsScreen.routeName: (ctx) => TabsScreen('Parkign App'),
               },
             );

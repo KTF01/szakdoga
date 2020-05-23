@@ -162,7 +162,12 @@ export class ParkHouseService extends ErrorHandler {
     this.commonService.isLoading = false;
     console.log(error);
     switch (error.status) {
-      case 400: this.errorOccured.next(error.error.error); break;
+      case 0: this.errorOccured.next(CommonData.unknownErrorText); break;
+      case 400:
+      if(error.error.errors[0]!=null){
+        this.errorOccured.next("A szintek számának pozitív számnak kell lennie."); break;
+      }
+      this.errorOccured.next(error.error.message); break;
       case 401: this.errorOccured.next(error.error); break;
       case 500: this.errorOccured.next(error.error.error); break;
       default: this.errorOccured.next(error.message);

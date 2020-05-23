@@ -264,4 +264,89 @@ class AuthManager with ChangeNotifier {
   Future<void> cancelNotification(int id) async {
     await notificationsPlugin.cancel(id);
   }
+
+  Future<void> parkOut(ParkingLot parkingLot) async {
+    if (parkingLot.occupyingCar != null) {
+      try {
+        http.Response response = await http.put(
+            '${Common.hostUri}auth/parkingLots/parkOut/${parkingLot.id}',
+            headers: {'authorization': Common.authToken});
+        print(response.body);
+
+        if (response.statusCode != 403) {
+          parkingLot.occupyingCar.occupiedParkingLot = null;
+          parkingLot.occupyingCar = null;
+        } else {
+          throw HttpException("Csak admin állhat ki más nevében!");
+        }
+      } catch (error) {
+        print(error);
+      }
+
+      
+    }
+    notifyListeners();
+  }
+
+  Future<void> parkIn(ParkingLot parkingLot,Car car) async {
+    if (parkingLot.occupyingCar == null) {
+      try {
+        http.Response response = await http.put(
+            '${Common.hostUri}auth/parkingLots/parkIn/${parkingLot.id}/${car.plareNumber}',
+            headers: {'authorization': Common.authToken});
+        parkingLot.occupyingCar = car;
+        car.occupiedParkingLot = parkingLot;
+      } catch (error) {
+        throw (error);
+      }
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteReservation(ParkingLot parkingLot) async {
+    if (parkingLot.reservation != null) {
+      try {
+        http.Response response = await http.delete(
+            '${Common.hostUri}auth/reservations/delete/${parkingLot.reservation.id}',
+            headers: {'authorization': Common.authToken});
+        parkingLot.reservation = null;
+        parkingLot.isReserved = false;
+      } catch (error) {
+        print("HIBAN: " + error);
+      }
+      notifyListeners();
+    }
+  }
+
+  Future<void> makeReservation(ParkingLot parkingLot ,User user, int duration) async {
+    try {
+      duration *= 3600000;
+      http.Response response = await http.post(
+        '${Common.hostUri}auth/reservations/reserve?plId=${parkingLot.id}&userId=${user.id}&duration=$duration',
+        body: null,
+        headers: {'authorization': Common.authToken},
+      );
+      dynamic responseReservation = jsonDecode(response.body);
+      parkingLot.reservation = Reservation(
+        id: responseReservation['id'],
+        user: User(
+          id: responseReservation['user']['id'],
+          firstName: responseReservation['user']['firstName'],
+          lastName: responseReservation['user']['lastName'],
+          email: responseReservation['user']['email'],
+          role: EnumToString.fromString(Role.values, responseReservation['user']['role'])
+        ),
+        startTime: DateTime.parse(responseReservation['startTime']),
+        endTime: DateTime.parse(responseReservation['endTime']),
+        parkingLot: parkingLot
+        
+      );
+      parkingLot.isReserved =true;
+      notifyListeners();
+    } catch (error) {
+      print("HIBA: " + error.toString());
+    }
+    
+  }
+
 }

@@ -37,9 +37,8 @@ public class TimeLogService {
 		timeLog.setAction(logAction);
 		timeLog.setUserName(authenticatedUser.getUser().getFirstName()+" "+ authenticatedUser.getUser().getLastName());
 		timeLog.setTime(new Timestamp(System.currentTimeMillis()));
-		pl.getSector().getParkHouse().countPls();
+		pl.getSector().getParkHouse().countParkingLots();
 		timeLog.setParkHouseId(pl.getSector().getParkHouse().getId());
-		timeLog.setParkHouseName(pl.getSector().getParkHouse().getName());
 		timeLog.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
 		timeLog.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
 		String parkingLotPath = pl.getSector().getParkHouse().getName()+'/'+pl.getSector().getName()+'/'+pl.getName();
@@ -79,9 +78,8 @@ public class TimeLogService {
 		TimeLog timeLog = new TimeLog();
 		timeLog.setAction(LogAction.RESERVE_MAKE);
 		timeLog.setUserName(authenticatedUser.getUser().getFirstName()+" "+ authenticatedUser.getUser().getLastName());
-		pl.getSector().getParkHouse().countPls();
+		pl.getSector().getParkHouse().countParkingLots();
 		timeLog.setParkHouseId(pl.getSector().getParkHouse().getId());
-		timeLog.setParkHouseName(pl.getSector().getParkHouse().getName());
 		timeLog.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
 		timeLog.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
 		timeLog.setMessage(String.format("%s lefoglalta a %s parkolóház %s szektorában a %s parkolóhelyet",
@@ -97,9 +95,8 @@ public class TimeLogService {
 		TimeLog timeLog = new TimeLog();
 		timeLog.setAction(LogAction.RESERVE_DELETE);
 		timeLog.setUserName(authenticatedUser.getUser().getFirstName()+" "+ authenticatedUser.getUser().getLastName());
-		pl.getSector().getParkHouse().countPls();
+		pl.getSector().getParkHouse().countParkingLots();
 		timeLog.setParkHouseId(pl.getSector().getParkHouse().getId());
-		timeLog.setParkHouseName(pl.getSector().getParkHouse().getName());
 		timeLog.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
 		timeLog.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
 		timeLog.setMessage(String.format("%s törölte a %s parkolóhelyre vonatkozó foglalását.",

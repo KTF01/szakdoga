@@ -38,6 +38,9 @@ public class UserService {
 	ParkHouseRepository parkHouseRepository;
 	
 	@Autowired
+	ParkingLotService parkingLotService;
+	
+	@Autowired
 	AuthenticatedUser authenticatedUser;
 	
 	public UsersDataResponse getAllUsers() {
@@ -161,6 +164,20 @@ public class UserService {
 		System.out.println(minDistance);
 		
 		return closestPh;
+	}
+	
+	public Long deleteUser(Long id) {
+		User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
+		if(user.getOwnedCars().size()>0) {
+			for(Car car : user.getOwnedCars()) {
+				if(car.getOccupiedParkingLot()!=null) {
+					parkingLotService.parkOut(car.getOccupiedParkingLot().getId());
+				}
+			}
+		}
+		System.out.println(user.getEmail()+" elmailel rendelkező felhasználó törlésre került.");
+		userRepository.delete(user);
+		return user.getId();
 	}
 	
 	private double distance(double longitude1, double latitude1, double longitude2, double latitude2) {

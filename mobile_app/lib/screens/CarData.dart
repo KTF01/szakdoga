@@ -20,7 +20,7 @@ class _CarDataState extends State<CarData> {
     });
 
     auth.cancelNotification(widget.car.occupiedParkingLot.id);
-    await widget.car.occupiedParkingLot.parkOut();
+    await auth.parkOut(widget.car.occupiedParkingLot);
     
     setState(() {
       _isLoading = false;
@@ -91,7 +91,7 @@ class _CarDataState extends State<CarData> {
                               children: <Widget>[
                                 RaisedButton(
                                     child: Text('Kiállás'),
-                                    onPressed: ()=>_startParkOut(auth)),
+                                    onPressed: ()=>_startParkOut( auth)),
                               ],
                             )
                           ],

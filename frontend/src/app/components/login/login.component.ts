@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.authService.login(this.authForm.value.emailInput, this.authForm.value.passwordInput);
     this.authService.errorOccured.subscribe(errorMessage=>{
+      if(errorMessage)
       this.error=errorMessage;
     });
     this.logInSub= this.authService.loggedIn.subscribe(_=>{
@@ -79,7 +80,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
     }else{
       console.log("Invalid!");
-      this.error="Hibák vannak az űrlapban"
+      this.error="Töltsön ki minden mezőt helyesen!"
     }
   }
 

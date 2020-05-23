@@ -5,7 +5,6 @@ import { ParkHousesComponent } from './components/park-houses/park-houses.compon
 import { ParkHouseDetailComponent } from './components/park-house-detail/park-house-detail.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ParkingLotDetailComponent } from './components/parking-lot-detail/parking-lot-detail.component';
-import { SideNavComponent } from './components/common/side-nav/side-nav.component';
 import { UserDetailComponent } from './components/user-detail/user-detail.component';
 import { TimeLogComponent } from './components/time-log/time-log.component';
 import { AuthGuard } from './auth-guard';

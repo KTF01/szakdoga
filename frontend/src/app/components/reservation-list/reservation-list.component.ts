@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserServiceService } from '../../services/user-service.service';
 import { Reservation } from '../../models/Reservation';
 import { CommonData } from '../../common-data';
-import { PopUpContainer } from '../pop-up/PopUpContainer';
+import { PopUpContainer } from '../common/pop-up/PopUpContainer';
 import { ReservationServiceService } from '../../services/reservation-service.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';

@@ -60,3 +60,6 @@
 .delete-btn{
   margin: 5px;
 }
+a{
+  cursor: pointer;
+}

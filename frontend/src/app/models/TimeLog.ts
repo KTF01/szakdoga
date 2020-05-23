@@ -7,7 +7,6 @@ export class TimeLog{
   userName:string;
   message:string;
   parkHouseId:number;
-	parkHouseName:string;
   parkHouseFreePlCount:number;
 	parkHouseOccupiedPlCount:number;
 }

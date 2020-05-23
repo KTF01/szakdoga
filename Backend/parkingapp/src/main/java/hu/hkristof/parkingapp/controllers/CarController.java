@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.services.CarService;
 
@@ -48,6 +47,6 @@ public class CarController {
 	
 	@DeleteMapping("delete/{plateNumber}")
 	public ResponseEntity<String> deleteCar(@PathVariable String plateNumber){
-		return new ResponseEntity<>(carService.deleteCar(plateNumber), HttpStatus.OK);
+		return new ResponseEntity<>("{ \"plateNumber\": \""+ carService.deleteCar(plateNumber)+"\" }", HttpStatus.OK);
 	}
 }
