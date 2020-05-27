@@ -61,10 +61,17 @@ public class TestParkingLotService {
 		ArrayList<ParkingLot> testParkingLots = new ArrayList<>();
 		ArrayList<Car> testCars = new ArrayList<>();
 		
+		Car testCar1 = new Car(); testCar1.setPlateNumber("ABC-123"); testCar1.setOwner(testAuthUser);
+		Car testCar2 = new Car(); testCar2.setPlateNumber("ABC-124"); testCar2.setOwner(testUser);
+		Car testCar3 = new Car(); testCar3.setPlateNumber("ABC-125");
+		testCars.add(testCar1);
+		testCars.add(testCar2);
+		testCars.add(testCar3);
+		
 		ParkingLot p1 = new ParkingLot();
 		p1.setId(1L);
 		p1.setName("P1");
-		p1.setOccupyingCar(new Car());
+		p1.setOccupyingCar(testCar1);
 		p1.setSector(new Sector());
 		p1.getSector().setFreePlCount(0);
 		p1.getSector().setParkHouse(new ParkHouse());
@@ -74,13 +81,6 @@ public class TestParkingLotService {
 		p2.setSector(new Sector());
 		p2.getSector().setParkHouse(new ParkHouse());
 		testParkingLots.add(p1); testParkingLots.add(p2);
-		
-		Car testCar1 = new Car(); testCar1.setPlateNumber("ABC-123"); testCar1.setOwner(testAuthUser);
-		Car testCar2 = new Car(); testCar2.setPlateNumber("ABC-124"); testCar2.setOwner(testUser);
-		Car testCar3 = new Car(); testCar3.setPlateNumber("ABC-125");
-		testCars.add(testCar1);
-		testCars.add(testCar2);
-		testCars.add(testCar3);
 		
 		Mockito.when(plRepository.findById(Mockito.anyLong())).then((InvocationOnMock invocation)->{
 			for(ParkingLot pl : testParkingLots) {
