@@ -131,6 +131,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
 
   onSubmit() {
     this.formChecked = true;
+    console.log(this.form);
     if (this.form.valid) {
       if(this.formExtraValidate()){
         let newParkhouse: ParkHouse = {

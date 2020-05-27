@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
 import hu.hkristof.parkingapp.LogAction;
@@ -33,7 +34,7 @@ public class ParkingLotService {
 	TimeLogService timeLogService;
 	
 	@Autowired
-	AuthenticatedUser authenticateduser;
+	AuthenticatedUser authenticatedUser;
 
 	public void massParkOut(List<ParkingLot> parkingLots) {
 		List<Car> cars= new ArrayList<>();
@@ -52,8 +53,19 @@ public class ParkingLotService {
 	public ParkOutResponse parkOut(Long id) {
 		ParkOutResponse response = new ParkOutResponse();
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
+		
 		if(pl.getOccupyingCar()!=null) {
-			parkoutProcess(pl);
+			
+			boolean isNormalUser = authenticatedUser.getUser().getRole().equals(Role.ROLE_USER);
+			boolean isSelfCar=authenticatedUser.getUser().getId()==pl.getOccupyingCar().getOwner().getId();
+			if(!isNormalUser || isNormalUser && isSelfCar) {
+				parkoutProcess(pl);
+			}else {
+				throw new ForbiddenOperationException("NOT_ADMIN_OR_NOT_SELF_CAR");
+			}
+			
+		}else {
+			throw new ForbiddenOperationException("NO_CAR_IN_PARKINGLOT");
 		}
 		response.setParkingLot(pl);
 		response.setFreePlCount(pl.getSector().getFreePlCount());
@@ -91,27 +103,20 @@ public class ParkingLotService {
 		timeLogService.saveParkLog(LogAction.PARK_IN, car, pl);
 		System.out.println("A "+ car.getPlateNumber()+" rendszámú autó beparkolt a "+ pl.getName()+" nevű parkolóhelyre.");
 	}
+
 	
-	public ParkOutResponse parkOutSelf(Long id) {
-		ParkOutResponse response = new ParkOutResponse();
-		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
-		if(pl.getOccupyingCar()!=null) {
-			if(authenticateduser.getUser().getId()==pl.getOccupyingCar().getOwner().getId()) {
-				parkoutProcess(pl);
-			}else {
-				throw new ForbiddenOperationException("NOT_OWNED_CAR");
-			}
-		}
-		response.setParkingLot(pl);
-		response.setFreePlCount(pl.getSector().getFreePlCount());
-		return response;
-	}
-	
-	//Beparkolást végrehajtó metódus. Csak akkor hajtja végre ha nem foglalt más által a parkoló, vagy a saját autóval próbálkokzik ha nem admin.
+	/**
+	 * Beparkolást végrehajtó metódus. Csak akkor hajtja végre ha nem foglalt más által a parkoló,
+	 * vagy a saját autóval próbálkokzik ha nem admin.
+	 * @param plId A parkoló azonosítója ahova a beparkolás fog történni
+	 * @param carPlate Az autó rendszáma amivel beparkol a felhasználó.
+	 * @return ParkInRespons objektum amit visszaküldünk a kliensnek.
+	 */
+	@Transactional
 	public ParkInResponse parkIn(Long plId, String carPlate) {
 		ParkInResponse response = new ParkInResponse();
 		
-		Long authID = authenticateduser.getUser().getId();
+		Long authID = authenticatedUser.getUser().getId();
 		
 		ParkingLot pl = plRepository.findById(plId).orElseThrow(()->new ParkingLotNotFoundException(plId));
 		Car car = carRepository.findById(carPlate).orElseThrow(()->new CarNotFoundException(carPlate));
@@ -119,7 +124,7 @@ public class ParkingLotService {
 		if(pl.getIsReserved()&&(pl.getReservation().getUser().getId()!=authID || car.getOwner().getId()!=authID)) {
 			throw new ForbiddenOperationException("RESERVATION_BLOCK");
 		}
-		if(authenticateduser.getUser().getRole().equals(Role.ROLE_USER)&&car.getOwner().getId()!=authID) {
+		if(authenticatedUser.getUser().getRole().equals(Role.ROLE_USER)&&car.getOwner().getId()!=authID) {
 			throw new ForbiddenOperationException("NOT_OWNED_CAR");
 		}
 		parkInProcess(pl, car);

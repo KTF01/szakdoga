@@ -73,6 +73,9 @@ public class ReservationService {
 		}
 	}
 	
+	/**
+	 * Percenként lefut és kitörli a lejárt foglalásokat
+	 */
 	@Transactional
 	@Scheduled(fixedDelay = 60000, initialDelay = 60000)
 	public void purgeExpiredReservations() {

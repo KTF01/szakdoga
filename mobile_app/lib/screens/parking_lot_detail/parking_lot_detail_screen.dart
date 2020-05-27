@@ -1,16 +1,14 @@
-import 'dart:developer';
-
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app/common/loadable_button.dart';
 import 'package:mobile_app/models/parkingLot.dart';
-import 'package:mobile_app/models/providers/auth.dart';
-import 'package:mobile_app/models/providers/parkHouses.dart';
+import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:mobile_app/models/role.dart';
 import 'package:mobile_app/screens/parking_lot_detail/empty_view.dart';
 import 'package:mobile_app/screens/parking_lot_detail/make_reservation_panel.dart';
 import 'package:mobile_app/screens/parking_lot_detail/parked_view.dart';
-import 'package:mobile_app/screens/parking_lot_detail/user_car_list.dart';
+import './user_car_list.dart';
+import 'package:mobile_app/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
 class ParkingLotDetailScreen extends StatefulWidget {
@@ -23,15 +21,20 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
   AppBar myAppbar = AppBar();
   bool _isLoading = false;
 
-  void _parkOutStart(
-      AuthManager authManager, ParkingLot parkingLot) {
+  void _parkOutStart(CommonProvider commonProvider, ParkingLot parkingLot) {
     setState(() {
       _isLoading = true;
     });
-    authManager.parkOut(parkingLot).then((_) {
-      authManager.cancelNotification(parkingLot.id);
+    commonProvider.parkOut(parkingLot).then((_) {
+      NotificationService.notificationsPlugin.cancel(parkingLot.id);
       setState(() {
+        errorText="";
         _isLoading = false;
+      });
+    }, onError: (error){
+      setState(() {
+        errorText=error.toString();
+        _isLoading=false;
       });
     });
   }
@@ -39,19 +42,19 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
   void refresh() {
     setState(() {});
   }
-
+  String errorText = "";
   @override
   Widget build(BuildContext context) {
     ParkingLot parkingLot =
         ModalRoute.of(context).settings.arguments as ParkingLot;
-    AuthManager authManager = Provider.of<AuthManager>(context);
+    CommonProvider commonProvider = Provider.of<CommonProvider>(context);
     bool hasCar = parkingLot.occupyingCar != null;
-    bool isMyCar = hasCar&&
-        (parkingLot.occupyingCar.owner.id == authManager.loggedInUser.id);
+    bool isMyCar = hasCar &&
+        (parkingLot.occupyingCar.owner.id == commonProvider.loggedInUser.id);
     bool isMyReservation = parkingLot.isReserved &&
-        parkingLot.reservation.user.id == authManager.loggedInUser.id;
-    bool isAdmin = (authManager.loggedInUser.role != Role.ROLE_USER);
-    bool reservDisabled = !isMyCar && !isMyReservation;
+        parkingLot.reservation.user.id == commonProvider.loggedInUser.id;
+    bool isAdmin = (commonProvider.loggedInUser.role != Role.ROLE_USER);
+    bool reservDisabled = (!isMyCar && !isMyReservation);
     return Scaffold(
       appBar: myAppbar,
       body: Column(
@@ -85,6 +88,12 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                     ? ParkedInParkingLotView(parkingLot)
                     : EmptyParkingLotView(),
               ),
+              if (errorText != "")
+                Text(
+                  errorText,
+                  style: TextStyle(color: Theme.of(context).errorColor),
+                  textAlign: TextAlign.center,
+                ),
               LayoutBuilder(
                 builder: (BuildContext ctx, BoxConstraints constraints) {
                   if (_isLoading) {
@@ -96,14 +105,16 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                       return LoadableButton(
                         text: "Kiállás",
                         pressFunction: () =>
-                            _parkOutStart(authManager, parkingLot),
+                            _parkOutStart(commonProvider, parkingLot),
                         disabled: !isMyCar && !isAdmin,
                       );
                     } else {
                       return RaisedButton(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        color: Theme.of(context).primaryColor,
+                        textColor: Theme.of(context).primaryTextTheme.button.color,
                         onPressed: parkingLot.isReserved && !isMyReservation
-                            ? null
-                            : () {
+                            ? null : () {
                                 showModalBottomSheet(
                                     context: context,
                                     builder: (_) {
@@ -124,21 +135,32 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                     return LoadableButton(
                       text: "Foglalás törlése",
                       disabled: reservDisabled && !isAdmin,
-                      pressFunction: (){authManager.deleteReservation(parkingLot);},
+                      pressFunction: () async {
+                        try {
+                          await commonProvider.deleteReservation(parkingLot);
+                          errorText="";
+                        } catch (error) {
+                          setState(() {
+                            errorText=error.toString();
+                          });
+                        }
+                      },
                     );
                   } else {
                     return RaisedButton(
                       child: Text("Foglalás"),
-                      onPressed: reservDisabled && hasCar
-                          ? null
-                          : () {
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      color: Theme.of(context).primaryColor,
+                      textColor: Theme.of(context).primaryTextTheme.button.color,
+                      onPressed: reservDisabled && hasCar || commonProvider.loggedInUser.reservations.length>2
+                          ? null: () {
                               showModalBottomSheet(
                                 context: context,
                                 builder: (_) {
                                   return ReservationPanel(parkingLot);
                                 },
                               ).then((value) {
-                                print(parkingLot.reservation.id);
+                                errorText="";
                               });
                             },
                     );

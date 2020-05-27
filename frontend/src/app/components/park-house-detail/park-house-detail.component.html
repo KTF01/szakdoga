@@ -70,7 +70,7 @@
     (drag)="dragMarker($event)"></agm-marker>
     </agm-map>
 </app-pop-up>
-<app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" (okEvent)="submitAddForm()">
+<app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" (okEvent)="submitAddForm() " [okText]="'Hozzáad'">
   <form (ngSubmit)="onAddSubmit()" #af="ngForm">
     <div>
       <input class="form-control" type="text"  name="sectorNameInput" placeholder="Név" required ngModel #sectorName="ngModel">
@@ -95,7 +95,10 @@
       <div class="col-md-10">
         <h1>{{parkHouse.name}}</h1>
         <h2>{{parkHouse.address}}</h2>
-        <h3>Emeletek: {{parkHouse.firstFloor}}-{{parkHouse.firstFloor+parkHouse.numberOfFloors}}</h3>
+        <h3>Emeletek:
+          {{parkHouse.firstFloor<0?'('+parkHouse.firstFloor+')':parkHouse.firstFloor}}
+          -
+          {{maxFloor<0?'('+maxFloor+')':maxFloor}}</h3>
       </div>
       <div class="buttons col-md-2" *ngIf="isAdmin">
         <button class="btn btn-primary" (click)="openPopUp2()">
@@ -106,7 +109,8 @@
         </button>
       </div>
     </div>
-    <app-pie-chart #chart [freePls]="parkHouse.freePlCount" [occuPiedPls]="parkHouse.occupiedPlCount"></app-pie-chart>
+    <app-pie-chart [ngClass]="{invisible: parkHouse.freePlCount+parkHouse.occupiedPlCount<=0}"
+     #chart [freePls]="parkHouse.freePlCount" [occuPiedPls]="parkHouse.occupiedPlCount"></app-pie-chart>
     <div>
       <h2>Szektorok:</h2>
       <ul>

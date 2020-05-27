@@ -32,6 +32,8 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
 
   error: string = null;
 
+  maxFloor:number;
+
   faCaretDownIcon = faCaretDown;
   faCaretUpIcon = faCaretUp;
   editIcon = faEdit;
@@ -47,11 +49,14 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
     private authService: AuthService) { super(); }
 
   ngOnInit(): void {
+
     let id = +this.route.snapshot.params['id'];
     this.parkHouse = this.parkHouseService.getParkHouse(id);
     if (this.authService.loggedInUser) {
       this.isAdmin = !(this.authService.loggedInUser.role == Role.ROLE_USER);
     }
+    console.log(this.parkHouse.freePlCount +' '+ this.parkHouse.occupiedPlCount);
+    this.maxFloor =  this.parkHouse.firstFloor+this.parkHouse.numberOfFloors;
   }
 
   addNewSector(sector: Sector) {
@@ -142,7 +147,7 @@ export class ParkHouseDetailComponent extends PopUpContainer implements OnInit {
     if (this.addForm.valid && this.validateAddSectorForm(this.addForm)) {
       this.addForm.ngSubmit.emit();
     } else {
-      this.error='Invalid form!';
+      this.error='Érvénytelen adatok!';
     }
   }
 

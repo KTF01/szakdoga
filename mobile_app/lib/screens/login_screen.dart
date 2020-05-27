@@ -1,7 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:mobile_app/models/providers/auth.dart';
+import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:provider/provider.dart';
 
 enum AuthMode { Signup, Login }
@@ -20,17 +18,7 @@ class AuthScreen extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).accentColor
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  stops: [0, 1],
-                ),
-              ),
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             ),
             SingleChildScrollView(
               child: Container(
@@ -67,7 +55,7 @@ class AuthCard extends StatefulWidget {
 class _AuthCardState extends State<AuthCard> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
-  Map<String, String> _authData = {
+  Map<String, String> _authInfo = {
     'email': '',
     'firstName': '',
     'lastName': '',
@@ -79,38 +67,26 @@ class _AuthCardState extends State<AuthCard> {
   void _submit() async {
     FocusScope.of(context).requestFocus(new FocusNode());
     if (!_formKey.currentState.validate()) {
-      // Invalid!
       return;
     }
     _formKey.currentState.save();
     setState(() {
       _isLoading = true;
     });
-    AuthManager auth = Provider.of<AuthManager>(context, listen: false);
+    CommonProvider commonProvider = Provider.of<CommonProvider>(context, listen: false);
     if (_authMode == AuthMode.Login) {
       try {
-        await auth.loggIn(_authData['email'], _authData['password']);
+        await commonProvider.manualLogIn(_authInfo['email'], _authInfo['password']);
       } catch (error) {
-        String errorMessage = "Valami hiba keletkezett!";
-        if (error.toString().contains("Failed to parse header value")) {
-          errorMessage = "Helytelen bejelentkezési adatok!";
-        }
-        _showErrorDialog(errorMessage);
+        _showErrorDialog(error.toString());
       }
     } else {
       try {
-        await auth.signUp(_authData['firstName'], _authData['lastName'],
-            _authData['email'], _authData['password']);
+        await commonProvider.signUp(_authInfo['firstName'], _authInfo['lastName'],
+            _authInfo['email'], _authInfo['password']);
         _switchAuthMode();
-      } on HttpException catch (error){
-        print(error);
-        String errorMessage = 'Sikertelen regisztráció';
-        if(error.toString().contains('EMAIL_ALREADY_EXIST')){
-          errorMessage = 'Ez az emailcím már foglalt!';
-        }
-        _showErrorDialog(errorMessage);
       } catch (error) {
-        _showErrorDialog('Ismeeretlen hiba történt');
+        _showErrorDialog(error.toString());
       }
     }
     setState(() {
@@ -173,12 +149,15 @@ class _AuthCardState extends State<AuthCard> {
                   decoration: InputDecoration(labelText: 'E-Mail'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value.isEmpty || !value.contains('@')) {
-                      return 'Invalid email!';
+                    if (value.isEmpty) {
+                      return "Nem lehet üres!";
+                    }
+                    if (!value.contains('@') || !value.contains('.')) {
+                      return "Helyetlen email!";
                     }
                   },
                   onSaved: (value) {
-                    _authData['email'] = value;
+                    _authInfo['email'] = value;
                   },
                 ),
                 if (_authMode == AuthMode.Signup)
@@ -190,7 +169,7 @@ class _AuthCardState extends State<AuthCard> {
                       }
                     },
                     onSaved: (value) {
-                      _authData['firstName'] = value;
+                      _authInfo['firstName'] = value;
                     },
                   ),
                 if (_authMode == AuthMode.Signup)
@@ -202,7 +181,7 @@ class _AuthCardState extends State<AuthCard> {
                       }
                     },
                     onSaved: (value) {
-                      _authData['lastName'] = value;
+                      _authInfo['lastName'] = value;
                     },
                   ),
                 TextFormField(
@@ -215,7 +194,7 @@ class _AuthCardState extends State<AuthCard> {
                     }
                   },
                   onSaved: (value) {
-                    _authData['password'] = value;
+                    _authInfo['password'] = value;
                   },
                 ),
                 if (_authMode == AuthMode.Signup)

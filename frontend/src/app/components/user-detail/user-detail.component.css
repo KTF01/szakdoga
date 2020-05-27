@@ -6,7 +6,7 @@
   align-items: center;
 }
 
-.user-info{
+.user-header{
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;

@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class ParkHouseNotFoundException extends RuntimeException{
 	public ParkHouseNotFoundException(Long id) {
-		super(String.format("Autó %d nevű parkolóház nem található!", id));
+		super(String.format("%d id-vel rendelkező parkolóház nem található!", id));
 	}
 }

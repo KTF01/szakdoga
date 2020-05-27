@@ -3,7 +3,7 @@
     <h1>Nyilvántartott felhasználók</h1>
 
     <div class="search-components">
-      <div class="form-group">
+      <div class="form-group filter-form">
         <label for="nameFilterText" >Szűrés:</label>
         <input type="text" id="nameFilterText" [(ngModel)]="nameFilter" placeholder="Név">
       </div>
@@ -32,11 +32,11 @@
 
 <app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="adminBtnPressed(selectedUser)">
   <div *ngIf="selectedUser.role==USER_ROLE;else adminText">
-    <p>{{selectedUser.firstName}} {{selectedUser.lastName}} jelenleg sima felhasználó. Szeretne neki admin jogosultságot adni?</p>
+    <p>Adminisztrátorrá szeretné tenni a {{selectedUser.firstName}} {{selectedUser.lastName}} nevű felhasználót?</p>
   </div>
   <ng-template #adminText>
     <div>
-      <p>{{selectedUser.firstName}} {{selectedUser.lastName}} jelenleg admin. Meg szeretné vonni tőle az admin jogosultságot?</p>
+      <p>{{selectedUser.firstName}} {{selectedUser.lastName}} jelenleg adminisztrátor. Meg szeretné vonni tőle az ezt a jogosultságot?</p>
     </div>
   </ng-template>
 </app-pop-up>

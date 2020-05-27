@@ -29,7 +29,7 @@ class ParkedInParkingLotView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text('Rendszám: ' + parkingLot.occupyingCar.plareNumber),
+                  Text('Rendszám: ' + parkingLot.occupyingCar.plateNumber),
                   Text('Tulaj: ' +
                       parkingLot.occupyingCar.owner.firstName +
                       ' ' +

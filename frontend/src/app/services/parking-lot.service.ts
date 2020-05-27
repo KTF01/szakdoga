@@ -10,6 +10,7 @@ import { SectorService } from './sector.service';
 import { Car } from '../models/Car';
 import { AuthService } from './auth.service';
 import { Reservation } from '../models/Reservation';
+import { ParkHouse } from '../models/ParkHouse';
 
 @Injectable({
   providedIn: 'root'
@@ -63,8 +64,9 @@ export class ParkingLotService {
       let index = parkinglot.sector.parkingLots.findIndex(elem => elem.id == response);
       parkinglot.sector.parkingLots.splice(index, 1);
       if(parkinglot.occupyingCar==null){
-        parkinglot.sector.freePlCount--;
-        parkinglot.sector.parkHouse.freePlCount--;
+        let parkHouse:ParkHouse = this.parkHouseService.parkHouses.find(ph=>ph.id==parkinglot.sector.parkHouse.id);
+        parkHouse.sectors.find(sec=>sec.id==parkinglot.sector.id).freePlCount--;
+        parkHouse.freePlCount--;
       }else{
         parkinglot.sector.parkHouse.occupiedPlCount--;
       }

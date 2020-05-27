@@ -1,4 +1,4 @@
-<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="deleteElementEvent()">
+<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="deleteElementEvent()" [okText]="'Igen'">
   <p>Biztosan törlöd?</p>
   <p class="text-danger">{{errorDisplay}}</p>
 </app-pop-up>

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
 import hu.hkristof.parkingapp.Role;
+import hu.hkristof.parkingapp.exceptions.ForbiddenOperationException;
 import hu.hkristof.parkingapp.exceptions.UserAlreadyExistEception;
 import hu.hkristof.parkingapp.exceptions.UserNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
@@ -110,7 +111,7 @@ public class UserService {
 	public User grantAdmin(Long id){
 		User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
 		if(user.getRole().equals(Role.ROLE_FIRST_USER)) {
-			return null;
+			throw new ForbiddenOperationException("ROLE_NOT_FIRST_USER");
 		}
 		user.setRole(Role.ROLE_ADMIN);
 		userRepository.save(user);

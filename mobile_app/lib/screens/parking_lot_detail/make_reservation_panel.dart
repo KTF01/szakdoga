@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/common/loadable_button.dart';
 import 'package:mobile_app/models/parkingLot.dart';
-import 'package:mobile_app/models/providers/auth.dart';
+import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:provider/provider.dart';
 
 class ReservationPanel extends StatefulWidget {
 
-  ParkingLot parkingLot;
+  final ParkingLot parkingLot;
   ReservationPanel(this.parkingLot);
 
   @override
@@ -15,11 +15,15 @@ class ReservationPanel extends StatefulWidget {
 
 class _ReservationPanelState extends State<ReservationPanel> {
   int dropDownValue = 1;
+  bool _isLoading = false;
+  String errorText = "";
   @override
   Widget build(BuildContext context) {
-    AuthManager authManager = Provider.of<AuthManager>(context);
+    CommonProvider authManager = Provider.of<CommonProvider>(context);
     return Container(
-      child: Column(
+      child: _isLoading? Center(child: CircularProgressIndicator( 
+        backgroundColor: Theme.of(context).primaryColor,)
+        ) : errorText==""? Column(
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -44,11 +48,19 @@ class _ReservationPanelState extends State<ReservationPanel> {
             ],
           ),
           LoadableButton(text: "Lefoglal", pressFunction: () async {
-            await authManager.makeReservation(widget.parkingLot,authManager.loggedInUser, dropDownValue);
-            Navigator.pop(context);
+            try{
+              await authManager.makeReservation(widget.parkingLot,authManager.loggedInUser, dropDownValue);
+              Navigator.pop(context);
+            }catch(error){
+              setState(() {
+                errorText=error.toString();
+              });
+              
+            }
+            
           })
         ],
-      ),
+      ): Text(errorText, style: TextStyle(color: Theme.of(context).errorColor), textAlign: TextAlign.center,),
     );
   }
 }

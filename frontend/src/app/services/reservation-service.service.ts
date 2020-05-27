@@ -5,6 +5,7 @@ import { CommonService } from './common.service';
 import { Subject } from 'rxjs';
 import { Reservation } from '../models/Reservation';
 import { ParkingLot } from '../models/ParkingLot';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class ReservationServiceService {
   deleteReservSub:Subject<ParkingLot> = new Subject<ParkingLot>();
   errorOccured: Subject<string> = new Subject<string>();
 
-  constructor(private http:HttpClient, private commonService:CommonService) { }
+  constructor(private http:HttpClient, private commonService:CommonService, private authService:AuthService) { }
 
   makeResevation(parkingLot:ParkingLot, userId:number, duration:number){
     this.commonService.isLoading=true;
@@ -27,8 +28,7 @@ export class ReservationServiceService {
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`}),
       params: params
     }).subscribe(response=>{
-      console.log(response);
-
+      this.authService.loggedInUser.reservations.push(response);
       this.makeReservSub.next(response);
       this.commonService.isLoading=false;
     },error=>{console.log(error);
@@ -41,6 +41,8 @@ export class ReservationServiceService {
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`}),
     }).subscribe(response=>{
       console.log(response);
+      let index = this.authService.loggedInUser.reservations.findIndex((res=>res.id==response.id));
+      this.authService.loggedInUser.reservations.splice(index,1);
       this.deleteReservSub.next(response);
       this.commonService.isLoading=false;
     },error=>{console.log(error);

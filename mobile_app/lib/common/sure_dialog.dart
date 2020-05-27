@@ -13,6 +13,7 @@ class SureDialog extends StatefulWidget {
 
 class _SureDialogState extends State<SureDialog> {
   bool _isLoadig = false;
+  String errorText="";
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -23,7 +24,9 @@ class _SureDialogState extends State<SureDialog> {
                 child: CircularProgressIndicator(
                 backgroundColor: Theme.of(context).primaryColor,
               ))
-            : Text(widget.text),
+            : errorText==""?
+            Text(widget.text): 
+            Text(errorText, style: TextStyle(color: Theme.of(context).errorColor),),
       ),
       actions: <Widget>[
         RaisedButton(
@@ -32,8 +35,15 @@ class _SureDialogState extends State<SureDialog> {
             setState(() {
               _isLoadig = true;
             });
-            await widget.okAction();
-            Navigator.pop(context);
+            try {
+              await widget.okAction();
+              Navigator.pop(context);
+            } catch (error) {
+              setState(() {
+                _isLoadig = false;
+                errorText=error.toString();
+              });
+            }
           },
         ),
         RaisedButton(

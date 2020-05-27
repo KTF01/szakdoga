@@ -8,6 +8,6 @@ import org.springframework.http.HttpStatus;
 public class ParkingLotNotFoundException extends RuntimeException {
 
 	public ParkingLotNotFoundException(Long resourceId) {
-		super(String.format("Parkolóhely %d id-val nem található!", resourceId));
+		super(String.format("Parkolóhely %d id-vel nem található!", resourceId));
 	}
 }

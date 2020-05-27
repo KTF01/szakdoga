@@ -41,6 +41,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
   isLoggedInUser : boolean = true;
   sameuser:boolean;
   error:string = "";
+  addCarFormChecked: boolean=false;
 
   isCarView:boolean =true;
 
@@ -96,12 +97,12 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
 
 
 
-  addNewCar(plateNumbInput){//UNSUBSCRIBE
+  addNewCar(plateNumbInput){
+    this.addCarFormChecked = true;
     if(plateNumbInput.valid){
       let newCar:Car= {plateNumber: plateNumbInput.value}
       this.userService.addCarToUser(this.displayedUser,newCar);
       this.carAddSub = this.userService.carAdded.subscribe(responseCar=>{
-        //this.displayedUser.ownedCars.push(responseCar);
         this.closePopUp2();
       });
       this.errorSub = this.userService.errorOccured.subscribe(error=>{
@@ -194,6 +195,7 @@ export class UserDetailComponent extends PopUpContainer implements OnInit, OnDes
     this.popUp2IsOpen=true;
     this.selectedCar=null;
     this.error=null;
+    this.addCarFormChecked = false;
   }
   openPopUp3(){
     this.popUp3IsOpen=true;

@@ -31,8 +31,7 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
   constructor(private parkingLotService:ParkingLotService, private router: Router, private route: ActivatedRoute) { super(); }
 
   ngOnInit(): void {
-    console.log("init");
-    this.chart.updateChart(this.sector.parkHouse.freePlCount, this.sector.parkHouse.occupiedPlCount);
+    if(this.chart) this.chart.updateChart(this.sector.parkHouse.freePlCount, this.sector.parkHouse.occupiedPlCount);
   }
   novigateToParkingLotDetail(parkingLot: ParkingLot) {
     this.router.navigate(['parkingLot', parkingLot.id], { relativeTo: this.route });

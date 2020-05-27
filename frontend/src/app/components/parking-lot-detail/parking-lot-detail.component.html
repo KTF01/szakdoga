@@ -29,7 +29,8 @@
   </ng-template>
 </app-pop-up>
 
-<app-pop-up *ngIf="popUp4IsOpen" (closeEvent)="closePopUp4()" (okEvent)="parkingLot.isReserved? startReservationDelete():sendReservation()">
+<app-pop-up *ngIf="popUp4IsOpen" (closeEvent)="closePopUp4()" (okEvent)="parkingLot.isReserved? startReservationDelete():sendReservation()"
+[okText]="parkingLot.isReserved?'Igen':'Foglal'">
   <form #reservForm="ngForm" *ngIf="!parkingLot.isReserved">
     <div class="form-group">
       <label for="fromDate">Mennyi ideig:</label>
@@ -95,7 +96,7 @@
       <button *ngIf="!parkingLot.isReserved &&isReservable" class="btn btn-primary" (click)="authService.loggedInUser.reservations.length<3 ? openPopUp4():openPopUp5()">
         Foglalás
       </button>
-      <button *ngIf="parkingLot.isReserved &&(isAdmin||isUsersCar)" class="btn btn-primary" (click)="authService.loggedInUser.reservations.length<3 ? openPopUp4():openPopUp5()">
+      <button *ngIf="parkingLot.isReserved &&(isAdmin||isUsersCar)" class="btn btn-primary" (click)="openPopUp4()">
         Foglalás törlése
       </button>
     </div>

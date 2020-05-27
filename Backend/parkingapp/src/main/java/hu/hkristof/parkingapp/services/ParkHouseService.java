@@ -32,7 +32,7 @@ public class ParkHouseService {
 	
 	/**
 	 * Az összes parkolóházat lekérdezi és a válaszban visszaadja őket és elvégzi a sorbarendezéseket.
-	 * @return A válasz objektum ami tartalmazza magukat a parkolóházakat és a benne lévő autükat, foglalásokat.
+	 * @return A válasz objektum ami tartalmazza magukat a parkolóházakat és a benne lévő autókat, foglalásokat.
 	 */
 	public AllParkHousesResponse getAllParkhouses() {
 		AllParkHousesResponse response =  new AllParkHousesResponse();

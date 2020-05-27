@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import hu.hkristof.parkingapp.AuthenticatedUser;
-import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.repositoris.CarRepository;
@@ -47,12 +45,8 @@ public class ParkingLotController {
 	@Autowired
 	ParkingLotService parkingLotService;
 	
-	@Autowired 
-	private AuthenticatedUser authenticatedUser;
-	
-	
 	@GetMapping("/all")
-	public List<ParkingLot> getAllNotes() {
+	public List<ParkingLot> getAllParkingLot() {
 		System.out.println("Parkoló helyek lekérdezve!");
 	    return plRepository.findAll();
 	}
@@ -99,10 +93,6 @@ public class ParkingLotController {
 	@Transactional
 	@PutMapping("/parkOut/{id}")
 	public ResponseEntity<ParkOutResponse> parkOut(@PathVariable Long id) {
-		if(authenticatedUser.getUser().getRole().equals(Role.ROLE_USER)) {
-			ParkOutResponse response = parkingLotService.parkOutSelf(id);
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		}
 		return new ResponseEntity<>(parkingLotService.parkOut(id), HttpStatus.OK);
 	}
 	

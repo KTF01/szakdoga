@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app/common/loadable_floating_button.dart';
 import 'package:mobile_app/models/parkHouse.dart';
-import 'package:mobile_app/models/providers/auth.dart';
-import 'package:mobile_app/models/providers/parkHouses.dart';
-import 'package:mobile_app/park_house_list.dart';
+import 'package:mobile_app/models/providers/common_provider.dart';
+import 'package:mobile_app/models/providers/park_houses_provider.dart';
+import './park_house_list.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../park_house_detail_screen.dart';
+import './park_house_detail_screen.dart';
 
 class ParkHousesScreen extends StatefulWidget {
-  ParkHousesScreen({Key key}) : super(key: key);
+  final double availableHeight;
+  ParkHousesScreen(this.availableHeight);
 
   static const String routeName = '/parkHouses';
 
@@ -42,7 +43,7 @@ class _ParkHousesScreenState extends State<ParkHousesScreen> {
       setState(() {
         _isLoading = true;
       });
-      Provider.of<ParkHouses>(context).loadParkHouses().then((_) {
+      Provider.of<ParkHousesProvider>(context).loadParkHouses().then((_) {
         setState(() {
           _isLoading = false;
         });
@@ -54,8 +55,8 @@ class _ParkHousesScreenState extends State<ParkHousesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ParkHouses parkHousesProv = Provider.of<ParkHouses>(context);
-    AuthManager authManager = Provider.of<AuthManager>(context);
+    ParkHousesProvider parkHousesProv = Provider.of<ParkHousesProvider>(context);
+    CommonProvider authManager = Provider.of<CommonProvider>(context);
     List<ParkHouse> _parkHouses = parkHousesProv.parkHouses;
 
     Set<Marker> _parkHouseMarkers = _parkHouses
@@ -77,6 +78,7 @@ class _ParkHousesScreenState extends State<ParkHousesScreen> {
           children: <Widget>[
             Container(
               width: double.infinity,
+              height: widget.availableHeight*0.1,
               child: Text(
                 'Parkolóházak',
                 textAlign: TextAlign.center,
@@ -88,11 +90,11 @@ class _ParkHousesScreenState extends State<ParkHousesScreen> {
                     backgroundColor: Theme.of(context).primaryColor,
                   )
                 : Container(
-                    height: (MediaQuery.of(context).size.height) * 0.4,
+                    height: widget.availableHeight * 0.4,
                     child: ParkHouseList(),
                   ),
-            Container(
-              height: (MediaQuery.of(context).size.height) * 0.33,
+            if(!_isLoading) Container(
+              height: (MediaQuery.of(context).size.height) * 0.35,
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
                   target: LatLng(47.491800, 19.075364),
@@ -106,7 +108,7 @@ class _ParkHousesScreenState extends State<ParkHousesScreen> {
                 ),
                 markers: _parkHouseMarkers.union(
                   {
-                    if(!authManager.locationDenied) Marker(
+                    if(!authManager.authService.locationDenied) Marker(
                       markerId: MarkerId('self'),
                       position: LatLng(authManager.devicePosition.latitude,
                           authManager.devicePosition.longitude),
@@ -121,7 +123,7 @@ class _ParkHousesScreenState extends State<ParkHousesScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: LoadableFloatingButton(
-          displayed: !authManager.locationDenied,
+          displayed: !authManager.authService.locationDenied,
           tooltip: "Legközelebbi parkolóház",
           pressFunc: () async {
             int id = await authManager.getClosestParkHouse();

@@ -52,12 +52,7 @@ public class UserController {
 	@PutMapping("auth/users/grantAdmin/{id}")
 	public ResponseEntity<User> grantAdmin(@PathVariable Long id){
 		User user = userService.grantAdmin(id);
-		if(user==null) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}else {
-			return new ResponseEntity<User>(user, HttpStatus.OK);
-		}
-		
+		return new ResponseEntity<User>(user, HttpStatus.OK);	
 	}
 	
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})

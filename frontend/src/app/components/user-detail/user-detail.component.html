@@ -1,5 +1,5 @@
 <main class="">
-  <div class="user-info container">
+  <div class="user-header container">
     <div class="user-data">
       <div class="user-icon">
         <fa-icon [icon]="userService.getUserIcon(displayedUser)"></fa-icon>
@@ -45,7 +45,7 @@
             <div class="car-info">{{ car.plateNumber }}</div>
           </div>
         </app-list-tile>
-        <app-add-button (click)="openPopUp2()" *ngIf="displayedUser.ownedCars.length<5" [isAddCar]="true" ></app-add-button>
+        <app-add-button (click)="openPopUp2()" *ngIf="displayedUser.ownedCars.length<5&&displayedUser.id==authService.loggedInUser.id" [isAddCar]="true" ></app-add-button>
       </ul>
     </div>
     <div class="pl-container">
@@ -71,7 +71,7 @@
           </div>
           <ng-template #noPl>
             <div><p>Ez az autó nem foglal jelenleg parkolót.</p></div>
-            <button class="delete-btn" (click)="openPopUp3()">
+            <button class="delete-btn" (click)="openPopUp3()" *ngIf="displayedUser.id==authService.loggedInUser.id">
               <fa-icon [icon] = "deleteIson"></fa-icon>
             </button>
           </ng-template>
@@ -116,7 +116,7 @@
   <div class="form-group ">
     <label for="plateNumber">Rendszám:</label>
     <input class="form-control" type="text" name="plateNumberInpur" id="plateNumber" ngModel required #plateNumb="ngModel">
-    <span class="text-danger" *ngIf="!plateNumb.valid&&plateNumb.touched">Nem lehet üres</span>
+    <span class="text-danger" *ngIf="!plateNumb.valid&&(plateNumb.touched||addCarFormChecked)">Nem lehet üres</span>
   </div>
   <p class="text-danger">{{error}}</p>
 </app-pop-up>
