@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="Parkoló Tároló"
+        android:label="Parkoló Kezelő"
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyC5Ps-M1wtosWKu1A_GsR1uOWUdQn3p5sI"/>
