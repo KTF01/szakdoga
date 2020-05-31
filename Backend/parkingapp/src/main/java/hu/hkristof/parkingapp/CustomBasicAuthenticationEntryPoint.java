@@ -9,6 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
+/**
+ * Autentikációs belépési pont arra az esetre ha nem sikerül az autentikáció.
+ * @author krist
+ *
+ */
 public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint{
 	@Override
     public void commence(final HttpServletRequest request, 
@@ -23,7 +28,7 @@ public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
      
     @Override
     public void afterPropertiesSet() {
-        setRealmName("MY REALM");
+        setRealmName("REALM");
         super.afterPropertiesSet();
     }
 }

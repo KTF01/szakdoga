@@ -10,6 +10,7 @@ import hu.hkristof.parkingapp.models.Reservation;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 	
+	//Minden olyan foglalást visszaad az adatbázisból aminek a lejárati ideje kissebb mint a jelenlegi idő.
 	@Query(value = "SELECT * FROM parking_database.reservations where end_time<:now", nativeQuery = true)
 	List<Reservation> findAllExpired(@Param("now") String now);
 }

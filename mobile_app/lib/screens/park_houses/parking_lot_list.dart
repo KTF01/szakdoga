@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../models/parkingLot.dart';
 import './parking_lot_tile.dart';
 
+/**
+ * Parkolók listájának widgete
+ */
 class ParkingLotList extends StatelessWidget {
   final List<ParkingLot> parkingLots;
   ParkingLotList(this.parkingLots);
@@ -11,7 +14,7 @@ class ParkingLotList extends StatelessWidget {
       child: Wrap(
         spacing: 10,
         children: parkingLots.map((parkingLot){
-          return ParkingLotTile(parkingLot);
+          return ParkingLotTile(parkingLot); //A map() függvénynel minden elembő ParkingLotTile widgetet csinálunk.
         }).toList(),
       ),
     );

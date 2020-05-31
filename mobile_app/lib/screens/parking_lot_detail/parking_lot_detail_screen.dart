@@ -11,6 +11,10 @@ import './user_car_list.dart';
 import 'package:mobile_app/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
+/**
+ * Parkoló adatait megjelenítő widget.
+ */
+
 class ParkingLotDetailScreen extends StatefulWidget {
   static const String routeName = "/parkingLotDetials";
   @override
@@ -18,6 +22,7 @@ class ParkingLotDetailScreen extends StatefulWidget {
 }
 
 class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
+  //Mérete miatt változóba kimentett AppBar
   AppBar myAppbar = AppBar();
   bool _isLoading = false;
 
@@ -26,6 +31,7 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
       _isLoading = true;
     });
     commonProvider.parkOut(parkingLot).then((_) {
+      //Kiparkolásnál megszakítjuk a figyelmeztetést ha volt.
       NotificationService.notificationsPlugin.cancel(parkingLot.id);
       setState(() {
         errorText="";
@@ -42,18 +48,25 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
   void refresh() {
     setState(() {});
   }
+  //Hibát megjelenítő szöveg
   String errorText = "";
   @override
   Widget build(BuildContext context) {
+    //Navigáció során kapott paraméterből jön a parkolóhelely objektuma
     ParkingLot parkingLot =
         ModalRoute.of(context).settings.arguments as ParkingLot;
+    //Feliratkozás a CommonProviderre
     CommonProvider commonProvider = Provider.of<CommonProvider>(context);
+    //Van e autó a parkolóban
     bool hasCar = parkingLot.occupyingCar != null;
+    //Ha van autó akkor a bejelentkezett felhasználó autója e?
     bool isMyCar = hasCar &&
-        (parkingLot.occupyingCar.owner.id == commonProvider.loggedInUser.id);
+        (parkingLot.occupyingCar.owner.id == CommonProvider.loggedInUser.id);
+    //Ha van foglalás a felhasználó foglalása e?
     bool isMyReservation = parkingLot.isReserved &&
-        parkingLot.reservation.user.id == commonProvider.loggedInUser.id;
-    bool isAdmin = (commonProvider.loggedInUser.role != Role.ROLE_USER);
+        parkingLot.reservation.user.id == CommonProvider.loggedInUser.id;
+    //Admin-e a felhasználó
+    bool isAdmin = (CommonProvider.loggedInUser.role != Role.ROLE_USER);
     bool reservDisabled = (!isMyCar && !isMyReservation);
     return Scaffold(
       appBar: myAppbar,
@@ -83,7 +96,7 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
               Container(
                 height: (MediaQuery.of(context).size.height -
                         myAppbar.preferredSize.height) *
-                    0.2,
+                    0.2, //Az elérhető magasság 20%-a
                 child: parkingLot.occupyingCar != null
                     ? ParkedInParkingLotView(parkingLot)
                     : EmptyParkingLotView(),
@@ -115,7 +128,7 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                         textColor: Theme.of(context).primaryTextTheme.button.color,
                         onPressed: parkingLot.isReserved && !isMyReservation
                             ? null : () {
-                                showModalBottomSheet(
+                                showModalBottomSheet(//Alulról jövő felugró ablak
                                     context: context,
                                     builder: (_) {
                                       return UserCarList(parkingLot);
@@ -152,7 +165,7 @@ class _ParkingLotDetailScreenState extends State<ParkingLotDetailScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                       color: Theme.of(context).primaryColor,
                       textColor: Theme.of(context).primaryTextTheme.button.color,
-                      onPressed: reservDisabled && hasCar || commonProvider.loggedInUser.reservations.length>2
+                      onPressed: reservDisabled && hasCar || CommonProvider.loggedInUser.reservations.length>2
                           ? null: () {
                               showModalBottomSheet(
                                 context: context,

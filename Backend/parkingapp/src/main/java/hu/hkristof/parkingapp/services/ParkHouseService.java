@@ -1,5 +1,6 @@
 package hu.hkristof.parkingapp.services;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,6 +43,7 @@ public class ParkHouseService {
 		
 		for(ParkHouse ph : parkHouses) {
 			for(Sector sector : ph.getSectors()) {
+				//A parkolókat szektoronként név szerint rendezzük
 				sector.getParkingLots().sort(new Comparator<ParkingLot>() {
 					@Override
 					public int compare(ParkingLot o1, ParkingLot o2) {
@@ -57,6 +59,7 @@ public class ParkHouseService {
 					}
 				}
 			}
+			//A szektorokat is név szerint rendezzük parkolóházanként.
 			ph.getSectors().sort(new Comparator<Sector>() {
 				@Override
 				public int compare(Sector o1, Sector o2) {
@@ -71,7 +74,8 @@ public class ParkHouseService {
 				}
 			});;
 		}
-		System.out.println("Parkolóházak lekérdezve!");
+		System.out.println(new Timestamp(System.currentTimeMillis()).toString()+
+				": "+"Parkolóházak lekérdezve!");
 		response.setParkHouses(parkHouses);
 		response.setCars(cars);
 		response.setReservations(reservations);
@@ -86,7 +90,8 @@ public class ParkHouseService {
 		editPH.setNumberOfFloors(modifiedParkHouse.getNumberOfFloors());
 		editPH.setLongitude(modifiedParkHouse.getLongitude());
 		editPH.setLatitude(modifiedParkHouse.getLatitude());
-		System.out.println(oldName +" nevű parkolóház módosítva lett! Új név: "+ editPH.getName());
+		System.out.println(new Timestamp(System.currentTimeMillis()).toString()+
+				": "+oldName +" nevű parkolóház módosítva lett! Új név: "+ editPH.getName());
 		return parkHouseRepository.save(editPH);
 	}
 	
@@ -95,18 +100,26 @@ public class ParkHouseService {
 		for(Sector sec : newSectors) {
 			ph.addSector(sec);
 		}
-		System.out.println(ph.getName()+" parkolóházhoz szektorok lettek hozzáadva!");
+		System.out.println(new Timestamp(System.currentTimeMillis()).toString()+
+				": "+ph.getName()+" parkolóházhoz szektorok lettek hozzáadva!");
 		return parkHouseRepository.save(ph);
 	}
 	
+	/**
+	 * Parkolóház törlése. Törlés előtt az összes autót ami bent parkol a parkolóházban kiparkoltatjuk.
+	 * @param id A törölni kívánt parkolóház azonosítója.
+	 * @return A törölt parkolóház azonosítója.
+	 */
 	public Long deleteParkHouse(Long id) {
 		ParkHouse parkHouse = parkHouseRepository.findById(id).orElseThrow(()->new ParkHouseNotFoundException(id));
 		parkOutAllCars(parkHouse);
-		System.out.println(parkHouse.getName()+" nevű parkolóház törölve!");
+		System.out.println(new Timestamp(System.currentTimeMillis()).toString()+
+				": "+parkHouse.getName()+" nevű parkolóház törölve!");
 		parkHouseRepository.delete(parkHouse);
 		return id;
 	}
 	
+	//A paraméterben kapott parkolóházban parkoló öszzes autót kiparkoltatja.
 	private void parkOutAllCars(ParkHouse parkHouse) {
 		ArrayList<ParkingLot> allParkingLots = new ArrayList<ParkingLot>();
 		for(Sector sector: parkHouse.getSectors()) {

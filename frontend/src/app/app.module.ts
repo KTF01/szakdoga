@@ -29,6 +29,10 @@ import { ChartsModule } from 'ng2-charts';
 import { PieChartComponent } from './components/common/pie-chart/pie-chart.component';
 import { LineChartComponent } from './components/common/line-chart/line-chart.component';
 
+/**
+ * Az alkalmazást összefogó osztály. Ide kell mindent importálni amit használni szeretnénk.
+ */
+
 @NgModule({
   declarations: [
     AppComponent,

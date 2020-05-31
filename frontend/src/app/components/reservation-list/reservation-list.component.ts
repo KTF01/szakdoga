@@ -7,6 +7,10 @@ import { ReservationServiceService } from '../../services/reservation-service.se
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 
+/**
+ * Foglalások listáját megjelenítő komponens (A Nyilvántartás menüpont alattt)
+ */
+
 @Component({
   selector: 'app-reservation-list',
   templateUrl: './reservation-list.component.html',
@@ -14,6 +18,7 @@ import { Router } from '@angular/router';
 })
 export class ReservationListComponent extends PopUpContainer implements OnInit, OnDestroy {
 
+  //Keresési szöveg
   filter:string="";
   selectedRervation:Reservation;
   deleteResSub:Subscription;
@@ -24,6 +29,7 @@ export class ReservationListComponent extends PopUpContainer implements OnInit, 
   ngOnInit(): void {
   }
 
+  //A filter változóra szűrt foglalások loistáját adja vissza.
   filteredReservationList():Reservation[]{
     if(this.filter===""){
       return this.userService.reservations;
@@ -35,10 +41,12 @@ export class ReservationListComponent extends PopUpContainer implements OnInit, 
     }
   }
 
+  //Ha rákattintunk egy foglalás listelemére, átnavigálunk a parkolóhely oldalára.
   navigateToParkinglotDetail(id:number, phId:number){
     this.router.navigate(["frame/parkHouses/parkHouse/"+phId+"/parkingLot/"+id]);
   }
 
+  //Foglalás törlése.
   deleteReservation(){
 
     this.reservatioService.deleteReservation(this.selectedRervation.id);
@@ -55,7 +63,7 @@ export class ReservationListComponent extends PopUpContainer implements OnInit, 
   }
 
   openPopupSelected(res:Reservation){
-    this.popupIsOpen=true;
+    this.popUpIsOpen=true;
     this.selectedRervation=res;
   }
 

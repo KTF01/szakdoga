@@ -11,9 +11,12 @@ import 'package:provider/provider.dart';
 import 'screens/park_houses/park_house_detail_screen.dart';
 import 'screens/parking_lot_detail/parking_lot_detail_screen.dart';
 
+//Belépési pont
 Future<void> main() async {
+  //Értesítésekért felelős rendszerek inicializálása.
   WidgetsFlutterBinding.ensureInitialized();
   NotificationService.initNotification();
+  //Horizontális orientációt letiltjuk.
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(MyApp());
@@ -35,7 +38,7 @@ class MyApp extends StatelessWidget {
             create: (BuildContext ctx) => CommonProvider(),
           )
         ],
-        child: Consumer<CommonProvider>(
+        child: Consumer<CommonProvider>(//Feliratkozunk a CommonProviderrre
           builder: (context, commonProv, _) {
             return MaterialApp(
               title:title,
@@ -48,14 +51,16 @@ class MyApp extends StatelessWidget {
                       builder: (BuildContext ctx, commonProvResult) {
                         return commonProvResult.connectionState ==
                                 ConnectionState.waiting
-                            ? SplashScreen()
-                            : AuthScreen();
+                            ? SplashScreen() //Ameddig fut a future addig a SplashScreent jelenítjük meg.
+                            : AuthScreen(); //Amikor végzett átváltunk az AuthScreenre.
                       },
                     ),
+              //Útvonalak beállítása.
               routes: {
                 ParkHouseDetail.routeName: (ctx) => ParkHouseDetail(),
                 ParkingLotDetailScreen.routeName: (ctx) => ParkingLotDetailScreen(),
                 TabsScreen.routeName: (ctx) => TabsScreen(title),
+                AuthScreen.routeName: (ctx) =>AuthScreen()
               },
             );
           },

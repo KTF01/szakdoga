@@ -2,6 +2,11 @@ package hu.hkristof.parkingapp.responsetypes;
 
 import hu.hkristof.parkingapp.models.ParkingLot;
 
+/**
+ * Kiparkolást megvalósító végpontra küldött kérés válasz típusa.
+ * @author krist
+ *
+ */
 public class ParkOutResponse {
 	private ParkingLot parkingLot;
 	

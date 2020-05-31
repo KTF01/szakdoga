@@ -1,32 +1,38 @@
-<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="deleteParkingLot()" [okText]="'Igen'">
-  <h3>Biztos törölni akarod?</h3>
+<app-pop-up *ngIf="popUpIsOpen" (closeEvent)="closePopUp()" (okEvent)="errorText==''? deleteParkingLot():closePopUp()"
+[okText]="errorText==''?'Igen':'OK'">
+  <h3 *ngIf="errorText==''">Biztos törölni akarod?</h3>
+  <div class="text-danger" *ngIf="errorText!=''">{{errorText}}</div>
 </app-pop-up>
 
-<app-pop-up *ngIf="popUp2IsOpen" (closeEvent)="closePopUp2()" (okEvent)="submitEditForm()">
+<app-pop-up *ngIf="popUp2IsOpen" (closeEvent)="closePopUp2()" (okEvent)="errorText==''? submitEditForm():closePopUp2()">
   <form #form="ngForm" (ngSubmit)="onEditSubmit()" class="form-group">
     <label for="nameEditInput">Név:</label>
     <input class="form-control" id="nameEditInput" type="text" required name="newNameInput" placeholder="Új név" [ngModel]="parkingLot.name">
   </form>
+  <div class="text-danger" *ngIf="invalidText!=''">{{invalidText}}</div>
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" [actionButtons]="false">
-  <ul class="user-list" *ngIf="isUsersView;else carView">
-    <h3>Felhasználók</h3>
-    <li *ngFor="let user of userService.users" (click)="changeView(user)">
-      <div class="card user-list-item">{{user.firstName}} {{user.lastName}}</div>
-    </li>
-  </ul>
-  <ng-template #carView>
-    <h3>Autók:</h3>
-    <ul class="car-list" *ngIf="selectedUser.ownedCars.length>0;else noCar">
-      <li *ngFor="let car of selectedUser.ownedCars" (click)="parkIn(car)">
-        <div class="card car-list-item">
-          {{car.plateNumber}}
-        </div>
+  <div *ngIf="errorText==''">
+    <ul class="user-list" *ngIf="isUsersView;else carView">
+      <h3>Felhasználók</h3>
+      <li *ngFor="let user of userService.users" (click)="changeView(user)">
+        <div class="card user-list-item">{{user.firstName}} {{user.lastName}}</div>
       </li>
     </ul>
-    <ng-template #noCar><div>Ennek a felhasználónak nincs autója nyilvámntartva!</div></ng-template>
-  </ng-template>
+    <ng-template #carView>
+      <h3>Autók:</h3>
+      <ul class="car-list" *ngIf="selectedUser.ownedCars.length>0;else noCar">
+        <li *ngFor="let car of selectedUser.ownedCars" (click)="parkIn(car)">
+          <div class="card car-list-item">
+            {{car.plateNumber}}
+          </div>
+        </li>
+      </ul>
+      <ng-template #noCar><div>Ennek a felhasználónak nincs autója nyilvámntartva!</div></ng-template>
+    </ng-template>
+  </div>
+  <div *ngIf="errorText!=''" class="text-danger">{{errorText}}</div>
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp4IsOpen" (closeEvent)="closePopUp4()" (okEvent)="parkingLot.isReserved? startReservationDelete():sendReservation()"
@@ -44,10 +50,15 @@
   <div *ngIf="parkingLot.isReserved">
     Biztos törlil a foglalást?
   </div>
+  <div class="text-danger" *ngIf="errorText!=''">{{errorText}}</div>
 </app-pop-up>
 
 <app-pop-up *ngIf="popUp5IsOpen" (closeEvent)="closePopUp5()" (okEvent)="closePopUp5()">
   <p>Egyszerre maximum három parkolóhelyet lehet foglalni. Őn már három parkolóhelyet foglal.</p>
+</app-pop-up>
+
+<app-pop-up *ngIf="commonService.isLoading && !popUpIsOpen&&!popUp2IsOpen&&!popUp3IsOpen&&!popUp4IsOpen&&!popUp5IsOpen&&!popUp6IsOpen" [actionButtons]="false" [nobackGround]="true">
+  <app-loading-spinner></app-loading-spinner>
 </app-pop-up>
 
 <div class="container">
@@ -88,6 +99,7 @@
       </h4>
       <h4>{{reserveEndTimeString}}</h4>
     </div>
+    <div *ngIf="errorText!=''" class="text-danger" style="text-align: center;">{{errorText}}</div>
     <div class="no-car">
       <button class="btn btn-primary" (click)="parkingLot.occupyingCar? parkOut() :openPopUp3()"
       *ngIf="isParkActionShown">{{parkingLot.occupyingCar?'Kiállás':'Beállás'}}</button>

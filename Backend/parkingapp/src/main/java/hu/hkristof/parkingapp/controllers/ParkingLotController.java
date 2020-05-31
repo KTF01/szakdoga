@@ -74,22 +74,35 @@ public class ParkingLotController {
 		return plRepository.save(pl);
 	}
 	
+	/**
+	 * Parkoló hely törlése.
+	 * @param id A parkoló azonosítója ami törlésre kerül.
+	 * @return A törölt parkoló azonosítója
+	 */
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Long> deletePrakingLot(@PathVariable Long id) {
 		return new ResponseEntity<>(parkingLotService.deletePrakingLot(id), HttpStatus.OK);
 	}
 	
+	/**
+	 * Beparkolás végrehajtása.
+	 * @param plId A parkoló azonosítója ahova beparkolunk.
+	 * @param carPlate Az autó rendszáma amivel beparkolunk.
+	 * @return ParkInResponse objektum.
+	 */
 	@Transactional
 	@PutMapping("/parkIn/{plId}/{carPlate}")
 	public ResponseEntity<ParkInResponse> parkIn(@PathVariable Long plId, @PathVariable String carPlate ) {
 		ParkInResponse response = parkingLotService.parkIn(plId, carPlate);
-		if(response==null) {
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		}
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
+	/**
+	 * A kiparkolást végrehajtó végpont.
+	 * @param id A parkoló azonosÍtója ahonnan a kiparkolás történik.
+	 * @return
+	 */
 	@Transactional
 	@PutMapping("/parkOut/{id}")
 	public ResponseEntity<ParkOutResponse> parkOut(@PathVariable Long id) {

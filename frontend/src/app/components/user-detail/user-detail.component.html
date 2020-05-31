@@ -13,8 +13,14 @@
       <div class="fu-btn" *ngIf="loggedInUserFirstUser&&!sameuser" (click)="openPopUp4()">
         <button class="btn btn-primary">Fő Adminisztrátori jog átadása</button>
       </div>
-      <div class="password-btn" *ngIf="isLoggedInUser" >
-        <button class="btn btn-primary" (click)="openPopUp5()">Jelszó változtatás</button>
+      <div>
+        <div class="password-btn" *ngIf="isLoggedInUser" >
+          <button class="btn btn-primary" (click)="openPopUp5()">Jelszó változtatás</button>
+        </div>
+        <div class="user-delete-btn">
+          <button class="btn btn-danger" *ngIf="!isLoggedInUser&&!isDisplayedUserFirstUser"
+          (click)="openPopUp6()">Felhasználó eltávolítása</button>
+        </div>
       </div>
     </div>
   </div>
@@ -66,13 +72,13 @@
             <p>Szektor: {{selectedCar.occupiedParkingLot.sector.name}}</p>
             <button class="btn btn-primary" (click)="openPopUp()">Kiállás</button>
             <button class="delete-btn" (click)="openPopUp3()" *ngIf="isLoggedInUser">
-              <fa-icon [icon] = "deleteIson"></fa-icon>
+              <fa-icon [icon] = "deleteIcon"></fa-icon>
             </button>
           </div>
           <ng-template #noPl>
             <div><p>Ez az autó nem foglal jelenleg parkolót.</p></div>
             <button class="delete-btn" (click)="openPopUp3()" *ngIf="displayedUser.id==authService.loggedInUser.id">
-              <fa-icon [icon] = "deleteIson"></fa-icon>
+              <fa-icon [icon] = "deleteIcon"></fa-icon>
             </button>
           </ng-template>
 
@@ -105,7 +111,7 @@
 
 </main>
 
-<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="isCarView?parkOut():deleteReservation()">
+<app-pop-up *ngIf="popUpIsOpen" (closeEvent)="closePopUp()" (okEvent)="isCarView?parkOut():deleteReservation()">
   <h3 *ngIf="isCarView">Kiáll a parkolóbol?</h3>
   <h3 *ngIf="!isCarView">Biztos lemondja a foglalását?</h3>
   <p class="text-danger">{{error}}</p>
@@ -123,6 +129,11 @@
 
 <app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" (okEvent)="removeCar(selectedCar)">
   <h2>Biztos törli az autót?</h2>
+  <p class="text-danger">{{error}}</p>
+</app-pop-up>
+
+<app-pop-up *ngIf="popUp6IsOpen" (closeEvent)="closePopUp6()" (okEvent)="error==''? deleteUser(displayedUser):closePopUp6()">
+  <h2>Boztos eltávolítja a felhasználót?</h2>
   <p class="text-danger">{{error}}</p>
 </app-pop-up>
 
@@ -155,6 +166,7 @@
 </app-pop-up>
 
 
-<app-pop-up *ngIf="commonService.isLoading && !popUp2IsOpen && !popupIsOpen &&!popUp3IsOpen &&!popUp4IsOpen &&!popUp5IsOpen" [actionButtons]="false" [nobackGround]="true">
+<app-pop-up *ngIf="commonService.isLoading && !popUp2IsOpen && !popUpIsOpen &&!popUp3IsOpen &&!popUp4IsOpen &&!popUp5IsOpen&&!popUp6IsOpen"
+ [actionButtons]="false" [nobackGround]="true">
   <app-loading-spinner></app-loading-spinner>
 </app-pop-up>

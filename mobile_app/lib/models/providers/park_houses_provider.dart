@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/models/common_data.dart';
 import 'package:mobile_app/models/parkHouse.dart';
+import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:mobile_app/models/reservation.dart';
 
 import '../Sector.dart';
@@ -13,11 +14,17 @@ import '../parkingLot.dart';
 import '../role.dart';
 import '../user.dart';
 
+/**
+ * Parkolóházakat kiszokáló provider.
+ */
+
 class ParkHousesProvider with ChangeNotifier {
+  //Az applikációba betöltött parkolóházak, kezdetben üres tömb.
   List<ParkHouse> _parkHouses = [];
 
+  //Parkolóházak betöltése az alkalmazásszerverről get kérés segítségével.
   Future<void> loadParkHouses() async {
-    try {
+
       http.Response response =
           await http.get('${Common.hostUri}auth/parkHouses/all', headers: {
         'authorization': Common.authToken,
@@ -28,12 +35,12 @@ class ParkHousesProvider with ChangeNotifier {
       List<dynamic> phList = reponseDecoded['parkHouses'];
       List<dynamic> carList = reponseDecoded['cars'];
       List<dynamic> reservationList = reponseDecoded['reservations'];
+      //Válasz átalakítása az app típusaivá
       this._parkHouses = _extractParkHouses(phList, carList, reservationList);
-    } catch (error) {
-      print(error);
-    }
+
   }
 
+  //A három lista összeszerkesztése egymásra hivatkozó referenciákká.
   List<ParkHouse> _extractParkHouses(List<dynamic> phList,
       List<dynamic> carList, List<dynamic> reservationList) {
     List<Car> cars = _extractCars(carList);
@@ -65,8 +72,9 @@ class ParkHousesProvider with ChangeNotifier {
               sector: sector,
               isReserved: pl['isReserved']);
           if (pl['occupyingCar'] != null) {
-            Car carToPutin =
-                cars.firstWhere((car) => car.plateNumber == pl['occupyingCar']);
+            Car carToPutin = CommonProvider.loggedInUser.ownedCars.firstWhere((element) => element.plateNumber==pl['occupyingCar'],
+            orElse:()=> null);
+            if(carToPutin==null) carToPutin = cars.firstWhere((car) => car.plateNumber == pl['occupyingCar']);
             carToPutin.occupiedParkingLot = parkingLot;
             parkingLot.occupyingCar = carToPutin;
           }
@@ -85,6 +93,7 @@ class ParkHousesProvider with ChangeNotifier {
     return parkHouses;
   }
 
+  //Külön az autók parse-olására fókuszáló függvény
   List<Car> _extractCars(List<dynamic> carList) {
     List<Car> cars = [];
     carList.forEach((car) {
@@ -100,7 +109,7 @@ class ParkHousesProvider with ChangeNotifier {
     });
     return cars;
   }
-
+  //Parkolók "kicsomagolása" a válaszból
   List<Reservation> _extractReservations(List<dynamic> reservationList) {
     List<Reservation> reservations = [];
     reservationList.forEach((r) {
@@ -122,11 +131,26 @@ class ParkHousesProvider with ChangeNotifier {
     return reservations;
   }
 
+  //Parkoló keresése id alapján.
   ParkingLot findParkingLotById(int id) {
     for (ParkHouse parkHouse in this._parkHouses) {
       for (Sector sector in parkHouse.sectors) {
         ParkingLot pl = sector.parkingLots
             .firstWhere((pl) => pl.id == id, orElse: () => null);
+        if (pl != null) {
+          return pl;
+        }
+      }
+    }
+    return null;
+  }
+
+  //Parkolóhely keresése benne parkoló autó rendszáma alapján.
+  ParkingLot findParkingLotByplateNumber(String plateNumber){
+     for (ParkHouse parkHouse in this._parkHouses) {
+      for (Sector sector in parkHouse.sectors) {
+        ParkingLot pl = sector.parkingLots
+            .firstWhere((pl) => pl.occupyingCar!=null&&pl.occupyingCar.plateNumber==plateNumber, orElse: () => null);
         if (pl != null) {
           return pl;
         }

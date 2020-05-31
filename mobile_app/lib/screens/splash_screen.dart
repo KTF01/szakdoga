@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-
+/**
+ * Betöltés előtt míg a rendszer eldönt, hogy autómatikus vagy manuális bejelentkezés szükséges
+ * addig ez a diget jelenik meg.
+ */
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

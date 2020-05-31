@@ -1,4 +1,4 @@
-<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="submitAddPlForm()">
+<app-pop-up *ngIf="popUpIsOpen" (closeEvent)="closePopUp()" (okEvent)="submitAddPlForm()">
   <form #form="ngForm">
     <div *ngFor="let inputNum of inputCount; let i=index" class="nameInput">
       <input class="form-control" type="text" name="parkingLotNameInput{{i}}" placeholder="Parkoló neve" ngModel #plName="ngModel">

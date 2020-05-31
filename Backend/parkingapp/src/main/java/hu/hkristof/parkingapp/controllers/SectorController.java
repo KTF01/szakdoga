@@ -35,12 +35,24 @@ public class SectorController {
 		return sectorService.getAll();
 	}
 	
+	/**
+	 * Parkolók hozzáadása egy szektorhoz.
+	 * @param id A szektor azonosítója amelyik tartalmazni fogja az új parkolót.
+	 * @param newParkingLots Az űj parkolók listája ami jön a requestből.
+	 * @return A szektor ami ki lett bővítve parkolókkal.
+	 */
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@PutMapping("addParkingLot/{id}")
 	public ResponseEntity<Sector> addParkingLot(@PathVariable Long id, @Valid @RequestBody List<ParkingLot> newParkingLots) {
 		return new ResponseEntity<Sector>(sectorService.addParkingLot(id, newParkingLots), HttpStatus.OK);
 	}
 	
+	/**
+	 * Szektor eltávolítása.
+	 * @param id Eltávolítandó szektor azonosítója.
+	 * @return Egy DeleteSector objektum ami tartalmaza a törölt szektor azonosítóját és a törlés utáni
+	 * statisztikai állapotot a parkolóházban ahol a szektor volt.
+	 */
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@DeleteMapping("delete/{id}")
 	public ResponseEntity<DeleteSectorResponse> deleteSector(@PathVariable Long id)

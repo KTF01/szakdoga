@@ -4,6 +4,10 @@ import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, Router, UrlTr
 import { AuthService } from './services/auth.service';
 import { Role } from './models/Role';
 
+/**
+ * AuthGuard-al védjük le az url-eket.
+ */
+
 @Injectable({providedIn: 'root'})
 export class AuthGuard implements CanActivate {
   constructor(private authService:AuthService, private router:Router) { }
@@ -18,10 +22,12 @@ export class AuthGuard implements CanActivate {
       if(isAuthorized){
         return true;
       }else{
+        //Ha nincs engedélye nem engedjük a felületre.
         console.log("NO PERMISSION");
         return false;
       }
     }else{
+      //Ha nincs autentikálva átnavigálunk a bejelentkezéshez.
       return this.router.createUrlTree(["/login"]);
     }
   }

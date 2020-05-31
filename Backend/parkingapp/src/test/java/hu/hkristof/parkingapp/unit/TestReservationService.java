@@ -14,11 +14,12 @@ import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
-import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.ForbiddenOperationException;
 import hu.hkristof.parkingapp.exceptions.ReservationNotFoundException;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.Reservation;
+import hu.hkristof.parkingapp.models.Role;
+import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.models.User;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.repositoris.ReservationRepository;
@@ -73,6 +74,10 @@ public class TestReservationService {
 		ParkingLot pl = new ParkingLot();
 		pl.setName("TestPl");
 		pl.setId(1L);
+		Sector testSector = new Sector();
+		testSector.setId(1L);
+		testSector.setFreePlCount(1);
+		testSector.addParkingLot(pl);
 		Optional<ParkingLot> oPl = Optional.of(pl);
 		//Amikor a findById kerülne meghívásra, csak visszaadjuk a pl parkolót.
 		Mockito.when(parkingLotRepository.findById(Mockito.anyLong())).thenReturn(oPl);
@@ -86,6 +91,10 @@ public class TestReservationService {
 		ParkingLot pl = new ParkingLot();
 		pl.setName("TestPl");
 		pl.setId(1L);
+		Sector testSector = new Sector();
+		testSector.setId(1L);
+		testSector.setFreePlCount(1);
+		testSector.addParkingLot(pl);
 		Optional<ParkingLot> oPl = Optional.of(pl);
 		Mockito.when(parkingLotRepository.findById(Mockito.anyLong())).thenReturn(oPl);
 		Timestamp startTimeTime = new Timestamp(System.currentTimeMillis());
@@ -97,6 +106,10 @@ public class TestReservationService {
 		ParkingLot pl = new ParkingLot();
 		pl.setName("TestPl");
 		pl.setId(1L);
+		Sector testSector = new Sector();
+		testSector.setId(1L);
+		testSector.setFreePlCount(1);
+		testSector.addParkingLot(pl);
 		Optional<ParkingLot> oPl = Optional.of(pl);
 		Mockito.when(parkingLotRepository.findById(Mockito.anyLong())).thenReturn(oPl);
 		Timestamp startTimeTime = new Timestamp(System.currentTimeMillis());
@@ -111,6 +124,10 @@ public class TestReservationService {
 		ParkingLot pl = new ParkingLot();
 		pl.setName("TestPl");
 		pl.setId(1L);
+		Sector testSector = new Sector();
+		testSector.setId(1L);
+		testSector.setFreePlCount(1);
+		testSector.addParkingLot(pl);
 		Optional<ParkingLot> oPl = Optional.of(pl);
 		Mockito.when(parkingLotRepository.findById(Mockito.anyLong())).thenReturn(oPl);
 		Timestamp startTimeTime = new Timestamp(System.currentTimeMillis());

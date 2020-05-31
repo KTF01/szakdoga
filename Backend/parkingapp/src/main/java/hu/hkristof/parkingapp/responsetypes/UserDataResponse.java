@@ -6,6 +6,11 @@ import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.Reservation;
 import hu.hkristof.parkingapp.models.User;
 
+/**
+ * Egy felhasználó lekérdezésének válasza.
+ * @author krist
+ *
+ */
 public class UserDataResponse {
 	User user;
 	List<Car> userCars;

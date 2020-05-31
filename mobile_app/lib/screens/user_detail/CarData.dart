@@ -5,6 +5,9 @@ import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:mobile_app/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
+/**
+ * Egy autó kiválasztásánál megjeleő felület ami tartalmazza az autó adatait.
+ */
 class CarData extends StatefulWidget {
   final Car car;
   CarData(this.car);
@@ -22,6 +25,7 @@ class _CarDataState extends State<CarData> {
     });
 
     try {
+      //kiparkolásnál megszüntetjük a készülőben lévő figyelmeztetéseket.
       NotificationService.notificationsPlugin.cancel(widget.car.occupiedParkingLot.id);
       await commonProvider.parkOut(widget.car.occupiedParkingLot);
       setState(() {
@@ -36,6 +40,7 @@ class _CarDataState extends State<CarData> {
     }
   }
 
+  //Autó törlése
   void _startDelete(CommonProvider commonProvider) {
     showDialog(
         context: context,
@@ -92,7 +97,7 @@ class _CarDataState extends State<CarData> {
                   widget.car.plateNumber,
                   style: TextStyle(fontSize: 25),
                 ),
-                widget.car.occupiedParkingLot != null
+                widget.car.occupiedParkingLot != null //Ha parkol valahol az autó akkor megjelenítjük a SizedBox-ot
                     ? SizedBox(
                         height: 100,
                         width: MediaQuery.of(context).size.width * 0.6,
@@ -125,7 +130,7 @@ class _CarDataState extends State<CarData> {
                           ],
                         ),
                       )
-                    : Text('Nem foglal parkolóhelyet!'),
+                    : Text('Nem foglal parkolóhelyet!'), //Ha nem akkor csak ezt írjuk ki
                 RaisedButton(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30)),
@@ -138,6 +143,7 @@ class _CarDataState extends State<CarData> {
                   },
                   color: Theme.of(context).errorColor,
                 ),
+                //Hiba esetén pirossal kiírjuk a hibát.
                 if(errorText!="") Text(errorText, style: TextStyle(color: Theme.of(context).errorColor),),
               ],
             ),

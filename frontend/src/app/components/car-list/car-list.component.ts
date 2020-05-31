@@ -17,14 +17,16 @@ export class CarListComponent implements OnInit {
   searchIcon=faSearch;
 
   parkedOutSub:Subscription = new Subscription();
+  errorSub:Subscription = new Subscription();
 
+  errorText:string = "";
   plateFilter:string="";
 
   constructor(public userService:UserServiceService, public commonService:CommonService, private parkingLotService:ParkingLotService) { }
 
   ngOnInit(): void {
   }
-
+  //A kereső mező szerinti szűrése az autóknak.
   filterEdCarList():Car[]{
     if(this.plateFilter===""){
       return this.userService.cars;
@@ -36,11 +38,15 @@ export class CarListComponent implements OnInit {
 
   }
 
+  //Meghívjuk a kiszolgáló parkOut metódusát, hogy végezze el a kiállás műveletét.
   parkOut(car:Car){
     this.parkingLotService.parkOut(car.occupiedParkingLot);
     this.parkedOutSub = this.parkingLotService.parkedOut.subscribe(_=>{
       car.occupiedParkingLot=null;
-    })
+    });
+    this.errorSub = this.parkingLotService.errorOccured.subscribe(error=>{
+      this.errorText=error;
+    });
   }
 
 }

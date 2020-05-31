@@ -4,10 +4,16 @@ import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.Reservation;
 
+/**
+ * Beparkolás requestre küldendő válasz típus.
+ * @author krist
+ *
+ */
 public class ParkInResponse {
 	private ParkingLot parkingLot;
 	private Car car;
 	private Reservation reservation;
+	//A felületek számára szükség van a parkolás utáni számokra a parkolőházban.
 	private int sectorPlCount;
 	private int parkHouseFreePlCount;
 	private int parkHouseOccupiedPlCount;

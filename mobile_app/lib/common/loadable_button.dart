@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
+/**
+ * Egy gomb ami aszinkron műveletek alatt töltő kört mutat.
+ */
+
 class LoadableButton extends StatefulWidget {
+  //A végrehajtandó függvény referenciája
   final Function pressFunction;
+  
   final String text;
   final bool disabled;
 

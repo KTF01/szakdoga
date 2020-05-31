@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import hu.hkristof.parkingapp.exceptions.ForbiddenOperationException;
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.User;
 import hu.hkristof.parkingapp.repositoris.CarRepository;
@@ -73,13 +74,12 @@ public class TestCarService {
 		assertTrue(car.getOwner().getId()==2L&& car.getOwner().getOwnedCars().size()==5);
 	}
 	
-	@Test
+	@Test(expected = ForbiddenOperationException.class)
 	public void testAddCarCarsMoreThanFive() {
 		Car car = new Car();
 		car.setPlateNumber("ABC-123");
 		carService.addCarToUser(2L, car);
-		Car result =  carService.addCarToUser(2L, new Car());
-		assertTrue(result==null);
+		carService.addCarToUser(2L, new Car());
 	}
 	
 	@Test

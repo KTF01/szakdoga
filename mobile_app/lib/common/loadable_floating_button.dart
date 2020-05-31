@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
+/**
+ * Aszinkron műveletek alatt töltő kört mutató lebegő gomb.
+ */
+
 class LoadableFloatingButton extends StatefulWidget {
-  Function pressFunc;
-  String tooltip;
-  bool displayed;
+  final Function pressFunc;
+  final String tooltip;
+  final bool displayed;
   LoadableFloatingButton({this.tooltip ,this.pressFunc, this.displayed});
 
   @override
@@ -32,6 +36,6 @@ class _LoadableFloatingButtonState extends State<LoadableFloatingButton> {
           _isLoading=false;
         });
       }:null,
-    ):Container(height: 0,);
+    ):Container(height: 0,); //Ha nem rajzoljuk ki akkor csak egy 0 magasságú konténert mutatunk ami = nem látszik semmi
   }
 }

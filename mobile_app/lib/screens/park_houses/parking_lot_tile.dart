@@ -4,6 +4,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/parkingLot.dart';
 import '../parking_lot_detail/parking_lot_detail_screen.dart';
 
+/*
+ * Egy parkolócsempt megjelenítő widget.
+ */
+
 class ParkingLotTile extends StatelessWidget {
 
   final ParkingLot parkingLot;
@@ -12,7 +16,7 @@ class ParkingLotTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
-      child: InkWell(
+      child: InkWell( //Inkwellel nomhatóvá tesszük.
         onTap: () {
           Navigator.of(context).pushNamed(ParkingLotDetailScreen.routeName, arguments: parkingLot);
         },
@@ -27,7 +31,7 @@ class ParkingLotTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(parkingLot.name),
-                if(parkingLot.occupyingCar!=null) FaIcon(FontAwesomeIcons.car)
+                if(parkingLot.occupyingCar!=null) FaIcon(FontAwesomeIcons.car) //Ha parkolnak benne akkor autó ikon jelenik meg
               ],
             ),
           ),

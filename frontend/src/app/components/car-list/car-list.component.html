@@ -1,6 +1,7 @@
 <div class="container-fluid">
   <div class="head-components">
     <h1>Nyilvántartott Autók</h1>
+    <p *ngIf="errorText!=''" class="text-danger">{{errorText}}</p>
     <div class="search-components">
       <div class="form-group">
         <label for="plateFilterText" >Szűrés:</label>

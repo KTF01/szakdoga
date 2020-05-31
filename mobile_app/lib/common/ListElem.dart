@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/**
+ * Általános listaelemet kirajzoló widget.
+ */
+
 class ListElem extends StatefulWidget {
   final String title;
   final String subtitle;

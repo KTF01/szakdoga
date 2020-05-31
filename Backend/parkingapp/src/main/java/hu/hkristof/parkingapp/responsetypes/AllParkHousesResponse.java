@@ -6,6 +6,12 @@ import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.models.Reservation;
 
+/**
+ * Összes parkolóház lekérdezésénél ennek az osztálynak egy példánya lesz a válasz.
+ * Megléte Json serializációs okok miatt szükséges.
+ * @author krist
+ *
+ */
 public class AllParkHousesResponse {
 	
 	List<ParkHouse> parkHouses;

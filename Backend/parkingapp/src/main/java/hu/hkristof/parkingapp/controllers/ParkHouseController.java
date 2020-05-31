@@ -23,6 +23,12 @@ import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.responsetypes.AllParkHousesResponse;
 import hu.hkristof.parkingapp.services.ParkHouseService;
 
+/**
+ * Parkolóházakkal kapcsolatos műveletek kontrollerje.
+ * A parkHouseService segítségével előállítja a kérésekre a válaszokat.
+ * @author krist
+ *
+ */
 @RestController
 @RequestMapping("auth/parkHouses")
 public class ParkHouseController {
@@ -30,6 +36,11 @@ public class ParkHouseController {
 	@Autowired
 	ParkHouseService parkHouseService;
 	
+	/**
+	 * Új parkolóház hozzáadása. Csak adminisztrátorok érhetik el.
+	 * @param ph A kérésből jön az új parkolóház modellje ami létre fog jönni.
+	 * @return Az új parkolóház
+	 */
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@PostMapping("/newPH")
@@ -37,6 +48,10 @@ public class ParkHouseController {
 	    return new ResponseEntity<ParkHouse>(parkHouseService.createParkHouse(ph), HttpStatus.OK);
 	}
 	
+	/**
+	 * Az összes parkolóház és a benne található összes entitás (Autók, Foglalások) lekérdezésére szolgáló végpont.
+	 * @return AllParkHousesResponse objektum ami tartalmaz minden szükséges információt.
+	 */
 	@CrossOrigin
 	@GetMapping("/all")
 	public ResponseEntity<AllParkHousesResponse> getAllParkHouses(){
@@ -44,6 +59,13 @@ public class ParkHouseController {
 				.body(parkHouseService.getAllParkhouses());
 	}
 	
+	/**
+	 * Egy parkolóház felülírása. Csak a név, cím, koordináták és az emeletek kerülnek beállításra.
+	 * Csak adminisztrátorok számára elérhető.
+	 * @param id A felülírandó parkolóház azonosítója.
+	 * @param ph A kérésben érkező módosított parakolóház amivel felülírjuk a régét.
+	 * @return Maga a módosított parkolóház.
+	 */
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@PutMapping("/updatePH/{id}")
@@ -51,6 +73,12 @@ public class ParkHouseController {
 		return new ResponseEntity<>(parkHouseService.updateParkHouse(id, ph), HttpStatus.OK);
 	}
 	
+	/**
+	 * Szektorok hozzáadása egy parkolóházhoz.
+	 * @param id A parkolóház azonosítója
+	 * @param newSectors A kérésből jövő új szektorok listája
+	 * @return A parkolóház az újonnan felvett szektorokkal.
+	 */
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@PutMapping("/addSectors/{id}")
@@ -58,6 +86,11 @@ public class ParkHouseController {
 		return new ResponseEntity<>(parkHouseService.addSectors(id, newSectors), HttpStatus.OK);
 	}
 	
+	/**
+	 * Parkolóház törlése.
+	 * @param id A törölni kívánt parkolóház azonosítója.
+	 * @return
+	 */
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@CrossOrigin
 	@DeleteMapping("delete/{id}")

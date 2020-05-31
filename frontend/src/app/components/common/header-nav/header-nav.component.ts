@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
+/**
+ * A navigációs menü.
+ */
 @Component({
   selector: 'app-header-nav',
   templateUrl: './header-nav.component.html',

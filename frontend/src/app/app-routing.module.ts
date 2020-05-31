@@ -15,10 +15,14 @@ import { HeaderNavComponent } from './components/common/header-nav/header-nav.co
 import { FrameComponent } from './components/common/frame/frame.component';
 import { ReservationListComponent } from './components/reservation-list/reservation-list.component';
 
+/**
+ * Navogáció és útvonal választást lehetővé tevő konfigurációs osztály.
+ */
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: '', redirectTo:'login',pathMatch: 'full'},
+  //AuthGuarddal levédünk bizonyos url-eket, hogy ne érjék el bejelentkezés nélkül.
   {path: 'frame', component:FrameComponent, canActivate:[AuthGuard],children:[
     {path: 'parkHouses', component: ParkHousesComponent},
     {path: 'userDetail', component: UserDetailComponent},

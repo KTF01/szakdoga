@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
+/**
+ * Egy rákérdező felugró ablak. 
+ */
 class SureDialog extends StatefulWidget {
+  //Az ablak üzenete
   final String text;
+  //Az igenlő gomb felirata
   final String okText;
+  //A tagadó gomb felirata
   final String noText;
+  //Igenlő válasz esetén futtatandó függvény (Nem esetén csak bezárjuk az ablakot)
   final Function okAction;
   SureDialog({this.text, this.okText, this.noText, this.okAction});
 
@@ -37,7 +44,7 @@ class _SureDialogState extends State<SureDialog> {
             });
             try {
               await widget.okAction();
-              Navigator.pop(context);
+              Navigator.pop(context);//Bezárjuk a legfelső widgetet. (A popuppot)
             } catch (error) {
               setState(() {
                 _isLoadig = false;

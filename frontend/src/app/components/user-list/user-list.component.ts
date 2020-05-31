@@ -7,6 +7,9 @@ import { Role } from '../../models/Role';
 import { Router } from '@angular/router';
 import { PopUpContainer } from '../common/pop-up/PopUpContainer';
 
+/**
+ * Nyilvántartásoknál megjelenő felhasználók listája.
+ */
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
@@ -16,6 +19,7 @@ export class UserListComponent extends PopUpContainer implements OnInit {
 
   userIcon =faUser;
 
+  //Enum konstansok hogy a html-templatben tuduk őket használni.
   FIRST_USER_ROLE: Role = Role.ROLE_FIRST_USER;
   USER_ROLE: Role = Role.ROLE_USER;
 
@@ -25,10 +29,12 @@ export class UserListComponent extends PopUpContainer implements OnInit {
 
   constructor(private router:Router,public userService:UserServiceService, public commonService:CommonService) {super(); }
 
+  //Betöltjük inicializációkor a felhasználólkat.
   ngOnInit(): void {
     this.userService.loadUsers();
   }
 
+  //Felhasználóra kattintva átnavigálunk a felhasználó adatit megjelenítő felületre.
   navigateToUserDetail(id:number){
     this.router.navigate(["frame/userDetail/"+id]);
   }
@@ -37,6 +43,7 @@ export class UserListComponent extends PopUpContainer implements OnInit {
     return this.userService.getUserIcon(user);
   }
 
+  //A jogosultság kezelésre alkalmas gombok megnyomásának kezalése.
   adminBtnPressed(user:User){
     if(user.role==Role.ROLE_USER){
       console.log(user.firstName +' Admin lett!');
@@ -50,6 +57,7 @@ export class UserListComponent extends PopUpContainer implements OnInit {
     this.closePopUp();
   }
 
+  //A keresési feltételnek megfelelő lista előállítása
   filteredUserList():User[]{
     if(this.nameFilter===""){
       return this.userService.users;
@@ -61,17 +69,8 @@ export class UserListComponent extends PopUpContainer implements OnInit {
     }
   }
 
-  returnList(){
-    return this.filteredUserList().map(u=>{
-      this.getUserIcon(u),
-      u.firstName+' '+u.lastName;
-      u.email;
-      !(u.role==this.FIRST_USER_ROLE)
-    });
-  }
-
   openPopUpCustom(user:User){
-    this.popupIsOpen=true;
+    this.popUpIsOpen=true;
     this.selectedUser= user;
   }
 

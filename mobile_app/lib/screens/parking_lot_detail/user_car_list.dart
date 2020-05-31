@@ -5,6 +5,10 @@ import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:mobile_app/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
+/**
+ * A felhasználó autóit megjelenítő widget, ami az ulról felugró ablakon jelenik meg.
+ */
+
 class UserCarList extends StatefulWidget {
   final ParkingLot parkingLot;
   UserCarList(this.parkingLot);
@@ -24,6 +28,7 @@ class _UserCarListState extends State<UserCarList> {
 
     try {
       await auth.parkIn(widget.parkingLot,car);
+      //Beparkolásnál beállítjuk a figyelmeztetéseket.
       NotificationService.setupNotification(car.occupiedParkingLot.id, car.occupiedParkingLot);
        Navigator.pop(context);
     } catch (error) {
@@ -39,8 +44,9 @@ class _UserCarListState extends State<UserCarList> {
 
   @override
   Widget build(BuildContext context) {
-    CommonProvider auth = Provider.of<CommonProvider>(context);
-    List<Car> cars = auth.loggedInUser.ownedCars;
+    //Feliratkozás a Common providerre
+    CommonProvider commonProvider = Provider.of<CommonProvider>(context);
+    List<Car> cars = CommonProvider.loggedInUser.ownedCars;
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       child: _isLoading
@@ -56,7 +62,7 @@ class _UserCarListState extends State<UserCarList> {
                   return Card(
                     child: InkWell(
                       onTap: () {
-                        _startParkIn(auth, car);
+                        _startParkIn(commonProvider, car);
                       },
                       highlightColor: Theme.of(context).primaryColor,
                       child: ListTile(

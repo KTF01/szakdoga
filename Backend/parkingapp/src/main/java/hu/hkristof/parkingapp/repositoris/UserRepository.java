@@ -12,5 +12,6 @@ import hu.hkristof.parkingapp.models.User;
 public interface UserRepository extends CrudRepository<User, Long>  {
 	
 	Optional<User> findByEmail(String email);
+	//Név szerint rendezett felhasználók listája.
 	List<User> findAllByOrderByFirstName();
 }

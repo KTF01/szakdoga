@@ -1,15 +1,21 @@
+/**
+ * Segéd osztály ami hat különböző popup kezelését teszi lehetővé egy komponensen
+ * az ebből, származtatott osztályok számára.
+ */
 export class PopUpContainer {
-  popupIsOpen: boolean = false;
+  popUpIsOpen: boolean = false;
   popUp2IsOpen: boolean = false;
   popUp3IsOpen: boolean = false;
   popUp4IsOpen: boolean = false;
   popUp5IsOpen: boolean = false;
+  popUp6IsOpen: boolean = false;
+
   openPopUp() {
-    this.popupIsOpen = true;
+    this.popUpIsOpen = true;
   }
 
   closePopUp(): void {
-    this.popupIsOpen = false;
+    this.popUpIsOpen = false;
   }
 
   openPopUp2() {
@@ -29,6 +35,9 @@ export class PopUpContainer {
   openPopUp4() {
     this.popUp4IsOpen = true;
   }
+  openPopUp6() {
+    this.popUp6IsOpen = true;
+  }
 
   closePopUp4() {
     this.popUp4IsOpen = false;
@@ -39,6 +48,9 @@ export class PopUpContainer {
 
   closePopUp5() {
     this.popUp5IsOpen = false;
+  }
+  closePopUp6() {
+    this.popUp6IsOpen = false;
   }
 
 }

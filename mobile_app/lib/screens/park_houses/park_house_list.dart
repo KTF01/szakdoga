@@ -6,6 +6,10 @@ import 'package:provider/provider.dart';
 import '../../models/providers/park_houses_provider.dart';
 import './park_house_detail_screen.dart';
 
+/**
+ * Parkolóházak listáját kirajzoló widget.
+ */
+
 class ParkHouseList extends StatefulWidget {
   @override
   _ParkHouseListState createState() => _ParkHouseListState();
@@ -14,8 +18,9 @@ class ParkHouseList extends StatefulWidget {
 class _ParkHouseListState extends State<ParkHouseList> {
 
   void selectParkHouse(BuildContext ctx, ParkHouse selectedParkHouse) {
-    Navigator.of(ctx)
-        .pushNamed(ParkHouseDetail.routeName, arguments: selectedParkHouse);
+    //Egyik elemre kattintáskor átnavigálunk annak a parkolóháznak a felületére.
+    //Paraméterben átadjuk a kiválasztott parkolóházat.
+    Navigator.of(ctx).pushNamed(ParkHouseDetail.routeName, arguments: selectedParkHouse);
   }
 
   @override

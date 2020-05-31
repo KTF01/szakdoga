@@ -13,38 +13,48 @@ import '../car.dart';
 import '../parkingLot.dart';
 import 'park_houses_provider.dart';
 
+/**
+ * Általános provider ami minden műveletnél értesíti a feliratkozott widgeteket.
+ */
+
 class CommonProvider with ChangeNotifier {
-  User _loggedInUser;
+  static User _loggedInUser;
   ParkHousesProvider _parkHousesProvider;
+  //Szükség van néhány helyen a parkolóházak providerére.
   CommonProvider.withParkHouses(parkHousesProvider){
     _parkHousesProvider = parkHousesProvider;
     authService = new AuthService(_parkHousesProvider);
   }
   CommonProvider();
+
+  //A műveleteket végrehajtó kiszolgálók
   CarService carService = new CarService();
   ReservationService reservationService = new ReservationService();
   ParkingLotService parkingLotService = new ParkingLotService();
   AuthService authService;
 
-  bool loginRunned = false;
 
   bool get isAuth {
     return Common.authToken != null && _loggedInUser != null;
   }
 
-  User get loggedInUser {
+  //A bejelentkezett feéhasználó
+  static User get loggedInUser {
     return _loggedInUser;
   }
 
+  //Az eszköz helyadatai.
   Position get devicePosition {
     return authService.devicePosition;
   }
 
+  //Ha nincs elemntve a bejelentkezési token akkor manuálisan a bejelentkező képernyőn keresztül lép be a felhasználó
   Future<void> manualLogIn(String email, String password) async {
     _loggedInUser = await authService.manualLogIn(email, password);
     notifyListeners();
   }
 
+  //Ha van elmentett token akkor autómatikusan belép
   Future<bool> autoLogin() async {
     _loggedInUser =  await authService.autoLogin();
     bool result = _loggedInUser!=null;
@@ -95,22 +105,12 @@ class CommonProvider with ChangeNotifier {
   }
 
   Future<void> parkIn(ParkingLot parkingLot, Car car) async {
-    ParkingLot pl;
-    if(car.occupiedParkingLot!=null){
-      pl = _parkHousesProvider.findParkingLotById(car.occupiedParkingLot.id);
-    }else{
-      pl=null;
-    }
-    await parkingLotService.parkIn(parkingLot, car);
-    if(pl!=null)
-    pl.occupyingCar=null;
+    await parkingLotService.parkIn(parkingLot, car, _parkHousesProvider);
     notifyListeners();
   }
 
   Future<void> deleteReservation(ParkingLot parkingLot) async {
-    Reservation res = parkingLot.reservation;
     await reservationService.deleteReservation(parkingLot, _loggedInUser);
-    //_loggedInUser.reservations.removeWhere((element) => element.id==res.id);
     notifyListeners();
   }
 

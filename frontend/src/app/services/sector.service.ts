@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Sector } from '../models/Sector';
-import { ParkingLot } from '../models/ParkingLot';
 import { Car } from '../models/Car';
 import { Reservation } from '../models/Reservation';
 
@@ -9,11 +8,11 @@ import { Reservation } from '../models/Reservation';
 })
 export class SectorService{
 
-  sectors: Sector[];
-
   constructor() {
   }
 
+  //A szektor parkolóinak ténylegesen beállítja a paraméterben kapot autókat és foglalásokat.
+  //Fel van téve, hogy a kapott autók és foglalások hivatkoznak valamelyik parkolónak az id-jára.
   adjustParkingLotsWithCarsAndReservations(sector:Sector, cars:Car[], reservations:Reservation[]){
     for(let pl of sector.parkingLots){
       pl.sector=sector;
@@ -30,15 +29,12 @@ export class SectorService{
     }
   }
 
+  //A parkolók szektor adattagját beállítja a paraméterben kapott szektorra
   adjustParkingLots(sector:Sector){
     for(let pl of sector.parkingLots){
       pl.sector=sector;
     }
   }
 
-  addParkingLotToSector(sector:Sector, parkingLot: ParkingLot){
-    parkingLot.sector=sector;
-    sector.parkingLots.push(parkingLot);
-  }
 
 }

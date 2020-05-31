@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/models/parkingLot.dart';
 
+/**
+ * Ha a parkolóban áll autó akkor ez a felület jelenik meg a parkoló képernyőjén.
+ */
 class ParkedInParkingLotView extends StatelessWidget {
   final ParkingLot parkingLot;
 

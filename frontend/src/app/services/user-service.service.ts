@@ -9,6 +9,12 @@ import { Role } from '../models/Role';
 import { faUser, faUserEdit, faUserCog } from '@fortawesome/free-solid-svg-icons';
 import { ParkingLotService } from './parking-lot.service';
 import { Reservation } from '../models/Reservation';
+import { Router } from '@angular/router';
+import { ParkHouseService } from './park-house.service';
+
+/**
+ * Felhasználókkat kezelő service osztály
+ */
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +25,16 @@ export class UserServiceService {
   cars:Car[]=[];
   reservations:Reservation[];
 
+  //Emittáló objektumok
   usersLoaded: Subject<boolean> = new Subject<boolean>();
   carAdded: Subject<Car> = new Subject<Car>();
   carRemoved: Subject<Car[]> = new Subject<Car[]>();
   roleSet: Subject<Role> = new Subject<Role>();
+  userDeleted: Subject<number> = new Subject<number>();
   errorOccured: Subject<string> = new Subject<string>();
 
-  constructor( private http:HttpClient, private commonService:CommonService, private parkingLotService:ParkingLotService) { }
+  constructor(private router:Router, private http:HttpClient,
+     private commonService:CommonService, private parkingLotService:ParkingLotService, private parkHouseService:ParkHouseService) { }
 
   getById(id:number){
     let index:number = this.users.findIndex(user=>user.id==id);
@@ -33,6 +42,7 @@ export class UserServiceService {
   }
 
 
+  //Összes felhasználó lekérdezése.
   loadUsers(){
     this.commonService.isLoading = true;
     this.http.get<{usersData:{user:User, userCars:Car[], userReservations:Reservation[]}[]}>(CommonData.hostUri+'auth/users/all',{
@@ -43,6 +53,7 @@ export class UserServiceService {
       this.reservations=[];
       for(let userData of response.usersData){
         userData.user.role= (<any>Role)[userData.user.role];
+        //Amit a parse-olás nem tudott elvágezni automatikusan azt megcsináljuk.
         let user:User = this.setUpUserCarsAndRes(userData);
         for(let car of user.ownedCars){
           this.cars.push(car);
@@ -54,9 +65,18 @@ export class UserServiceService {
         this.usersLoaded.next();
       }
       this.commonService.isLoading=false;
-    }, error=>this.handleError(error))
+    }, error=>{
+      if(error.status==0){
+        this.router.navigate(["/login"]);
+        this.commonService.isLoading=false;
+      }else{
+        this.handleError(error);
+      }
+
+    })
   }
 
+  //Autó hozzáadása egy felhasználóhoz
   addCarToUser(user:User, newCar:Car){
     this.commonService.isLoading=true;
     this.http.post<Car>(CommonData.hostUri+'auth/cars/newCarToUser/'+user.id, newCar,{
@@ -69,6 +89,7 @@ export class UserServiceService {
     }, error=>this.handleError(error));
   }
 
+  //Autó törlése
   deleteCar(car:Car){
     this.commonService.isLoading=true;
     this.http.delete<Car[]>(CommonData.hostUri+'auth/cars/delete/'+`${car.plateNumber}`,{
@@ -82,6 +103,7 @@ export class UserServiceService {
     error=>this.handleError(error));
   }
 
+  //Felhasználó jogosultságának állítása
   setRole(user:User, role:Role){
     this.commonService.isLoading=true;
 
@@ -94,6 +116,7 @@ export class UserServiceService {
     this.http.put<User>(CommonData.hostUri+'auth/users/'+endpointString+user.id, null,{
       headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
     }).subscribe(response=>{
+      //A válaszban jövő felhasználó jogát beállítjuk, a felületen lévő felhasználónak.
       response.role=(<any>Role)[response.role];
       user.role=response.role;
       this.commonService.isLoading=false;
@@ -101,6 +124,7 @@ export class UserServiceService {
     }, error=>this.handleError(error));
   }
 
+  //A listaelemeknek szükséges ikonok.
   getUserIcon(user:User){
     let userIcon;
     switch (user.role){
@@ -111,20 +135,34 @@ export class UserServiceService {
       return userIcon;
   }
 
+  //A válaszban jövő Json serializáció hányossága miatt beállítjuk a referenciákat a feéhasználó és az autók és foglalások között.
   setUpUserCarsAndRes(userData:{user:User, userCars:Car[], userReservations:Reservation[]}){
     userData.user.ownedCars=userData.userCars;
     for(let car of userData.userCars){
       car.owner=userData.user;
       if(car.occupiedParkingLot){
-        car.occupiedParkingLot=this.parkingLotService.getParkingLot(car.occupiedParkingLot.id);
+        car.occupiedParkingLot=this.parkHouseService.getParkingLot(car.occupiedParkingLot.id);
       }
     }
     userData.user.reservations=userData.userReservations;
     for(let res of userData.userReservations){
       res.user=userData.user;
-      res.parkingLot=this.parkingLotService.getParkingLot(res.parkingLot.id);
+      res.parkingLot=this.parkHouseService.getParkingLot(res.parkingLot.id);
     }
     return userData.user;
+  }
+
+  //Felhasználó törlése.
+  deleteUser(user:User){
+    this.commonService.isLoading=true;
+    this.http.delete<number>(CommonData.hostUri+'auth/deleteUser/'+user.id,{
+      headers: new HttpHeaders({'Authorization': `Basic ${this.commonService.authToken}`})
+    }).subscribe(response=>{
+      let index:number=this.users.findIndex(user=>user.id==response);
+      this.users.splice(index,1);
+      this.userDeleted.next(response);
+      this.commonService.isLoading=false;
+    }, error=>this.handleError(error));
   }
 
   handleError(error:HttpErrorResponse){
@@ -134,6 +172,7 @@ export class UserServiceService {
       case 0: this.errorOccured.next(CommonData.unknownErrorText); break;
       case 400: this.errorOccured.next(error.error.message);break;
       case 401: this.errorOccured.next("HIBA: 401");break;
+      case 404: this.errorOccured.next("Az erőforrás nem található! 404"); break;
       case 500: this.errorOccured.next(error.error.error);break;
       default: this.errorOccured.next(error.message);
     }

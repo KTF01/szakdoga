@@ -2,8 +2,12 @@ package hu.hkristof.parkingapp.models;
 
 import java.sql.Timestamp;
 
-import hu.hkristof.parkingapp.LogAction;
-
+/**
+ * Naplóbejegyzések szűrésére létrejött osztály. Az adattagjai az egyes paraméterek amik alapján keresés történik a
+ * TimeLog rekordok között.
+ * @author krist
+ *
+ */
 public class LogFilter {
 	private String text;
 	private LogAction action;

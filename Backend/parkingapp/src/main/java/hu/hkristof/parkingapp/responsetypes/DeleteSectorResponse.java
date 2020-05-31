@@ -1,7 +1,12 @@
 package hu.hkristof.parkingapp.responsetypes;
-
+/**
+ * Szektor törlésének kérésére küldendő válasz típusa.
+ * @author krist
+ *
+ */
 public class DeleteSectorResponse {
 	private Long deletedId;
+	//Beletesszük a törlés utáni számokat, hogy könyebb legyen frissíteni a frontenden.
 	private int parkHouseFreeplCount;
 	private int parkHouseOccupiedPlCount;
 	public Long getDeletedId() {

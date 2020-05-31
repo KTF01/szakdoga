@@ -27,6 +27,7 @@ class AuthService {
     return _devicePosition;
   }
 
+  //aszinkron hívás az alkalmazás szerver felé. Eredménye képpen resgosztráció történik
   Future<void> signUp(
       String firstName, String lastName, String email, String password) async {
     try {
@@ -38,14 +39,14 @@ class AuthService {
             'email': email,
             'password': password,
           }));
-      if (response.statusCode == 409) {
+      if (response.statusCode == 409) { //Ha a válasz kódja 409 akkor hibát dobumnk
         throw HttpException(response.body);
       }
     } catch (error) {
       handleError(error);
     }
   }
-
+  //Kijelentkezés
   Future<void> logout() async {
     Common.authToken = null;
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -53,6 +54,7 @@ class AuthService {
     NotificationService.notificationsPlugin.cancelAll();
   }
 
+  //Bejelentkezés post kéréssel a szerver felé.
   Future<User> logIn(String token) async {
     try {
       const String url = "${Common.hostUri}auth/users/login";
@@ -60,9 +62,13 @@ class AuthService {
         'authorization': token,
         "content-type": "application/json; charset=utf-8"
       });
+       if(response.statusCode==401){
+        throw HttpException("BAD_CREDENTIALS");
+      }
       final extractedResponse =
           json.decode(response.body.toString()) as Map<String, dynamic>;
 
+      //Válasz átalakítása sajét típusokká
       User user = _extractUser(extractedResponse);
       Common.authToken = token;
       SharedPreferences pref = await SharedPreferences.getInstance();
@@ -75,12 +81,12 @@ class AuthService {
       return null;
     }
   }
-
+  //Megpróbáljuk lekérni az eszköz helyadatait.
   Future<bool> getDeviceLocation() async {
     try {
       _devicePosition = await Geolocator()
           .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    } on PlatformException catch (error) {
+    } on PlatformException catch (error) {//Ha nem sikerül akkor egy flag-et beállítunk
       this.locationDenied = true;
       print(error.message);
     }
@@ -88,12 +94,14 @@ class AuthService {
     return true;
   }
 
+  //Manuális belépés amihez kell paraméterben email és jelszó
   Future<User> manualLogIn(String email, String password) async {
     await getDeviceLocation();
     String token = 'Basic ' + base64Encode(utf8.encode('$email:$password'));
     return await logIn(token);
   }
 
+  //Autómatikus belépés ami az eszköz tárhelyéből szedi az autentikációs tokent
   Future<User> autoLogin() async {
     await getDeviceLocation();
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -105,6 +113,7 @@ class AuthService {
     }
   }
 
+  //Felhasználó adatainak lekérdezése
   Future<User> fetchUserData(int userId) async {
     try {
       http.Response response =
@@ -119,7 +128,7 @@ class AuthService {
     }
     return null;
   }
-
+  //A szervertől jövő válasz átkonvertálása saját típusokká
   User _extractUser(Map<String, dynamic> extractedResponse) {
     User logInUser = User(
       id: extractedResponse['user']['id'],
@@ -178,6 +187,10 @@ class AuthService {
     } else if (error is HttpException) {
       if (error.message.contains("EMAIL")) {
         throw new ErrorHint("Ezzel az e-mailcímmel már regisztráltak!");
+      }else{
+        if(error.message.contains("BAD_CREDENTIALS")){
+          throw new ErrorHint("Helytelen e-mailcím vagy jelszó!");
+        }
       }
     } else {
       throw new ErrorHint(error.toString());

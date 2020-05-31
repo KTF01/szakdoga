@@ -5,15 +5,17 @@ import { CommonService } from '../../../services/common.service';
 import { Role } from '../../../models/Role';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 
+/**
+ * Az oldalsó menü megjelenítéséért felel.
+ */
 @Component({
   selector: 'app-side-nav',
   templateUrl: './side-nav.component.html',
   styleUrls: ['./side-nav.component.css'],encapsulation: ViewEncapsulation.None
 })
-export class SideNavComponent implements OnInit, OnChanges {
+export class SideNavComponent implements OnInit {
 
   isAdmin: boolean;
-  logedInuserId: number;
   barIcon = faBars;
   isCollapsedOpen = false;
   constructor(public authService:AuthService, public router:Router, public commonService:CommonService) { }
@@ -21,7 +23,6 @@ export class SideNavComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     if(this.authService.loggedInUser){
       this.isAdmin = !(this.authService.loggedInUser.role==Role.ROLE_USER);
-      this.logedInuserId = this.authService.loggedInUser.id;
     }
 
   }
@@ -29,11 +30,6 @@ export class SideNavComponent implements OnInit, OnChanges {
   toggleCollapse(){
     this.isCollapsedOpen=!this.isCollapsedOpen;
   }
-
-  ngOnChanges(){
-    console.log('CHANGE');
-  }
-
   navigateToUserDetail(){
     this.router.navigate(['frame/userDetail']);
   }
@@ -49,6 +45,7 @@ export class SideNavComponent implements OnInit, OnChanges {
     this.router.navigate(['frame/dataList/userList']);
   }
 
+  //Kijelentkezés
   fireLogout(){
     this.authService.logout();
   }

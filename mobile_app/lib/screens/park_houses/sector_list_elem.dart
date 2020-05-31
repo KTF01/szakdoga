@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../../models/Sector.dart';
 import './parking_lot_list.dart';
 
+/**
+ * Szektor lista elemet megjelenítő widget.
+ * 
+ */
+
 class SectorListElem extends StatefulWidget {
   final Sector sector;
 
@@ -14,6 +19,7 @@ class _SectorListElemState extends State<SectorListElem> {
 
   double plListheight = 0;
 
+  //Változtatjuk, hogy lenyitva legyen vagy sem.
   void toggleExpand(BuildContext ctx) {
     setState(() {
       if(plListheight==0)

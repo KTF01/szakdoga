@@ -15,13 +15,13 @@ import org.mockito.invocation.InvocationOnMock;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
-import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.CarNotFoundException;
 import hu.hkristof.parkingapp.exceptions.ForbiddenOperationException;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
 import hu.hkristof.parkingapp.models.ParkHouse;
 import hu.hkristof.parkingapp.models.ParkingLot;
+import hu.hkristof.parkingapp.models.Role;
 import hu.hkristof.parkingapp.models.Sector;
 import hu.hkristof.parkingapp.models.User;
 import hu.hkristof.parkingapp.repositoris.CarRepository;

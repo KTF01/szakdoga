@@ -8,6 +8,10 @@ import { Subscription } from 'rxjs';
 import { UserServiceService } from '../../services/user-service.service';
 import { CommonData } from '../../common-data';
 
+/**
+ * A bejelentkezésért felelős felület.
+ */
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -15,10 +19,12 @@ import { CommonData } from '../../common-data';
 })
 export class LoginComponent implements OnInit, OnDestroy {
 
+  //Ha hiba van ebbe a változóba kerül az üzenet.
   error:string= null;
   title:string = CommonData.title;
   isLoginMode: boolean=true;
 
+  //A komponens html template-jéből hivatkozott form elem.
   @ViewChild('authForm') authForm:NgForm;
 
   private logInSub: Subscription;
@@ -30,14 +36,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     if(this.userService.users!=null)this.userService.users = null;
   }
 
+  //Bejelentkező és regisztrációs nézet közötti váltás
   switchMode(){
     this.isLoginMode=!this.isLoginMode;
     this.authForm.reset();
     this.error=null;
   }
 
+  //A kiszolgálót hívva végbemegy a bejelentkezés. Ha sikerült átnavigálunk a parkolóházakhoz.
   logIn() {
-
     this.authService.login(this.authForm.value.emailInput, this.authForm.value.passwordInput);
     this.authService.errorOccured.subscribe(errorMessage=>{
       if(errorMessage)
@@ -48,8 +55,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
+  //Regisztráció, ha sikeres átváltunk bejeéentkező nézetre.
   signUp(){
-
     let newUser:User={
       firstName: this.authForm.value.firstNameInput,
       lastName: this.authForm.value.lastNameInput,
@@ -65,6 +72,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
   }
 
+  //A form tartalmának feldolgozása és ha valid akkor bejelentkezés (vagy regisztrálás)
   onSubmit(){
     if(this.authForm.valid){
       if(this.isLoginMode){
@@ -84,10 +92,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
+  //A jelszó megerősítés helyességének ellenőrzése
   passwordMatches():boolean{
     return this.authForm.value.passwordInput===this.authForm.value.passwordConfirmInput;
   }
 
+  //A komponens megsemmisülésekor leiratkozunk a feliratkozsokról.
   ngOnDestroy(){
     this.logInSub.unsubscribe();
   }

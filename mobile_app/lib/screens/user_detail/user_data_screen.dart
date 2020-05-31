@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_app/screens/user_detail/reservation_list.dart';
+import '../login_screen.dart';
 import './add_car_popup_content.dart';
 import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:mobile_app/models/user.dart';
 import './CarData.dart';
 import 'package:provider/provider.dart';
+
+/**
+ * A felhasználó adatait megjelenítő képernyő
+ */
 
 class UserData extends StatefulWidget {
   final double availableHeight;
@@ -20,22 +25,27 @@ class _UserDataState extends State<UserData> {
 
   @override
   void didChangeDependencies() {
-    if (_isInit) {
+    if (_isInit) { //Inicializálásnál betöltjük a felhasználó adatait.
       Provider.of<CommonProvider>(context).fetchLoggedInUserData().then((_) {
         setState(() {
           _isLoading = false;
         });
+      }, onError: (error){
+        if(error.toString().contains("A szerver nem elérhető!")){
+          Navigator.pushReplacementNamed(context,AuthScreen.routeName);
+        }
       });
     }
     _isInit = false;
     super.didChangeDependencies();
   }
 
+
   void _startAddCar(CommonProvider authManager) {
     setState(() {
       selectedIndex = -1;
     });
-
+    //Autó hozzáadásakor megjelenítjük a felugró ablakot a rendszám beviteli mezőjével.
     showDialog(context: context, child: AddCarPopup(authManager));
   }
 
@@ -45,11 +55,11 @@ class _UserDataState extends State<UserData> {
   @override
   Widget build(BuildContext context) {
     CommonProvider commonProvider = Provider.of<CommonProvider>(context);
-    User loggedInUser = commonProvider.loggedInUser;
+    User loggedInUser = CommonProvider.loggedInUser;
     double screenWidth = MediaQuery.of(context).size.width;
     bool isSelected =
         selectedIndex >= 0 && selectedIndex < loggedInUser.ownedCars.length;
-    return GestureDetector(
+    return GestureDetector( //Nyomhatóvá tesszük
       onTap: () {
         setState(() {
           selectedIndex = -1;
@@ -89,7 +99,7 @@ class _UserDataState extends State<UserData> {
                 ),
                 Container(
                   height: widget.availableHeight * 0.2,
-                  child: ListView.builder(
+                  child: ListView.builder(//Scrollolható lista, ha nem fér bele az elérhet magasságba a tartalom.
                       scrollDirection: Axis.horizontal,
                       itemCount: loggedInUser.ownedCars.length + 1,
                       itemBuilder: (BuildContext ctx, int index) {
@@ -110,7 +120,7 @@ class _UserDataState extends State<UserData> {
                             );
                         } else
                           return Card(
-                            child: InkWell(
+                            child: InkWell(//Nyomhatóvá tesszük
                               onTap: () {
                                 setState(() {
                                   selectedIndex = index;

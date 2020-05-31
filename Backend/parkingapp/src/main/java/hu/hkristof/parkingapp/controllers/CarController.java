@@ -28,12 +28,22 @@ public class CarController {
 	@Autowired
 	CarService carService;
 	
+	/**
+	 * Az összes autó lekérdezése
+	 * @return A lekérdezett autók listája
+	 */
 	@Secured({"ROLE_ADMIN", "ROLE_FIRST_USER"})
 	@GetMapping("/all")
 	public List<Car> getAllCars() {
 	    return carService.getAllCars();
 	}
 	
+	/**
+	 * Új autó hozzáadása egy felhasználóhoz.
+	 * @param userId A felhasználó azonosítója
+	 * @param car Az autó amit hozzáadunk
+	 * @return Az újonnan létrehozott autó
+	 */
 	@PostMapping("/newCarToUser/{userId}")
 	public ResponseEntity<Car> addCarToUser(@PathVariable Long userId, @Valid @RequestBody Car car) {
 		 Car modifiedCar = carService.addCarToUser(userId, car);
@@ -45,6 +55,11 @@ public class CarController {
 		
 	}
 	
+	/**
+	 * Autó eltávolítása
+	 * @param plateNumber Az eltávolítandó autó rendszáma
+	 * @return Az eltávolított autó rendszáma
+	 */
 	@DeleteMapping("delete/{plateNumber}")
 	public ResponseEntity<String> deleteCar(@PathVariable String plateNumber){
 		return new ResponseEntity<>("{ \"plateNumber\": \""+ carService.deleteCar(plateNumber)+"\" }", HttpStatus.OK);

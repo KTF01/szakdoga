@@ -4,6 +4,11 @@ import 'package:mobile_app/models/parkingLot.dart';
 import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:provider/provider.dart';
 
+/**
+ * Foglalásnál felugró panel.
+ * Itt lehet kiválasztani mennyi időre szeretnénk lefoglalni a parkolót.
+ */
+
 class ReservationPanel extends StatefulWidget {
 
   final ParkingLot parkingLot;
@@ -49,15 +54,13 @@ class _ReservationPanelState extends State<ReservationPanel> {
           ),
           LoadableButton(text: "Lefoglal", pressFunction: () async {
             try{
-              await authManager.makeReservation(widget.parkingLot,authManager.loggedInUser, dropDownValue);
+              await authManager.makeReservation(widget.parkingLot,CommonProvider.loggedInUser, dropDownValue);
               Navigator.pop(context);
             }catch(error){
               setState(() {
                 errorText=error.toString();
               });
-              
             }
-            
           })
         ],
       ): Text(errorText, style: TextStyle(color: Theme.of(context).errorColor), textAlign: TextAlign.center,),

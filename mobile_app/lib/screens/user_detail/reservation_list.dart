@@ -5,6 +5,9 @@ import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:mobile_app/models/reservation.dart';
 import 'package:provider/provider.dart';
 
+/**
+ * A felhaználó foglalásait megjelenítő felület.
+ */
 class ReservationList extends StatefulWidget {
   final List<Reservation> reservations;
   ReservationList(this.reservations);
@@ -27,7 +30,7 @@ class _ReservationListState extends State<ReservationList> {
               'Foglalás vége: ' +
                   formatDate(
                     res.endTime.toLocal(),
-                    [yyyy, "-", mm, "-", dd, " ", HH, ":", nn],
+                    [yyyy, "-", mm, "-", dd, " ", HH, ":", nn],//Formázzuk az időt
                   ),
             ),
             trailing: RaisedButton(
@@ -35,7 +38,7 @@ class _ReservationListState extends State<ReservationList> {
               textColor: Theme.of(context).primaryTextTheme.button.color,
               child: Text("Lemondás"),
               onPressed: () {
-                showDialog(
+                showDialog( //Popup
                     context: context,
                     builder: (BuildContext context) {
                       return SureDialog(

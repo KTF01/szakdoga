@@ -8,6 +8,10 @@ import { NgForm, NgModel } from '@angular/forms';
 import { ParkingLotService } from '../../services/parking-lot.service';
 import { PieChartComponent } from '../common/pie-chart/pie-chart.component';
 
+/**
+ * Lenyitható panel ami megjeleníti a parkolókat csempézett fomában.
+ */
+
 @Component({
   selector: 'app-parking-lot-list',
   templateUrl: './parking-lot-list.component.html',
@@ -19,12 +23,13 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
   @Input() sector: Sector;
   @Input() chart:PieChartComponent;
 
+  //ikon
   faCar = faCar;
 
   @Output() parkingLotsVisible: boolean = false;
 
   @ViewChild('plName') plInitInput: NgModel;
-  @ViewChild('form') form: NgForm;
+  @ViewChild('form') addParkingLotForm: NgForm;
 
   inputCount: number[] = [0];
 
@@ -33,24 +38,29 @@ export class ParkingLotListComponent extends PopUpContainer implements OnInit {
   ngOnInit(): void {
     if(this.chart) this.chart.updateChart(this.sector.parkHouse.freePlCount, this.sector.parkHouse.occupiedPlCount);
   }
+  //Egy csempére kattintva elnavigálunk a parkolóhely felületére.
   novigateToParkingLotDetail(parkingLot: ParkingLot) {
     this.router.navigate(['parkingLot', parkingLot.id], { relativeTo: this.route });
   }
 
+  //Beviteli mező hozzáadása az új parkolóhelyeket felvevő űrlaphoz.
   addInputToForm(): void {
     this.inputCount.push(1);
   }
 
+  //Beviteli mező levétele az új parkolóhelyeket felvevő űrlapról.
   removeInputFromForm() {
     this.inputCount.pop();
   }
 
+  //A hozzáadás űrlap feldolgozása.
   submitAddPlForm() {
     let newParkingLots: ParkingLot[] = [];
-    for (let inputName in this.form.value) {
-      if(this.form.value[inputName]!==""){
+    for (let inputName in this.addParkingLotForm.value) {
+      //Az üres mezőket nem vesszük figyelembe.
+      if(this.addParkingLotForm.value[inputName]!==""){
         newParkingLots.push({
-          name: this.form.value[inputName],
+          name: this.addParkingLotForm.value[inputName],
           occupyingCar: null,
           sector: null,
           isReserved:false,

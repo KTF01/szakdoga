@@ -6,6 +6,9 @@ import { ParkHouseService } from '../../../services/park-house.service';
 import { ParkHouse } from '../../../models/ParkHouse';
 import { TimeLogService } from '../../../services/time-log.service';
 
+/**
+ * A vonal grafikont megejlenítő és beállító komponens.
+ */
 @Component({
   selector: 'app-line-chart',
   templateUrl: './line-chart.component.html',
@@ -19,11 +22,11 @@ export class LineChartComponent implements OnInit {
 
   public lineChartData: ChartDataSets[] = [];
 
-  public lineChartLabels: Label[] = ['January', 'February', 'March', 'April', 'May',];
+  public lineChartLabels: Label[]=[];
   public lineChartOptions: ChartOptions = {};
 
   public lineChartColors: Color[] = [
-    { // blue
+    { // piros
       backgroundColor: 'rgba(0,0,159,0.2)',
       borderColor: 'rgba(0,0,255,1)',
       pointBackgroundColor: 'rgba(0,0,177,1)',
@@ -31,7 +34,7 @@ export class LineChartComponent implements OnInit {
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
     },
-    { // red
+    { // kék
       backgroundColor: 'rgba(255,0,0,0.3)',
       borderColor: 'red',
       pointBackgroundColor: 'rgba(148,159,177,1)',
@@ -51,10 +54,12 @@ export class LineChartComponent implements OnInit {
     this.updateChart();
   }
 
+  //A grafikon újboli kirajzolása.
   updateChart() {
     let chartDatas: ChartDataSets[] = [{ data: [], label: "Szabad parkolók",
     cubicInterpolationMode:"monotone", lineTension:0, hidden: true },
     { data: [], label: "Foglalt parkolók", cubicInterpolationMode:"monotone", lineTension:0 }];
+    //Konfigurációs objektum.
     this.lineChartOptions = {
       responsive: true,
       scales: {
@@ -95,10 +100,12 @@ export class LineChartComponent implements OnInit {
     this.lineChartLabels = labels;
     this.lineChartData = chartDatas;
   }
+  //Idő szöveget átkonvertál helyi formátumúra: magyar->2020. XX. XX
   convertDate(time: string) {
     let timedate: Date = new Date(time);
     return timedate.toLocaleString();
   }
+  //A grafikon által megjelenített parkolóház módosítása.
   setSelectedParkHouse(ph: ParkHouse) {
     if (this.selectedParkHouse != null && ph.id != this.selectedParkHouse.id) {
       this.selectedParkHouse = ph;

@@ -31,6 +31,7 @@ public class Sector {
 	@NotBlank
 	private String name;
 	
+	//A parkolóház ezen emeletén található ez a szektor.
 	@NotNull
 	private int floor;
 	

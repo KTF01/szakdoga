@@ -1,11 +1,14 @@
 
 
 
-
+<!--Egy egéz képernyőre kiterjedő szürke felület blokkolja a kattintást más elemre a felületen
+ameddig be nem záródik az ablak.
+-->
 <div class="backdrop" (click)="onClose()"></div>
 <div class="popup-box" [ngClass]="{transparent:nobackGround}">
   <ng-content *ngIf="!commonSevice.isLoading;else spinner"></ng-content>
   <ng-template #spinner>
+    <!--A popup ablak tartalma-->
     <app-loading-spinner></app-loading-spinner>
   </ng-template>
   <div *ngIf="actionButtons" class="popup-actions">

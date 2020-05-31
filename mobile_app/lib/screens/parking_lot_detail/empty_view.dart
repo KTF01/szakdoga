@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/**
+ * Ha üres a parkoló akkor ez a widget rajzolódik ki a parkoló képernyőjén.
+ */
+
 class EmptyParkingLotView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

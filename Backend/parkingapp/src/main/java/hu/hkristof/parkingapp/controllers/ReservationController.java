@@ -31,6 +31,13 @@ public class ReservationController {
 	@Autowired
 	ReservationService reservationService;
 	
+	/**
+	 * Parkoló lefoglalása
+	 * @param plId A parkoló azonosítója
+	 * @param userId A felhasználó azonosítója aki foglal
+	 * @param duration Az időtartam amennyi időre le lesz foglalva a parkoló miliszekundumokban
+	 * @return A megképződött foglalás objektuma
+	 */
 	@PostMapping("reserve")
 	public ResponseEntity<Reservation> makeReservation(@RequestParam("plId") Long plId,
 													@RequestParam("userId") Long userId,
@@ -43,22 +50,26 @@ public class ReservationController {
 		return ResponseEntity.ok().header("content-type", "application/json; charset=utf-8").body(response);
 	}
 	
+	/**
+	 * Egy foglalás lekérdezése.
+	 * @param id A foglalás azonosítója.
+	 * @return A lekérdezett foglalás
+	 */
 	@GetMapping("/{id}")
 	public ResponseEntity<Reservation> getReservation(@PathVariable Long id){
 		Reservation res = resRepo.findById(id).orElseThrow(()->new ReservationNotFoundException(id));
 		return new ResponseEntity<Reservation>(res, HttpStatus.OK);
 	}
 	
+	/**
+	 * Folgalás törlése.
+	 * @param id Törölni kívánt foglalás.
+	 * @return A parkoló objektuma amin a foglalás volt.
+	 */
 	@DeleteMapping("delete/{id}")
 	public ResponseEntity<ParkingLot> deleteReservation(@PathVariable Long id){
 		ParkingLot pl = reservationService.processDeleteReservation(id);
-		if(pl==null) {
-			return new ResponseEntity<ParkingLot>(HttpStatus.FORBIDDEN);
-		}else {
-			System.out.println("Rendelés törölve!");
-			return new ResponseEntity<ParkingLot>(pl, HttpStatus.OK);
-		}
-		
+		return new ResponseEntity<ParkingLot>(pl, HttpStatus.OK);
 	}
 	
 }

@@ -7,20 +7,27 @@ import { Reservation } from '../models/Reservation';
 import { ParkingLot } from '../models/ParkingLot';
 import { AuthService } from './auth.service';
 
+/**
+ * Foglalások kiszolgálója
+ */
+
 @Injectable({
   providedIn: 'root'
 })
 export class ReservationServiceService {
 
+  //Eseményeket emmitáló adattagok.
   makeReservSub:Subject<Reservation> = new Subject<Reservation>();
   deleteReservSub:Subject<ParkingLot> = new Subject<ParkingLot>();
   errorOccured: Subject<string> = new Subject<string>();
 
   constructor(private http:HttpClient, private commonService:CommonService, private authService:AuthService) { }
 
+  //Parkoló lefoglalása post kéréssel
   makeResevation(parkingLot:ParkingLot, userId:number, duration:number){
     this.commonService.isLoading=true;
     let params:HttpParams = new HttpParams();
+    //Querry paraméterekben küldjük a foglalás adatait.
     params=params.append("plId", parkingLot.id.toString());
     params=params.append("userId", userId.toString());
     params=params.append("duration", duration.toString());
@@ -35,6 +42,7 @@ export class ReservationServiceService {
       this.handleError(error)});
   }
 
+  //Foglalás törlése
   deleteReservation(reservationId:number){
     this.commonService.isLoading=true;
     this.http.delete<ParkingLot>(CommonData.hostUri+'auth/reservations/delete/'+reservationId,{
@@ -55,6 +63,7 @@ export class ReservationServiceService {
     switch (error.status) {
       case 0: this.errorOccured.next(CommonData.unknownErrorText); break;
       case 400: this.errorOccured.next(error.error.error); break;
+      case 404: this.errorOccured.next("A parkoló nem található!"); break;
       case 500: this.errorOccured.next(error.error.error); break;
       default: this.errorOccured.next(error.message);
     }

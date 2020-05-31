@@ -2,6 +2,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonData } from '../../../common-data';
 import { CommonService } from '../../../services/common.service';
 
+
+/**
+ * Felugró ablak. 
+ */
 @Component({
   selector: 'app-pop-up',
   templateUrl: './pop-up.component.html',

@@ -13,6 +13,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import hu.hkristof.parkingapp.services.MyUserDetailService;
 
+
+/**
+ * Autentikációt konfiguráló osztály.
+ * @author krist
+ *
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
@@ -25,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 	    http.cors().and().csrf().disable()
         .authorizeRequests()
-            .antMatchers("/auth/**").authenticated()
+            .antMatchers("/auth/**").authenticated() //Minden végpontot levédünk aminek az uri-jában szerepel az auth
             .and()
         .httpBasic().authenticationEntryPoint(getBasicAuthEntryPoint())
         .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -40,6 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public CustomBasicAuthenticationEntryPoint getBasicAuthEntryPoint(){
 	    return new CustomBasicAuthenticationEntryPoint();
 	}
+	
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

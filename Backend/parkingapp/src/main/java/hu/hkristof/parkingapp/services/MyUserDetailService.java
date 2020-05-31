@@ -25,6 +25,11 @@ public class MyUserDetailService implements UserDetailsService{
 	@Autowired 
 	private AuthenticatedUser authenticatedUser;
 	
+	/**
+	 * Autentikációkor ez a fügvény mondja meg, hogy honnan töltse be a bejelentkezett felhasználót.
+	 * Jelen esetben az userRespository segítségével az adatbázisból hozzuk elő, és az ott található 
+	 * role mező szerint állítjuk be a jogosultságát.
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Optional<User> oUser = userRepository.findByEmail(email);

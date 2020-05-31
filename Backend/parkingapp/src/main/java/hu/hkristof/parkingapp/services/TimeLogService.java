@@ -3,12 +3,13 @@ package hu.hkristof.parkingapp.services;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
-import hu.hkristof.parkingapp.LogAction;
 import hu.hkristof.parkingapp.models.Car;
+import hu.hkristof.parkingapp.models.LogAction;
 import hu.hkristof.parkingapp.models.ParkingLot;
 import hu.hkristof.parkingapp.models.TimeLog;
 import hu.hkristof.parkingapp.models.User;
@@ -32,6 +33,14 @@ public class TimeLogService {
 	private final String PARK_OUT_SELF_TEXT = "%s kiparkolt a %s rendszámú autójával a(z) %s parkolóhelyről.";
 	private final String PARK_OUT_OTHER_TEXT = "%s kiparkolt a %s nevében %s rendszámú autóval a(z) %s parkolóhelyről.";
 	
+	/**
+	 * Be és kiparkolással kapcsolatos bejegyzés mentése a naplóba. vagy ki- vagy beparkolás történt.
+	 * Megvan különböztetve az az eset amikor egy felhasználó saját autójával áll be és az amikor
+	 * egy adminisztrátor más nevében állbe.
+	 * @param logAction PARK_IN vagy PARK_OUT, ellenkező esetben nem kerül mentésre a bejegyzés.
+	 * @param car A beparkolt autó.
+	 * @param pl A parkolóhely ahove bebarkoltak.
+	 */
 	public void saveParkLog(LogAction logAction, Car car,ParkingLot pl) {
 		TimeLog timeLog = new TimeLog();
 		timeLog.setAction(logAction);
@@ -61,10 +70,11 @@ public class TimeLogService {
 						timeLog.getUserName(), car.getOwner().getFirstName()+' '+car.getOwner().getLastName(),
 						car.getPlateNumber(), parkingLotPath));
 			}
-		}
+		}else {return;}
 		timeLogRepository.save(timeLog);
 	}
 
+	//Regisztráció lementése
 	public void saveSignUpLog(User user) {
 		TimeLog timeLog = new TimeLog();
 		timeLog.setAction(LogAction.USER_SIGN_UP);
@@ -74,6 +84,10 @@ public class TimeLogService {
 		timeLogRepository.save(timeLog);
 	}
 	
+	/**
+	 * Foglalást jegyző naplóbejegyzés mentése.
+	 * @param pl A parkoló amelyik le lett foglalva.
+	 */
 	public void saveReserveLog(ParkingLot pl) {
 		TimeLog timeLog = new TimeLog();
 		timeLog.setAction(LogAction.RESERVE_MAKE);
@@ -91,23 +105,38 @@ public class TimeLogService {
 		timeLogRepository.save(timeLog);
 	}
 	
+	/**
+	 * Foglalást törlő naplóbejegyzés
+	 * @param pl A parkoló amiről törölték a foglalást.
+	 */
 	public void saveReserveDeleteLog(ParkingLot pl) {
 		TimeLog timeLog = new TimeLog();
 		timeLog.setAction(LogAction.RESERVE_DELETE);
-		timeLog.setUserName(authenticatedUser.getUser().getFirstName()+" "+ authenticatedUser.getUser().getLastName());
+		try {
+			timeLog.setUserName(authenticatedUser.getUser().getFirstName()+" "+ authenticatedUser.getUser().getLastName());
+			timeLog.setMessage(String.format("%s törölte a %s parkolóhelyre vonatkozó foglalását.",
+					timeLog.getUserName(),
+					pl.getSector().getParkHouse().getName()+"/"+
+					pl.getSector().getName()+"/"+
+					pl.getName()));
+		}catch(BeanCreationException ex) { //Nincs autentikált user, tehát nem requestben vagyun azaz a scheduler hívta meg a függvényt.
+			timeLog.setUserName("Rendszer");
+			timeLog.setMessage(String.format("A %s parkolóhelyre vonatkozó foglalás lejárt és a rendszer törölte.",
+					pl.getSector().getParkHouse().getName()+"/"+
+					pl.getSector().getName()+"/"+
+					pl.getName()
+				)
+			);
+		}
 		pl.getSector().getParkHouse().countParkingLots();
 		timeLog.setParkHouseId(pl.getSector().getParkHouse().getId());
 		timeLog.setParkHouseFreePlCount(pl.getSector().getParkHouse().getFreePlCount());
 		timeLog.setParkHouseOccupiedPlCount(pl.getSector().getParkHouse().getOccupiedPlCount());
-		timeLog.setMessage(String.format("%s törölte a %s parkolóhelyre vonatkozó foglalását.",
-				timeLog.getUserName(),
-				pl.getSector().getParkHouse().getName(),
-				pl.getSector().getName(),
-				pl.getName()));
 		timeLog.setTime(new Timestamp(System.currentTimeMillis()));
 		timeLogRepository.save(timeLog);
 	}
 	
+	//Naplóbejegyzések közötti keresés.
 	public List<TimeLog> filterLogs(String text, LogAction action, String startTime, String endTime) {
 		String actionString = action.equals(LogAction.ALL)?"": action.toString();
 		System.out.println("Logok szűrése ||| "+text+" | "+action+" | "+startTime+" | "+endTime);

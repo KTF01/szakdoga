@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:mobile_app/models/providers/common_provider.dart';
 import 'package:provider/provider.dart';
 
+//Regisztációs vagy bejelentkező form megjelenítésének eldöntésére szolgáló enum típus
 enum AuthMode { Signup, Login }
 
+/**
+ * Bejelentkező képernyő
+ */
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
 
@@ -42,7 +46,9 @@ class AuthScreen extends StatelessWidget {
     );
   }
 }
-
+/**
+ * Az űrlapot tartalmazó felület
+ */
 class AuthCard extends StatefulWidget {
   const AuthCard({
     Key key,
@@ -53,8 +59,10 @@ class AuthCard extends StatefulWidget {
 }
 
 class _AuthCardState extends State<AuthCard> {
-  final GlobalKey<FormState> _formKey = GlobalKey();
+  //Form validitásának ellenörzésére szolgál
+  final GlobalKey<FormState> _formState = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
+  //A form értékei ebben a mapban tárolódnak.
   Map<String, String> _authInfo = {
     'email': '',
     'firstName': '',
@@ -64,24 +72,29 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
+  //Űrlap elküldése
   void _submit() async {
+    //Fóluszt elvesszük az összes inputmezőtöl
     FocusScope.of(context).requestFocus(new FocusNode());
-    if (!_formKey.currentState.validate()) {
+    if (!_formState.currentState.validate()) {
+      //Ha nem valid nem küldjük el a formot.
       return;
     }
-    _formKey.currentState.save();
+    _formState.currentState.save();
     setState(() {
       _isLoading = true;
     });
     CommonProvider commonProvider = Provider.of<CommonProvider>(context, listen: false);
     if (_authMode == AuthMode.Login) {
       try {
+        //Bejelentkezés
         await commonProvider.manualLogIn(_authInfo['email'], _authInfo['password']);
       } catch (error) {
         _showErrorDialog(error.toString());
       }
     } else {
       try {
+        //Regisztráció
         await commonProvider.signUp(_authInfo['firstName'], _authInfo['lastName'],
             _authInfo['email'], _authInfo['password']);
         _switchAuthMode();
@@ -94,6 +107,7 @@ class _AuthCardState extends State<AuthCard> {
     });
   }
 
+  //Hiba esetén felugró ablak közli a hiba okát
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -114,6 +128,7 @@ class _AuthCardState extends State<AuthCard> {
     );
   }
 
+  //Formok közötti váltakozás
   void _switchAuthMode() {
     if (_authMode == AuthMode.Login) {
       setState(() {
@@ -141,7 +156,7 @@ class _AuthCardState extends State<AuthCard> {
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: _formState,
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
@@ -236,7 +251,6 @@ class _AuthCardState extends State<AuthCard> {
                       '${_authMode == AuthMode.Login ? 'Regisztráció' : 'Bejelentkezés'}'),
                   onPressed: _switchAuthMode,
                   padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   textColor: Theme.of(context).primaryColor,
                 ),
               ],

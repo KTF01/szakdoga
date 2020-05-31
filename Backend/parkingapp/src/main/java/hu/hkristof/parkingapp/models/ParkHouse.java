@@ -33,10 +33,12 @@ public class ParkHouse {
 	
 	private String address;
 	
+	//A parkolóház legalsó szintje. Nem kell 0-ról kezdődnie, de ha nem kerül kitöltésre automatikusan 0 lesz.
 	@NotNull
 	@Column(columnDefinition = "integer default 0")
 	private int firstFloor;
 	
+	//A parkolóház emeletenek száma.
 	@NotNull
 	@PositiveOrZero
 	private int numberOfFloors;
@@ -45,8 +47,10 @@ public class ParkHouse {
 	@OneToMany(mappedBy = "parkHouse", cascade = CascadeType.ALL)
 	private List<Sector> sectors;
 	
+	//Szabad parkoló helyek száma a parkolóházakban.
 	private int freePlCount;
 	
+	//Foglalt parkolóhelyek száma. Foglaltnak számít az a parkoló amelyikben parkol autó, vagy le van foglalva felhasználó által.
 	private int occupiedPlCount;
 	
 	@NotNull
@@ -55,6 +59,7 @@ public class ParkHouse {
 	@NotNull
 	private double latitude;
 	
+	//Megszámolja a parkolókat. Mennyi szabad és mennyi foglalt?
 	@PostLoad
 	public void countParkingLots() {
 		freePlCount = 0;

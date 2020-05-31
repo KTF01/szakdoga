@@ -14,6 +14,7 @@
       <div *ngIf="!closestBtnAllowed" style="text-align: center;">Helyadatok nem elérhetőek</div>
     </div>
     <div class="map-container">
+      <!--A térkép-->
       <agm-map (mapDblClick)="placeMarker($event)"
       [disableDoubleClickZoom]="true"
       [longitude]="19.075364"
@@ -28,7 +29,7 @@
             <h5>{{marker.parkHouse.address}}</h5>
           </agm-info-window>
         </agm-marker>
-        <agm-marker *ngIf="isAaddMarkerVisible" [(longitude)]="form.value.longitudeInput" [(latitude)]="form.value.latitudeInput">
+        <agm-marker *ngIf="isAaddMarkerVisible" [(longitude)]="addParkHouseForm.value.longitudeInput" [(latitude)]="addParkHouseForm.value.latitudeInput">
         </agm-marker>
         <agm-marker [longitude]="deviceLongitude" [latitude]="deviceLatitude" [iconUrl]="userMarkerIcon">
           <agm-info-window>
@@ -54,7 +55,7 @@
       </ul>
       <ng-template #addPanel>
         <h3>Parkolóház hozzáadása</h3>
-        <form (ngSubmit)="onSubmit()" #f="ngForm">
+        <form (ngSubmit)="onSubmit()" #addPhForm="ngForm">
           <div class="row justify-content-mg-around">
             <div class="col-md-6">
               <div>
@@ -111,7 +112,7 @@
                   type="number"
                   name="longitudeInput"
                   id="longitude"
-                  [(ngModel)]="f.value.longitudeInput"
+                  [(ngModel)]="addPhForm.value.longitudeInput"
                   required
                   placeholder="Szélességi fok"
                   #longitude="ngModel"/>
@@ -124,7 +125,7 @@
                     type="number"
                     name="latitudeInput"
                     id="latitude"
-                    [(ngModel)]="f.value.latitudeInput"
+                    [(ngModel)]="addPhForm.value.latitudeInput"
                     required
                     placeholder="Hosszúsági fok"
                     #latitude="ngModel"/>
@@ -137,7 +138,7 @@
           </div>
 
           <div class="text-danger">{{ errorText }}</div>
-          <button class="btn btn-primary" type="submit" [disabled]="!f.valid">Hozzáad</button>
+          <button class="btn btn-primary" type="submit" [disabled]="!addParkHouseForm.valid">Hozzáad</button>
           <button class="btn btn-primary" (click)="changeToNormalView()">Mégse</button>
         </form>
 

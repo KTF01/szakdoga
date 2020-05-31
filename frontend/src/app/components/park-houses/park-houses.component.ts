@@ -10,7 +10,9 @@ import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 import { MapRestriction, InfoWindow } from '@agm/core/services/google-maps-types';
 import { CommonData } from '../../common-data';
-
+/**
+ * Parkolóházak és a térkép megjelenítéséért felelős komponens.
+ */
 @Component({
   selector: 'app-park-houses',
   templateUrl: './park-houses.component.html',
@@ -23,14 +25,17 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   errorText: string = null;
   error: string = null;
 
-  @ViewChild('f') form: NgForm;
+  @ViewChild('addPhForm') addParkHouseForm: NgForm;
   @ViewChildren('listTile') tile: QueryList<ListTileComponent>;
+  //A térkép jelolőinek listája
   @ViewChildren('phMarkerInfo') windows: QueryList<InfoWindow>;
 
+  //Eseményekre való feliratkozást tároló adattagok.
   errorSub: Subscription = new Subscription();
   closestSub: Subscription = new Subscription();
-  closestBtnAllowed:boolean = this.commonService.isLocationAvailable;
 
+  closestBtnAllowed:boolean = this.commonService.isLocationAvailable;
+  //A térkép korlátainak meghatározása
   mapRestriction: MapRestriction = CommonData.maprRestriction;
 
   isAddview:boolean = false;
@@ -62,6 +67,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
   constructor(private parkHouseService: ParkHouseService, private route: ActivatedRoute, private router: Router,
     public commonService: CommonService, private authService: AuthService) { super(); }
 
+    //Inicializációkor lekérdezzük a parkolóházakat a backendtől.
   ngOnInit(): void {
     this.parkHouseService.loadParkHouses();
     this.parkHouseService.loadedParkHouses.subscribe(_ => {
@@ -77,22 +83,27 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
     });
   }
 
+  //Kijelölt parkolóház meghatározása.
   setSelectedParkHouse(id:number){
     let index = this.parkHouses.findIndex(ph=>ph.id==id);
     this.selectedparkHouse=this.parkHouses[index];
   }
 
+  //Új parkolóház hozzáadásakor eltűnnek a parkolóházak és helyette megjelenik az űrlap.
   changeToAddView(){
     this.isAddview =true;
     this.errorText=null;
   }
+
+  //Űrlap nézet visszaállígtása parkolóházak lista nézetté.
   changeToNormalView(){
     this.isAddview =false;
     this.isAaddMarkerVisible=false;
-    this.form.reset();
+    this.addParkHouseForm.reset();
     this.formChecked=false;
   }
 
+  //Parkolóház hozzáadása, kiszolgáló hívása.
   addParkHouse(parkHouse: ParkHouse): void {
     this.commonService.isLoading = true;
     this.parkHouseService.addNewParkHouse(parkHouse);
@@ -110,6 +121,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
     });
   }
 
+  //Parkolóház tölése.
   deleteParkHouse(parkHouse: ParkHouse, INDEX: number): void {
     this.commonService.isLoading = true;
     this.parkHouseService.removeParkHouse(parkHouse);
@@ -125,37 +137,39 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
     })
   }
 
+  //Parkolóházra kattintva átnavigálunk a parkolóház részleteire.
   openParkHouseDetail(id:number): void {
     this.router.navigate(['parkHouse', id], { relativeTo: this.route });
   }
 
+  //Parkolóház hozzáadásához szükséges űrlap ellenőrzése.
   onSubmit() {
     this.formChecked = true;
-    console.log(this.form);
-    if (this.form.valid) {
+    if (this.addParkHouseForm.valid) {
       if(this.formExtraValidate()){
         let newParkhouse: ParkHouse = {
-          name: this.form.value.parkHouseNameInput,
-          address: this.form.value.parkHouseAddressInput,
-          firstFloor: this.form.value.firstFloorInput,
-          numberOfFloors: this.form.value.numFloorInput,
+          name: this.addParkHouseForm.value.parkHouseNameInput,
+          address: this.addParkHouseForm.value.parkHouseAddressInput,
+          firstFloor: this.addParkHouseForm.value.firstFloorInput,
+          numberOfFloors: this.addParkHouseForm.value.numFloorInput,
           sectors: [],
-          longitude: this.form.value.longitudeInput,
-          latitude: this.form.value.latitudeInput,
+          longitude: this.addParkHouseForm.value.longitudeInput,
+          latitude: this.addParkHouseForm.value.latitudeInput,
         }
         this.addParkHouse(newParkhouse);
         this.formChecked = false;
       }else{
-        this.errorText="A koordinátáknak budapesten belül kell lennie! A térképre duplán kattintva kijelölhet pontos helyet.";
+        this.errorText="A koordinátáknak Budapesten belül kell lennie! A térképre duplán kattintva kijelölhet pontos helyet.";
       }
 
     } else {
       this.errorText = "Érvenytelen mezők szerepelnek az űrlapban."
     }
   }
+
   formExtraValidate():boolean{
-    let lo:number=this.form.value.longitudeInput;
-    let la:number=this.form.value.latitudeInput;
+    let lo:number=this.addParkHouseForm.value.longitudeInput;
+    let la:number=this.addParkHouseForm.value.latitudeInput;
 
     if(lo<this.mapRestriction.latLngBounds['west']||lo>this.mapRestriction.latLngBounds['east']||
     la<this.mapRestriction.latLngBounds['south']||la>this.mapRestriction.latLngBounds['north']){
@@ -164,6 +178,7 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
     return true;
   }
 
+  //Legközelebbi parkolóház lekérdezésének megkezdése. Ha sikerült akkor a megfelelő marker infóablaka felugrik.
   startGettinClosestParkHouse() {
     this.isGetClosestLoading=true;
     this.authService.getClosestParkhouse();
@@ -184,24 +199,25 @@ export class ParkHousesComponent extends PopUpContainer implements OnInit, OnDes
 
   }
 
+  //Térképre duplakattintás során megjelenik egy jelölő. Csak akkor ha épp parkolóházat adunk hozzá.
   placeMarker(event) {
     if(this.isAddview){
       let lo: number = +event.coords.lng;
       let la: number = +event.coords.lat;
-      this.form.value.longitudeInput = lo;
-      this.form.value.latitudeInput = la;
+      this.addParkHouseForm.value.longitudeInput = lo;
+      this.addParkHouseForm.value.latitudeInput = la;
       this.addMarkerLat = la;
       this.addMarkerLong = lo;
       this.isAaddMarkerVisible=true;
-      //this.phMarkers.push({ longitude: lo, latitude: la });
     }
   }
 
   closePopup(): void {
     this.formChecked = false;
-    this.popupIsOpen = false;
+    this.popUpIsOpen = false;
   }
 
+  //Leiratkozunk az errorSub-ról
   ngOnDestroy() {
     if (this.errorSub) this.errorSub.unsubscribe();
   }

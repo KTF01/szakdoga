@@ -1,5 +1,6 @@
 package hu.hkristof.parkingapp.services;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,13 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hu.hkristof.parkingapp.AuthenticatedUser;
-import hu.hkristof.parkingapp.LogAction;
-import hu.hkristof.parkingapp.Role;
 import hu.hkristof.parkingapp.exceptions.CarNotFoundException;
 import hu.hkristof.parkingapp.exceptions.ForbiddenOperationException;
 import hu.hkristof.parkingapp.exceptions.ParkingLotNotFoundException;
 import hu.hkristof.parkingapp.models.Car;
+import hu.hkristof.parkingapp.models.LogAction;
 import hu.hkristof.parkingapp.models.ParkingLot;
+import hu.hkristof.parkingapp.models.Role;
 import hu.hkristof.parkingapp.repositoris.CarRepository;
 import hu.hkristof.parkingapp.repositoris.ParkingLotRepository;
 import hu.hkristof.parkingapp.responsetypes.ParkInResponse;
@@ -36,6 +37,11 @@ public class ParkingLotService {
 	@Autowired
 	AuthenticatedUser authenticatedUser;
 
+	/**
+	 * Több parkoló egyszerre történő kiparkolása.
+	 * @param parkingLots
+	 */
+	@Transactional
 	public void massParkOut(List<ParkingLot> parkingLots) {
 		List<Car> cars= new ArrayList<>();
 		for(ParkingLot parkingLot: parkingLots) {
@@ -50,6 +56,11 @@ public class ParkingLotService {
 		plRepository.saveAll(parkingLots);
 	}
 	
+	/**
+	 * Autó kiparkolása egy parkolóhelyről
+	 * @param id Az autó azonosítója.
+	 * @return
+	 */
 	public ParkOutResponse parkOut(Long id) {
 		ParkOutResponse response = new ParkOutResponse();
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
@@ -75,6 +86,9 @@ public class ParkingLotService {
 		return response;
 	}
 	
+	//A közvetlenül az adatbázisban végbemenő változások végrehajtása kiparkolás esetén.
+	//Frissíti az autó occupied_parking_lot mezőjét, frissíti a parkolóhelyet, és elment egy naplóbejegyzést 
+	@Transactional
 	private void parkoutProcess(ParkingLot pl) {
 		Car car = pl.getOccupyingCar();
 		car.setOccupiedParkingLot(null);
@@ -88,6 +102,8 @@ public class ParkingLotService {
 		System.out.println(pl.getName()+" parkolóból kiállt a "+ car.getPlateNumber()+" rendszámú autó!");
 	}
 	
+	//Adatbázisba menti a beparkolási művelet következtében létrejövő változtatásokat.
+	@Transactional
 	private void parkInProcess(ParkingLot pl, Car car) {
 		if(car.getOccupiedParkingLot()!=null) {
 			parkOut(car.getOccupiedParkingLot().getId());
@@ -141,6 +157,11 @@ public class ParkingLotService {
 		return response;
 	}
 
+	/**
+	 * Parkolóhely kitörlése. Haáll benne autó azt előbb kiparkoltatjuk, frissítjük a parkolóházban lévő parkolók számát.
+	 * @param id Törölni kívánt parkoló azonosítója.
+	 * @return A törölt parkoló azonosítója
+	 */
 	public Long deletePrakingLot(Long id) {
 		
 		ParkingLot pl = plRepository.findById(id).orElseThrow(()->new ParkingLotNotFoundException(id));
@@ -151,7 +172,8 @@ public class ParkingLotService {
 			pl.getSector().getParkHouse().countParkingLots();
 		}
 		pl.getSector().removeParkingLot(pl);
-		System.out.println(id + " számú parkolóhely törölve!");
+		System.out.println(new Timestamp(System.currentTimeMillis()).toString()+
+				": "+id + " számú parkolóhely törölve!");
 		plRepository.delete(pl);
 		return id;
 	}

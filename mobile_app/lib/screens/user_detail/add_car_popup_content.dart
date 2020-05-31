@@ -3,6 +3,10 @@ import 'package:mobile_app/models/providers/common_provider.dart';
 
 import '../../models/car.dart';
 
+/**
+ * Autó hozzáadásához szükséges felugró ablak.
+ */
+
 class AddCarPopup extends StatefulWidget {
   final CommonProvider auth;
   AddCarPopup(this.auth);
@@ -12,6 +16,7 @@ class AddCarPopup extends StatefulWidget {
 }
 
 class _AddCarPopupState extends State<AddCarPopup> {
+  //Text input kezelésére használatos objektum
   TextEditingController plateNumberInputController =
       new TextEditingController();
 
@@ -50,9 +55,8 @@ class _AddCarPopupState extends State<AddCarPopup> {
           onPressed: () async {
             if (plateNumberInputController.value.text == '') {
               setState(() {
-                _showemptiAlert = true;
+                _showemptiAlert = true;//Ha üres a vlue akkor alertet mutatunk.
               });
-
               return;
             }
             setState(() {

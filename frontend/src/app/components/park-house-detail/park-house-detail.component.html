@@ -1,8 +1,10 @@
 
-<app-pop-up *ngIf="popupIsOpen" (closeEvent)="closePopUp()" (okEvent)="deleteParkHouse()">
+<app-pop-up *ngIf="popUpIsOpen" (closeEvent)="closePopUp()" (okEvent)="deleteParkHouse()">
   <p>Biztosan törlöd a parkolóházat?</p>
   <p class="text-danger">{{error}}</p>
 </app-pop-up>
+
+<!--Parkolóház szerkesztéséhez szükséges felugró ablak és űrlap-->
 <app-pop-up *ngIf="popUp2IsOpen" (closeEvent)="closePopUp2()" (okEvent)="submitForm()">
     <form (ngSubmit)="onSubmit()" #ef="ngForm">
       <h3>Parkolóház szerkesztése</h3>
@@ -50,7 +52,7 @@
                 name="latitudeInput"
                 id="latitude"
                 [(ngModel)]="parkHouse.latitude"
-                requireds
+                required
                 placeholder="Hosszúsági fok"
                 #latitude="ngModel"/>
               <span class="form-text text-danger" *ngIf="!latitude.valid && (latitude.touched || formChecked)">
@@ -70,8 +72,10 @@
     (drag)="dragMarker($event)"></agm-marker>
     </agm-map>
 </app-pop-up>
-<app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" (okEvent)="submitAddForm() " [okText]="'Hozzáad'">
-  <form (ngSubmit)="onAddSubmit()" #af="ngForm">
+
+<!--Szektor hozzáadásához szükséges felugró ablak és űrlap-->
+<app-pop-up *ngIf="popUp3IsOpen" (closeEvent)="closePopUp3()" (okEvent)="submitSectorAddForm() " [okText]="'Hozzáad'">
+  <form (ngSubmit)="onSectorAddSubmit()" #af="ngForm">
     <div>
       <input class="form-control" type="text"  name="sectorNameInput" placeholder="Név" required ngModel #sectorName="ngModel">
       <span class="form-text text-danger" *ngIf="!sectorName.valid && (sectorName.touched)">
@@ -116,7 +120,7 @@
       <ul>
         <app-list-tile *ngFor="let sector of parkHouse.sectors" (elementDeleted)="removeSector(sector)">
           <div class="col-md-11" >
-            <div class="row down-btn" (click)="hidePlList(plList)">
+            <div class="row down-btn" (click)="togglePlList(plList)">
               <h3 class="text-primary card-title col-md-4">{{sector.name}}</h3>
               <span class="text-primary col-md-3">Emelet: {{sector.floor}}</span>
               <span class="text-primary col-md-4">Szabad parkolók: {{sector.freePlCount}}</span>

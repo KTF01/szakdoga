@@ -28,6 +28,7 @@ public class Reservation {
 	@OneToOne(mappedBy = "reservation")
 	private ParkingLot parkingLot;
 	
+	//Létrehozáskor mindig a jelenlegi idő.
 	private Timestamp startTime;
 	
 	private Timestamp endTime;

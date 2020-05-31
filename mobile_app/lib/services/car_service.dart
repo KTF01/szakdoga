@@ -6,12 +6,15 @@ import 'package:mobile_app/models/car.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_app/models/common_data.dart';
 import 'package:mobile_app/models/user.dart';
-
+/**
+ * Autókkal kapcsolatos háttérhívások
+ */
 class CarService{
   
+  //Autó hozzáadása
   Future<void> addCar(Car car, User user) async {
     try {
-      http.Response response = await http.post(
+      await http.post(
           Common.hostUri + 'auth/cars/newCarToUser/${user.id}',
           headers: {
             'authorization': Common.authToken,
@@ -24,7 +27,7 @@ class CarService{
       handleError(error);
     }
   }
-
+  //Autó eltávolítása
   Future<void> removeCar(String plateNumber, User user) async {
     try {
       http.Response response = await http.delete(

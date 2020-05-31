@@ -12,8 +12,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import hu.hkristof.parkingapp.LogAction;
-
 @Entity
 @Table(name = "time_logs")
 public class TimeLog {
@@ -24,20 +22,24 @@ public class TimeLog {
 	@NotNull
 	private Timestamp time;
 	
+	//Mentett akció fajtája.
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private LogAction action;
 	
+	//Felhasználó neve aki kiváltotta az akciót.
 	@NotBlank
 	private String userName;
 	
+	//Bejegyzés szövege
 	@NotBlank
 	private String message;
 	
+	//A parkolóház azonosítója amiben a mentett akció végrehajtódott. (Amenyyiben nem regisztáció történ, akkor ez a mezó null)
 	private Long parkHouseId;
-	
+	//A parkolóházban lévő szabad parkolóhelyek száma az akció végbemenetele után.
 	private int parkHouseFreePlCount;
-	
+	//A parkolóházban lévő foglalt parkolóhelyek száma az akció végbemenetele után.
 	private int parkHouseOccupiedPlCount;
 
 	public Long getId() {

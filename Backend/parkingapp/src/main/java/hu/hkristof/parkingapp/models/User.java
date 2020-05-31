@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
-import hu.hkristof.parkingapp.Role;
-
 @Entity
 @Table(name = "users")
 public class User {
@@ -45,6 +43,7 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 	
+	//A felhasználó foglalásai. Maximum 3 lehet.
 	@JsonIdentityReference(alwaysAsId = true)
 	@NotNull
 	@OneToMany(mappedBy = "user")

@@ -13,6 +13,12 @@ import { AuthService } from '../../services/auth.service';
 import { Role } from '../../models/Role';
 import { ReservationServiceService } from '../../services/reservation-service.service';
 import { CommonData } from '../../common-data';
+import { CommonService } from '../../services/common.service';
+import { ParkHouseService } from '../../services/park-house.service';
+
+/**
+ * Parkolóhely részleteit megjelenítő komponens.
+ */
 
 @Component({
   selector: 'app-parking-lot-detail',
@@ -22,33 +28,49 @@ import { CommonData } from '../../common-data';
 export class ParkingLotDetailComponent extends PopUpContainer implements OnInit, OnDestroy {
 
   parkingLot: ParkingLot;
+  //ikonok
   editIcon = faEdit;
   trashIcon = faTrash;
   carIcon = faCar;
 
+  //Feliratkozások
   parkInSub: Subscription;
   usersSub: Subscription;
   reservSub:Subscription;
   delReservSub:Subscription;
+  errorSub: Subscription;
 
+  //Megejelenítést vezérló segédváltozük;
   isUsersView:boolean=true;
   selectedUser:User=null;
   isAdmin:boolean;
   reserveEndTimeString: string = "";
   isReservable:boolean;
   isUsersCar:boolean;
-
   isParkActionShown:boolean;
-  @ViewChild('form') editForm: NgForm;
+
+  //Hiba információ megjelenítéséhez szükséges változók
+  errorText:string = "";
+  invalidText:string="";
+
+
+  @ViewChild('form') editPlForm: NgForm;
   @ViewChild('reservForm') resForm: NgForm;
 
   constructor(private parkingLotService: ParkingLotService, private route:ActivatedRoute,
     private router: Router, public userService:UserServiceService, public authService:AuthService,
-    private reservationService:ReservationServiceService) { super();}
+    private reservationService:ReservationServiceService, public commonService:CommonService, private phService:ParkHouseService) { super();}
 
+    /**
+     * Inicializáskor történő dolgok:
+     * url paraméterből kinyer id alapján parkoló lekérdezése.
+     * Megállapítjuk, hogy admin-e a felhasználó
+     * Ha admin akkor lekérdezzük a userek listáját, hogy meg tudjuk majd jeleníteni őket a beparkoltatásnál.
+     * Eldöntjük, a autó áll bent akkor az a felhasználó autója-e
+     */
   ngOnInit(): void {
     let id = +this.route.snapshot.params['id'];
-    this.parkingLot=this.parkingLotService.getParkingLot(id);
+    this.parkingLot=this.phService.getParkingLot(id);
     if(this.authService.loggedInUser){
       this.isAdmin = !(this.authService.loggedInUser.role==Role.ROLE_USER);
       this.isUsersView = this.isAdmin&&!this.parkingLot.isReserved;
@@ -67,6 +89,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
 
   }
 
+  //Ha van foglalás akkor annak megfelelően frissítjük a felületet.
   setReservationDisplay():void{
     this.isParkActionShown = !this.parkingLot.isReserved||(this.parkingLot.isReserved&&this.parkingLot.reservation.user.id==this.authService.loggedInUser.id);
     if(this.parkingLot.occupyingCar){
@@ -80,6 +103,7 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
       this.isAdmin&&this.parkingLot.isReserved));
   }
 
+  //Beálláskor az autók és a felhasználók listája közötti váltás.
   changeView(user:User){
     this.isUsersView=!this.isUsersView;
     this.selectedUser = user;
@@ -88,51 +112,74 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
     this.popUp3IsOpen=false;
     this.isUsersView=this.isAdmin;
   }
+
+  //A Parkoló törlése, sikeres törlés esetén visszanavigálunk a parkolóház felületére.
   deleteParkingLot(){
     this.parkingLotService.removeParkingLot(this.parkingLot);
     this.parkingLotService.parkingLotsDeleted.subscribe(_=>{
       this.closePopUp();
       this.router.navigate(['../../'], {relativeTo:this.route});
     });
+    this.errorSub = this.parkingLotService.errorOccured.subscribe(error=>{
+      this.errorText = error.toString();
+    });
 
   }
 
+  //Parkoló nevének szerkesztésére való űrlap elküldése
   submitEditForm(){
-    if(this.editForm.valid){
-      this.editForm.ngSubmit.emit();
+    if(this.editPlForm.valid){
+      this.editPlForm.ngSubmit.emit();
+      this.invalidText="";
     }else{
-      console.log("INVALID");
+      this.invalidText="Ki kell tölteni a mezőt.";
     }
   }
 
+  //Kipsarkolási művelet végrehalytásának elkezdése.
   parkOut(){
     this.parkingLotService.parkOut(this.parkingLot);
     this.parkingLotService.parkedOut.subscribe(_=>{
       this.parkingLot.occupyingCar=null;
       this.setReservationDisplay();
+      this.errorText="";
+    });
+    this.errorSub = this.parkingLotService.errorOccured.subscribe(error=>{
+      this.errorText = error.toString();
     });
   }
 
+  //Beparkolási művelet
   parkIn(car:Car){
     this.parkingLotService.parkIn(this.parkingLot, car);
     this.parkInSub = this.parkingLotService.parkedIn.subscribe(responsePl=>{
       this.parkingLot=responsePl;
       this.closePopUp3();
       this.setReservationDisplay();
+      this.errorText="";
+    });
+    this.errorSub = this.parkingLotService.errorOccured.subscribe(error=>{
+      this.errorText = error.toString();
     });
 
   }
 
+  //Parkoló nevének szerkesztésének végrehalytása a service segítségével.
   onEditSubmit(){
-    this.parkingLotService.updateParkingLotName(this.parkingLot, this.editForm.value.newNameInput);
+    this.parkingLotService.updateParkingLotName(this.parkingLot, this.editPlForm.value.newNameInput);
     this.parkingLotService.parkingLotUpdated.subscribe(newName=>{
       this.parkingLot.name=newName;
       this.closePopUp2();
-    })
+      this.errorText="";
+    });
+    this.errorSub = this.parkingLotService.errorOccured.subscribe(error=>{
+      this.errorText = error.toString();
+    });
   }
 
+  //Parkoló lefogallása.
   sendReservation(){
-    let duration:number = this.resForm.value.durationSelectInput *3600000;
+    let duration:number = this.resForm.value.durationSelectInput *3600000; //Megszorozzuk a számot egy órányi milisecundummal.
     this.reservationService.makeResevation(this.parkingLot, this.authService.loggedInUser.id, duration);
     this.reservSub = this.reservationService.makeReservSub.subscribe(newReservation=>{
       this.parkingLot.reservation=newReservation;
@@ -143,9 +190,14 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
       }
       this.closePopUp4();
       this.setReservationDisplay();
+      this.errorText="";
+    });
+    this.errorSub = this.reservationService.errorOccured.subscribe(error=>{
+      this.errorText = error.toString();
     });
   }
 
+  //Folgalás feloldása.
   startReservationDelete(){
     this.reservationService.deleteReservation(this.parkingLot.reservation.id);
     this.delReservSub = this.reservationService.deleteReservSub.subscribe(pl=>{
@@ -157,11 +209,26 @@ export class ParkingLotDetailComponent extends PopUpContainer implements OnInit,
       }
       this.closePopUp4();
       this.setReservationDisplay();
+      this.errorText="";
+    });
+    this.errorSub = this.reservationService.errorOccured.subscribe(error=>{
+      this.errorText = error.toString();
     });
   }
+  //Feliratkozásokról leiratkozunk ha bezáródik az ablak.
   ngOnDestroy(){
     if(this.parkInSub) this.parkInSub.unsubscribe();
     if(this.reservSub) this.reservSub.unsubscribe();
     if(this.delReservSub) this.delReservSub.unsubscribe();
+    if(this.errorSub) this.errorSub.unsubscribe();
+  }
+  openPopUp(){
+    this.errorText="";
+    this.popUpIsOpen=true;
+  }
+
+  openPopUp2(){
+    this.errorText="";
+    this.popUp2IsOpen=true;
   }
 }

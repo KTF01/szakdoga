@@ -2,6 +2,10 @@ import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Role } from '../../../models/Role';
 
+/**
+ * Egy + jelet ábrázoló gomb.
+ */
+
 @Component({
   selector: 'app-add-button',
   templateUrl: './add-button.component.html',
