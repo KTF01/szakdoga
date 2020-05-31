@@ -62,7 +62,7 @@ export class TimeLogComponent implements OnInit {
         form.value.statTimeInput,
         form.value.endTimeInput);
       this.logsLoaded = this.timeLogService.logsLoaded.subscribe((_) => {
-        this.lineChart.updateChart();
+       this.refreshChart();
         this.logsLoaded.unsubscribe();
       });
       //Ha nem akkor megkonstuáljuk az időpontokat.
@@ -88,17 +88,11 @@ export class TimeLogComponent implements OnInit {
           startDateString = new Date(Date.now() - tzoffset - 365 * 604800000).toISOString();
           break;
         default:
-          if (form.value.textSearchInput == "") {
+          if (form.value.textSearchInput == "" &&form.value.actionSelectInput=="ALL") {
             //Ha nem adunk meg semmi paramétert, akkor minden bejegyzést lekérdezünk.
             this.timeLogService.loadAllTimeLog();
             this.logsLoaded = this.timeLogService.logsLoaded.subscribe((_) => {
-              if (this.timeLogService.timeLogs.length <= 0) {
-                this.isChartReady = false;
-              }
-              else if (this.lineChart) {
-                this.isChartReady = true;
-                this.lineChart.updateChart();
-              };
+              this.refreshChart();
               this.logsLoaded.unsubscribe();
             });
             return;
@@ -112,16 +106,20 @@ export class TimeLogComponent implements OnInit {
         startDateString,
         "");
       this.logsLoaded = this.timeLogService.logsLoaded.subscribe((_) => {
-        if (this.timeLogService.timeLogs.length <= 0) {
-          this.isChartReady = false;
-        } else {
-          this.isChartReady = true;
-          if (this.lineChart) this.lineChart.updateChart();
-        }
+        this.refreshChart();
         this.logsLoaded.unsubscribe();
       });
     }
 
+  }
+
+  refreshChart(){
+    if (this.timeLogService.timeLogs.length <= 0) {
+      this.isChartReady = false;
+    } else {
+      this.isChartReady = true;
+      if (this.lineChart) this.lineChart.updateChart();
+    }
   }
 
   //Felcseréljük az időpontok szerinti sorrendet.
@@ -130,7 +128,7 @@ export class TimeLogComponent implements OnInit {
     else this.downIcon = faCaretDown
     this.timeLogService.timeLogs.reverse();
   }
-  
+
   checkCheckbox(event) {
     console.log(event);
   }
